@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
+import { CreateListingHeader } from './components/CreateListingHeader';
 import { createListingSchema, type CreateListingForm } from './schemas/create-listing.schema';
 import { Step1BasicInfo } from './components/Step1BasicInfo';
 import { Step2Pricing } from './components/Step2Pricing';
@@ -44,11 +44,12 @@ export function CreateListingScreen() {
 
     return (
         <FormProvider {...methods}>
+            <CreateListingHeader step={step} totalSteps={4} onBack={previousStep} />
             <View style={{flex: 1,
                 padding: 24,
                 gap: 20,}}>
                 <Text>Step {step} of 4</Text>
-                {step === 1 &&<Step1BasicInfo />}
+                {step === 1 &&<Step1BasicInfo  />}
                 {step === 2 && <Step2Pricing />}
 
                 <View style={{
@@ -56,13 +57,14 @@ export function CreateListingScreen() {
             justifyContent: 'space-between',
           }}>
             {step > 1 && (
-                <Pressable onPress={previousStep} style={{backgroundColor: '#234', padding: 10, borderRadius: 5}}>
-                    <Text>previous</Text>
+                <Pressable onPress={previousStep} style={{backgroundColor: '#075985', padding: 10, borderRadius: 5}}>
+                    <Text style={{color: '#fff'}}>Previous</Text>
                 </Pressable>
             )}
             
-            <Pressable onPress={nextStep}>
-                <Text>Next</Text>
+            <Pressable onPress={nextStep}
+            style={{backgroundColor: '#075985', padding: 10, borderRadius: 5}}>
+                <Text style={{color: '#fff'}}>Next</Text>
             </Pressable>
 
                 </View>

@@ -1,7 +1,8 @@
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable, TextInput,ScrollView,  KeyboardAvoidingView, Platform } from 'react-native';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import type { CreateListingForm } from '../schemas/create-listing.schema';
+
 
 export function Step2Pricing() {
  const { control, setValue } =
@@ -62,6 +63,13 @@ const pricing = useWatch({
   };
 
   return (
+    <KeyboardAvoidingView
+  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+  style={{ flex: 1 }}
+>
+
+    <ScrollView contentContainerStyle={{ gap: 20, padding: 16 }}>
+      
     <View style={{ gap: 20 }}>
       <Text>Prices</Text>
 
@@ -325,5 +333,7 @@ const pricing = useWatch({
 
       </View>
     </View>
+    </ScrollView>
+</KeyboardAvoidingView>
   );
 }
