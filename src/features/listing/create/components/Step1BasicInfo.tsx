@@ -7,72 +7,110 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ActivityIndicator,
 } from 'react-native';
 
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Controller, useFormContext } from 'react-hook-form';
-import { useEffect, useMemo, useState } from 'react';
 
 import type { CreateListingForm } from '../schemas/create-listing.schema';
 
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 type Category = {
   id: string;
-  slug: string;
   name: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
 };
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const categories: Category[] = [
+  {
+    id: '1',
+    name: 'Plomería',
+    icon: 'plumbing',
+  },
+  {
+    id: '2',
+    name: 'Electricidad',
+    icon: 'power',
+  },
+  {
+    id: '3',
+    name: 'Clases de guitarra',
+    icon: 'music-note',
+  },
+  {
+    id: '4',
+    name: 'Clases de inglés',
+    icon: 'language',
+  },
+  {
+    id: '5',
+    name: 'Limpieza del hogar',
+    icon: 'cleaning-services',
+  },
+  {
+    id: '6',
+    name: 'Jardinería',
+    icon: 'yard',
+  },
+  {
+    id: '7',
+    name: 'Pintura',
+    icon: 'format-paint',
+  },
+  {
+    id: '8',
+    name: 'Carpintería',
+    icon: 'construction',
+  },
+  {
+    id: '9',
+    name: 'Cerrajería',
+    icon: 'lock',
+  },
+  {
+    id: '10',
+    name: 'Mudanzas',
+    icon: 'local-shipping',
+  },
+  {
+    id: '11',
+    name: 'Fotografía',
+    icon: 'photo-camera',
+  },
+  {
+    id: '12',
+    name: 'Diseño gráfico',
+    icon: 'design-services',
+  },
+  {
+    id: '13',
+    name: 'Peluquería',
+    icon: 'content-cut',
+  },
+  {
+    id: '14',
+    name: 'Manicure',
+    icon: 'spa',
+  },
+  {
+    id: '15',
+    name: 'Masajes',
+    icon: 'self-improvement',
+  },
+  {
+    id: '16',
+    name: 'Entrenamiento personal',
+    icon: 'fitness-center',
+  },
+];
 
 export function Step1BasicInfo() {
   const { control } = useFormContext<CreateListingForm>();
 
-  const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState('');
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [categoriesError, setCategoriesError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setLoadingCategories(true);
-        setCategoriesError(null);
-
-        const response = await fetch(`${API_URL}/categories`);
-
-        if (!response.ok) {
-          throw new Error('No se pudieron cargar las categorías');
-        }
-
-        const data: Category[] = await response.json();
-
-        setCategories(data);
-      } catch (error) {
-        setCategoriesError(
-          error instanceof Error
-            ? error.message
-            : 'Error cargando categorías'
-        );
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  const filteredCategories = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim();
-
-    if (!normalizedSearch) {
-      return categories;
-    }
-
-    return categories.filter((category) =>
-      category.name.toLowerCase().includes(normalizedSearch)
-    );
-  }, [categories, search]);
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(search.toLowerCase().trim()),
+  );
 
   return (
     <KeyboardAvoidingView
@@ -89,11 +127,12 @@ export function Step1BasicInfo() {
         ListHeaderComponent={
           <View style={styles.header}>
 
+            {/* BASIC INFORMATION */}
             <Text style={styles.stepLabel}>
               Basic Information
             </Text>
 
-            {/* TÍTULO */}
+            {/* TITLE */}
             <View style={styles.section}>
               <Text style={styles.label}>
                 Title
@@ -129,7 +168,7 @@ export function Step1BasicInfo() {
               </Text>
             </View>
 
-            {/* CATEGORÍA */}
+            {/* CATEGORY */}
             <View style={styles.categoryHeader}>
               <Text style={styles.title}>
                 Select a category
@@ -139,7 +178,7 @@ export function Step1BasicInfo() {
                 Choose the category that best describes your service.
               </Text>
 
-              {/* BUSCADOR */}
+              {/* SEARCH */}
               <View style={styles.searchContainer}>
                 <MaterialIcons
                   name="search"
@@ -155,21 +194,6 @@ export function Step1BasicInfo() {
                   style={styles.searchInput}
                 />
               </View>
-
-              {/* ERROR */}
-              {categoriesError && (
-                <Text style={styles.error}>
-                  {categoriesError}
-                </Text>
-              )}
-
-              {/* LOADING */}
-              {loadingCategories && (
-                <View style={styles.loading}>
-                  <ActivityIndicator />
-                  <Text>Cargando categorías...</Text>
-                </View>
-              )}
             </View>
           </View>
         }
@@ -189,6 +213,7 @@ export function Step1BasicInfo() {
                     fieldState.error && styles.cardError,
                   ]}
                 >
+                  {/* ICON */}
                   <View
                     style={[
                       styles.iconContainer,
@@ -196,12 +221,13 @@ export function Step1BasicInfo() {
                     ]}
                   >
                     <MaterialIcons
-                      name="category"
+                      name={item.icon}
                       size={28}
                       color={selected ? '#0284C7' : '#334155'}
                     />
                   </View>
 
+                  {/* NAME */}
                   <Text
                     style={[
                       styles.name,
@@ -211,6 +237,7 @@ export function Step1BasicInfo() {
                     {item.name}
                   </Text>
 
+                  {/* CHECK */}
                   {selected && (
                     <MaterialIcons
                       name="check-circle"
@@ -225,24 +252,24 @@ export function Step1BasicInfo() {
           />
         )}
         ListEmptyComponent={
-          !loadingCategories ? (
-            <View style={styles.empty}>
-              <MaterialIcons
-                name="search-off"
-                size={40}
-                color="#94A3B8"
-              />
+          <View style={styles.empty}>
+            <MaterialIcons
+              name="search-off"
+              size={40}
+              color="#94A3B8"
+            />
 
-              <Text style={styles.emptyText}>
-                No se encontraron categorías.
-              </Text>
-            </View>
-          ) : null
+            <Text style={styles.emptyText}>
+              No se encontraron categorías.
+            </Text>
+          </View>
         }
       />
     </KeyboardAvoidingView>
   );
 }
+
+import { useState } from 'react';
 
 const styles = StyleSheet.create({
   container: {
@@ -380,18 +407,6 @@ const styles = StyleSheet.create({
     right: 10,
   },
 
-  loading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 10,
-  },
-
-  error: {
-    color: '#EF4444',
-    fontSize: 13,
-  },
-
   empty: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -401,5 +416,10 @@ const styles = StyleSheet.create({
 
   emptyText: {
     color: '#64748B',
+  },
+
+  error: {
+    color: '#EF4444',
+    fontSize: 13,
   },
 });

@@ -4,6 +4,9 @@ import { pricingSchema } from '@cerca/src'
 export const createListingSchema = z.object({
     categoryId: z.string().min(1, 'Category is required'),
     title: z.string().trim().min(1, 'Title is required').max(80, 'Title must be at most 80 characters'),
+     description: z
+    .string()
+    .min(20, 'The description must be at least 20 characters long'),
     pricing: pricingSchema,
     latitude: z.number().optional(),
     longitude: z.number().optional(),
