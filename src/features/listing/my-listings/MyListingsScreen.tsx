@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Modal,
 } from 'react-native';
-
+import { router } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import {
@@ -108,7 +108,7 @@ export default function MyListingsScreen() {
       />
 
       {/* BOTÓN + */}
-      <Pressable style={styles.addButton}>
+      <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={styles.addButton}>
         <MaterialIcons
           name="add"
           size={30}
@@ -157,7 +157,7 @@ export default function MyListingsScreen() {
             </Pressable>
 
             {selectedListing?.status === 'published' && (
-              <Pressable style={styles.menuItem}>
+              <Pressable  style={styles.menuItem}>
                 <MaterialIcons
                   name="pause"
                   size={20}
