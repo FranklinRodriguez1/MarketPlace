@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/hooks/use-theme';
 
 import { createListingSchema, type CreateListingForm } from './schemas/create-listing.schema';
 import { Step1BasicInfo } from './components/Step1BasicInfo';
 import { Step2Pricing } from './components/Step2Pricing';
 
 export function CreateListingScreen() {
+    const theme = useTheme();
     const [ step, setStep ] = useState(1);
 
     const methods = useForm<CreateListingForm>({
@@ -40,33 +45,54 @@ export function CreateListingScreen() {
         const previousStep = () => {
             setStep((current) => Math.max(1, current - 1));
         }
-    
+
 
     return (
         <FormProvider {...methods}>
-            <View style={{flex: 1,
-                padding: 24,
-                gap: 20,}}>
-                <Text>Step {step} of 4</Text>
+            <ThemedView style={styles.container}>
+                <ThemedText type="smallBold" themeColor="textSecondary">Step {step} of 4</ThemedText>
                 {step === 1 &&<Step1BasicInfo />}
                 {step === 2 && <Step2Pricing />}
 
-                <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
+                <View style={styles.actions}>
             {step > 1 && (
-                <Pressable onPress={previousStep} style={{backgroundColor: '#234', padding: 10, borderRadius: 5}}>
-                    <Text>previous</Text>
+                <Pressable
+                    onPress={previousStep}
+                    style={[styles.button, styles.outlinedButton, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                >
+                    <ThemedText type="smallBold">previous</ThemedText>
                 </Pressable>
             )}
-            
-            <Pressable onPress={nextStep}>
-                <Text>Next</Text>
+
+            <Pressable onPress={nextStep} style={[styles.button, { backgroundColor: theme.primary }]}>
+                <ThemedText type="smallBold" style={styles.primaryLabel}>Next</ThemedText>
             </Pressable>
 
                 </View>
-            </View>
+            </ThemedView>
         </FormProvider>
     )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    gap: 20,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  outlinedButton: {
+    borderWidth: 1,
+  },
+  primaryLabel: {
+    color: '#FFFFFF',
+  },
+});

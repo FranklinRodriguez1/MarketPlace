@@ -1,10 +1,14 @@
-import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet } from 'react-native';
 import { Controller, useFormContext } from 'react-hook-form';
-
-import type { CreateListingForm } from '../schemas/create-listing.schema';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
+
+import type { CreateListingForm } from '../schemas/create-listing.schema';
+
 export function Step1BasicInfo() {
+    const theme = useTheme();
     const { control } = useFormContext<CreateListingForm>();
     const categories = [
         { id:"1", name:" Plomeria", icon: "water" },
@@ -14,63 +18,50 @@ export function Step1BasicInfo() {
     ]
     return (
        <View>
-        <Text>
+        <ThemedText themeColor="textSecondary">
             Basic Information
-        </Text>
-            <Text style={{
-                fontSize: 24,
-                fontWeight: "bold",
-                marginBottom: 16,
-            }}>Select a category</Text>
+        </ThemedText>
+            <ThemedText style={styles.title}>Select a category</ThemedText>
          <FlatList
         data={categories}
         numColumns={2}
         scrollEnabled={false}
         columnWrapperStyle={styles.row}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <MaterialIcons name="plumbing" size={24} color="black" />
+          <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <MaterialIcons name="plumbing" size={24} color={theme.primary} />
 
-            <Text style={styles.name}>
+            <ThemedText style={styles.name}>
               {item.name}
-            </Text>
+            </ThemedText>
           </View>
         )}
         keyExtractor={(item) => item.id}
       />
-        <View style={{
-            backgroundColor: '#fff',
-            padding: 16,
-            borderRadius: 8,
-            marginBottom: 16,
-        }}>
-            <Text>Title</Text>
+        <View style={[styles.field, { backgroundColor: theme.surface }]}>
+            <ThemedText type="smallBold">Title</ThemedText>
             <Controller
                 control={control}
                 name="title"
                 render={({ field, fieldState }) => (<>
-                    <TextInput 
+                    <TextInput
                     value={field.value}
                     onChangeText={field.onChange}
                     onBlur={field.onBlur}
                     placeholder="Ej. Clases de ingles"
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 12,
-                        borderRadius: 8,
-                    }}
+                    placeholderTextColor={theme.textSecondary}
+                    style={[styles.input, { borderColor: theme.border, color: theme.text }]}
                     />
                     {fieldState.error && (
-                        <Text>{fieldState.error.message}</Text>
+                        <ThemedText type="small" themeColor="danger">{fieldState.error.message}</ThemedText>
                     )}
                 </>
             )}
             />
-            <Text>A descriptive title helps users find your service easily.</Text>
+            <ThemedText type="small" themeColor="textSecondary">A descriptive title helps users find your service easily.</ThemedText>
         </View>
         <View>
-            <Text>Category</Text>
+            <ThemedText type="smallBold">Category</ThemedText>
             <Controller
           control={control}
           name="categoryId"
@@ -81,24 +72,20 @@ export function Step1BasicInfo() {
                 onChangeText={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="Escribe una categoría"
-                style={{
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  padding: 12,
-                  borderRadius: 8,
-                }}
+                placeholderTextColor={theme.textSecondary}
+                style={[styles.input, { borderColor: theme.border, color: theme.text }]}
               />
 
               {fieldState.error && (
-                <Text>
+                <ThemedText type="small" themeColor="danger">
                   {fieldState.error.message}
-                </Text>
+                </ThemedText>
               )}
             </>
           )}
         />
       </View>
-    </View> 
+    </View>
     )
 }
 
@@ -109,7 +96,8 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: "bold",
     marginBottom: 16,
   },
 
@@ -120,21 +108,31 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    width: "50%",
+    width: "48%",
     height: 128,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 16,
-    backgroundColor: "white",
-  },
-
-  icon: {
-    fontSize: 32,
+    borderWidth: 1,
   },
 
   name: {
     marginTop: 8,
     fontSize: 16,
     fontWeight: "400",
+  },
+
+  field: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    gap: 6,
+  },
+
+  input: {
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 12,
+    fontSize: 16,
   },
 });

@@ -13,8 +13,8 @@ const readline = require("readline");
 const root = process.cwd();
 const oldDirs = ["src", "scripts"];
 const exampleDir = "example";
-const newAppDir = "src/app";
-const exampleDirPath = path.join(root, exampleDir);
+const newAppDir = "src/pp";
+const exampleDirPath = apath.join(root, exampleDir);
 
 const indexContent = `import { Text, View, StyleSheet } from "react-native";
 

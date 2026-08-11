@@ -1,9 +1,13 @@
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { View, Pressable, TextInput, StyleSheet } from 'react-native';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+
+import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 
 import type { CreateListingForm } from '../schemas/create-listing.schema';
 
 export function Step2Pricing() {
+  const theme = useTheme();
  const { control, setValue } =
   useFormContext<CreateListingForm>();
 
@@ -12,6 +16,16 @@ const pricing = useWatch({
   name: 'pricing',
 });
   const model = pricing.model;
+
+  const inputStyle = { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text };
+
+  const optionCardStyle = (selected: boolean) => ({
+    backgroundColor: selected ? theme.backgroundSelected : theme.surface,
+    borderWidth: 1,
+    borderColor: selected ? theme.primary : theme.border,
+    padding: 16,
+    borderRadius: 12,
+  });
 
   const selectFixed = () => {
     setValue(
@@ -63,53 +77,33 @@ const pricing = useWatch({
 
   return (
     <View style={{ gap: 20 }}>
-      <Text>Prices</Text>
+      <ThemedText themeColor="textSecondary">Prices</ThemedText>
 
-      <Text
-        style={{
-          fontSize: 24,
-          fontWeight: 'bold',
-        }}
-      >
+      <ThemedText style={styles.title}>
         How do you want to charge?
-      </Text>
+      </ThemedText>
 
-      <Text>
+      <ThemedText themeColor="textSecondary">
         You can select how you want to charge for this service.
         You will be able to adjust the amounts in the next step.
-      </Text>
+      </ThemedText>
 
       <View style={{ gap: 12 }}>
 
         {/* ========================= */}
         {/* FIXED */}
         {/* ========================= */}
-        <View
-          style={{
-            backgroundColor:
-              model === 'fixed' ? '#E0F2FE' : '#FFF',
-
-            borderWidth: 1,
-
-            borderColor:
-              model === 'fixed'
-                ? '#0284C7'
-                : '#E5E7EB',
-
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
+        <View style={optionCardStyle(model === 'fixed')}>
           {/* SOLO ESTA PARTE ES PRESSABLE */}
           <Pressable onPress={selectFixed}>
-            <Text>
+            <ThemedText>
               {model === 'fixed' ? '●' : '○'} Fixed price
-            </Text>
+            </ThemedText>
 
-            <Text>
+            <ThemedText type="small" themeColor="textSecondary">
               A fixed amount for the entire job, ideal for
               well-defined tasks.
-            </Text>
+            </ThemedText>
           </Pressable>
 
           {/* INPUT FUERA DEL PRESSABLE */}
@@ -120,9 +114,9 @@ const pricing = useWatch({
                 marginTop: 16,
               }}
             >
-              <Text style={{ fontWeight: 'bold' }}>
+              <ThemedText type="smallBold">
                 Price
-              </Text>
+              </ThemedText>
 
               <Controller
                 control={control}
@@ -140,19 +134,14 @@ const pricing = useWatch({
                       }
                       keyboardType="numeric"
                       placeholder="50000"
-                      style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 12,
-                        borderRadius: 8,
-                        backgroundColor: '#fff',
-                      }}
+                      placeholderTextColor={theme.textSecondary}
+                      style={[styles.input, inputStyle]}
                     />
 
                     {fieldState.error && (
-                      <Text>
+                      <ThemedText type="small" themeColor="danger">
                         {fieldState.error.message}
-                      </Text>
+                      </ThemedText>
                     )}
                   </>
                 )}
@@ -164,31 +153,16 @@ const pricing = useWatch({
         {/* ========================= */}
         {/* HOURLY */}
         {/* ========================= */}
-        <View
-          style={{
-            backgroundColor:
-              model === 'hourly' ? '#E0F2FE' : '#FFF',
-
-            borderWidth: 1,
-
-            borderColor:
-              model === 'hourly'
-                ? '#0284C7'
-                : '#E5E7EB',
-
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
+        <View style={optionCardStyle(model === 'hourly')}>
           {/* SOLO EL ENCABEZADO ES PRESSABLE */}
           <Pressable onPress={selectHourly}>
-            <Text>
+            <ThemedText>
               {model === 'hourly' ? '●' : '○'} Per hour
-            </Text>
+            </ThemedText>
 
-            <Text>
+            <ThemedText type="small" themeColor="textSecondary">
               You charge a fee for each hour of work performed.
-            </Text>
+            </ThemedText>
           </Pressable>
 
           {/* INPUTS FUERA DEL PRESSABLE */}
@@ -201,9 +175,9 @@ const pricing = useWatch({
             >
               {/* PRECIO POR HORA */}
               <View style={{ gap: 8 }}>
-                <Text style={{ fontWeight: 'bold' }}>
+                <ThemedText type="smallBold">
                   Hourly rate
-                </Text>
+                </ThemedText>
 
                 <Controller
                   control={control}
@@ -221,19 +195,14 @@ const pricing = useWatch({
                         }
                         keyboardType="numeric"
                         placeholder="30000"
-                        style={{
-                          borderWidth: 1,
-                          borderColor: '#ccc',
-                          padding: 12,
-                          borderRadius: 8,
-                          backgroundColor: '#fff',
-                        }}
+                        placeholderTextColor={theme.textSecondary}
+                        style={[styles.input, inputStyle]}
                       />
 
                       {fieldState.error && (
-                        <Text>
+                        <ThemedText type="small" themeColor="danger">
                           {fieldState.error.message}
-                        </Text>
+                        </ThemedText>
                       )}
                     </>
                   )}
@@ -242,9 +211,9 @@ const pricing = useWatch({
 
               {/* HORAS MÍNIMAS */}
               <View style={{ gap: 8 }}>
-                <Text style={{ fontWeight: 'bold' }}>
+                <ThemedText type="smallBold">
                   Minimum hours
-                </Text>
+                </ThemedText>
 
                 <Controller
                   control={control}
@@ -262,19 +231,14 @@ const pricing = useWatch({
                         }
                         keyboardType="numeric"
                         placeholder="2"
-                        style={{
-                          borderWidth: 1,
-                          borderColor: '#ccc',
-                          padding: 12,
-                          borderRadius: 8,
-                          backgroundColor: '#fff',
-                        }}
+                        placeholderTextColor={theme.textSecondary}
+                        style={[styles.input, inputStyle]}
                       />
 
                       {fieldState.error && (
-                        <Text>
+                        <ThemedText type="small" themeColor="danger">
                           {fieldState.error.message}
-                        </Text>
+                        </ThemedText>
                       )}
                     </>
                   )}
@@ -287,39 +251,24 @@ const pricing = useWatch({
         {/* ========================= */}
         {/* QUOTE */}
         {/* ========================= */}
-        <View
-          style={{
-            backgroundColor:
-              model === 'quote' ? '#E0F2FE' : '#FFF',
-
-            borderWidth: 1,
-
-            borderColor:
-              model === 'quote'
-                ? '#0284C7'
-                : '#E5E7EB',
-
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
+        <View style={optionCardStyle(model === 'quote')}>
           {/* SOLO ESTA PARTE ES PRESSABLE */}
           <Pressable onPress={selectQuote}>
-            <Text>
+            <ThemedText>
               {model === 'quote' ? '●' : '○'} A budget
-            </Text>
+            </ThemedText>
 
-            <Text>
+            <ThemedText type="small" themeColor="textSecondary">
               You assess the work on-site before giving a
               final price.
-            </Text>
+            </ThemedText>
           </Pressable>
 
           {model === 'quote' && (
-            <Text style={{ marginTop: 16 }}>
+            <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: 16 }}>
               The customer can request a quote before the
               final price is agreed.
-            </Text>
+            </ThemedText>
           )}
         </View>
 
@@ -327,3 +276,15 @@ const pricing = useWatch({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  input: {
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 12,
+  },
+});
