@@ -6,6 +6,8 @@ import { CreateListingHeader } from './components/CreateListingHeader';
 import { createListingSchema, type CreateListingForm } from './schemas/create-listing.schema';
 import { Step1BasicInfo } from './components/Step1BasicInfo';
 import { Step2Pricing } from './components/Step2Pricing';
+import { Step3LocationPhotos } from './components/Step3LocationPhotos';
+import { Step4Review } from './components/Step4Review';
 
 export function CreateListingScreen() {
     const [ step, setStep ] = useState(1);
@@ -51,6 +53,8 @@ export function CreateListingScreen() {
                 <Text>Step {step} of 4</Text>
                 {step === 1 &&<Step1BasicInfo  />}
                 {step === 2 && <Step2Pricing />}
+                {step === 3 && <Step3LocationPhotos />}
+                {step === 4 && <Step4Review/>}
 
                 <View style={{
             flexDirection: 'row',
