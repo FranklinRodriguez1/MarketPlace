@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
 
 export function Step4Review() {
   return (
@@ -74,7 +75,7 @@ export function Step4Review() {
       </View>
 
       {/* BOTÓN */}
-      <Pressable style={styles.publishButton}>
+      <Pressable onPress={() => router.push('/my-listings')} style={styles.publishButton}>
 
         <MaterialIcons
           name="publish"
