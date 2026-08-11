@@ -25,7 +25,7 @@ export type RegisterFormData = z.infer<typeof registerFormSchema>;
 // --- Schema de respuesta del servidor ---
 // Valida lo que llega del backend antes de usarlo (parse, no `as`).
 
-const actorSchema = z.object({
+export const actorSchema = z.object({
   capacities: z.array(z.enum(['customer', 'provider'])),
   platformRole: z.enum(['user', 'moderator', 'admin']).optional(),
 });
