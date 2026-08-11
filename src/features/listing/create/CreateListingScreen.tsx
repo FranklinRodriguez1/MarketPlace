@@ -60,6 +60,7 @@ export function CreateListingScreen() {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
+            
             {step > 1 && (
                 <Pressable onPress={previousStep} style={{backgroundColor: '#075985', padding: 10, borderRadius: 5}}>
                     <Text style={{color: '#fff'}}>Previous</Text>
