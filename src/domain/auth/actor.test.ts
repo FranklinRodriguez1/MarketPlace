@@ -25,6 +25,29 @@ describe('can()', () => {
   });
 });
 
+describe('moderator', () => {
+  const actor: Actor = { capacities: [], platformRole: 'moderator' };
+
+  it('puede listing:read, listing:moderate, review:moderate, report:resolve', () => {
+    expect(can(actor, 'listing:read')).toBe(true);
+    expect(can(actor, 'listing:moderate')).toBe(true);
+    expect(can(actor, 'review:moderate')).toBe(true);
+    expect(can(actor, 'report:resolve')).toBe(true);
+  });
+
+  it('NO puede listing:create ni user:suspend', () => {
+    expect(can(actor, 'listing:create')).toBe(false);
+    expect(can(actor, 'user:suspend')).toBe(false);
+  });
+});
+
+describe('user sin rol elevado', () => {
+  it('NO puede user:suspend aunque tenga capacidades', () => {
+    const actor: Actor = { capacities: ['customer', 'provider'] };
+    expect(can(actor, 'user:suspend')).toBe(false);
+  });
+});
+
 describe('has()', () => {
   it('detecta correctamente si tiene una capacidad específica', () => {
     const actor: Actor = { capacities: ['customer'] };
