@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test *)",
+      "Bash(npx vitest *)",
+      "Bash(npm install *)",
+      "Bash(mkdir -p \"src/app/\\(tabs\\)\" \"src/app/\\(auth\\)\")",
+      "Bash(mv \"src/app/index.tsx\" \"src/app/\\(tabs\\)/index.tsx\")",
+      "Bash(mv \"src/app/explore.tsx\" \"src/app/\\(tabs\\)/explore.tsx\")",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(npm uninstall *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('deps:', Object.keys\\(p.dependencies\\).join\\(', '\\)\\); console.log\\('devDeps:', Object.keys\\(p.devDependencies\\).join\\(', '\\)\\)\")"
+    ]
+  }
+}
