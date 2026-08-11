@@ -10,6 +10,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 import { signIn } from '../auth.api';
 import { loginFormSchema, type LoginFormData } from '../auth.schemas';
+import { saveTokens } from '../session';
 import { AuthButton } from '../components/AuthButton';
 import { AuthCard } from '../components/AuthCard';
 import { AuthTextField } from '../components/AuthTextField';
@@ -33,11 +34,8 @@ export function LoginScreen() {
     setServerError(null);
     try {
       const result = await signIn(data.email, data.password);
-      // TODO CERCA-8: guardar result.accessToken y result.refreshToken en SecureStore
-      console.log('accessToken:', result.accessToken);
-      console.log('refreshToken:', result.refreshToken);
-      console.log('actor:', result.actor);
-      router.replace('/');
+      await saveTokens(result.accessToken, result.refreshToken);
+      router.replace('/(tabs)');
     } catch (error) {
       setServerError(error instanceof Error ? error.message : 'Error inesperado. Intenta de nuevo.');
     }
