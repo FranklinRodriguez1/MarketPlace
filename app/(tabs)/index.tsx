@@ -1,24 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { SearchScreen } from '@/features/search/SearchScreen';
 
 export default function Home() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Inicio</Text>
-    </View>
-  );
+  return <SearchScreen />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FAFAF7',
-  },
-
-  text: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-});

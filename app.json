@@ -33,6 +33,13 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      "expo-localization",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Cerca usa tu ubicación para mostrarte servicios cercanos."
+        }
       ]
     ],
     "experiments": {
