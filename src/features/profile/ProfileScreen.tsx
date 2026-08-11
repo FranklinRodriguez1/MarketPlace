@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -16,14 +17,12 @@ type ScreenState =
   | { status: 'error'; message: string }
   | { status: 'success'; me: MeData };
 
-type Language = 'es' | 'en';
-
 export default function ProfileScreen() {
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [state, setState] = useState<ScreenState>({ status: 'loading' });
   const [isActivating, setIsActivating] = useState(false);
   const [activateError, setActivateError] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Language>('es');
 
   useEffect(() => {
     void loadMe();
@@ -37,7 +36,7 @@ export default function ProfileScreen() {
     } catch (error) {
       setState({
         status: 'error',
-        message: error instanceof Error ? error.message : 'Error inesperado.',
+        message: error instanceof Error ? error.message : t('common.unexpectedError'),
       });
     }
   }
@@ -50,7 +49,7 @@ export default function ProfileScreen() {
       // Actualiza la pantalla con el actor nuevo sin recargar
       setState({ status: 'success', me: updatedMe });
     } catch (error) {
-      setActivateError(error instanceof Error ? error.message : 'Error inesperado.');
+      setActivateError(error instanceof Error ? error.message : t('common.unexpectedError'));
     } finally {
       setIsActivating(false);
     }
@@ -78,7 +77,7 @@ export default function ProfileScreen() {
           style={[styles.retryButton, { borderColor: theme.border }]}
         >
           <ThemedText type="smallBold" themeColor="primary">
-            Reintentar
+            {t('common.retry')}
           </ThemedText>
         </Pressable>
       </ThemedView>
@@ -93,19 +92,19 @@ export default function ProfileScreen() {
     <ThemedView style={styles.container}>
       <SafeAreaView>
         <ThemedText type="subtitle" style={styles.heading}>
-          Mi perfil
+          {t('profile.title')}
         </ThemedText>
 
         {/* Datos del actor */}
         <ThemedView type="backgroundElement" style={styles.card}>
-          <InfoRow label="ID" value={me.id} />
-          <InfoRow label="Rol" value={me.platformRole ?? 'user'} />
+          <InfoRow label={t('profile.id')} value={me.id} />
+          <InfoRow label={t('profile.role')} value={me.platformRole ?? 'user'} />
           <View style={styles.capRow}>
-            <ThemedText type="smallBold">Capacidades</ThemedText>
+            <ThemedText type="smallBold">{t('profile.capacities')}</ThemedText>
             <View style={styles.chips}>
               {me.capacities.length === 0 ? (
                 <ThemedText type="small" themeColor="textSecondary">
-                  Ninguna
+                  {t('profile.none')}
                 </ThemedText>
               ) : (
                 me.capacities.map((cap) => (
@@ -145,28 +144,28 @@ export default function ProfileScreen() {
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <ThemedText type="smallBold" style={styles.buttonText}>
-                  Convertirme en proveedor
+                  {t('profile.becomeProvider')}
                 </ThemedText>
               )}
             </Pressable>
           </View>
         )}
 
-        {/* Selector de idioma — UI sin i18next (CERCA-11) */}
+        {/* Selector de idioma */}
         <View style={styles.section}>
           <ThemedText type="smallBold" style={styles.sectionLabel}>
-            Idioma
+            {t('profile.language')}
           </ThemedText>
           <View style={styles.languageRow}>
             <LanguageButton
               label="ES"
-              active={language === 'es'}
-              onPress={() => setLanguage('es')}
+              active={i18n.language === 'es'}
+              onPress={() => void i18n.changeLanguage('es')}
             />
             <LanguageButton
               label="EN"
-              active={language === 'en'}
-              onPress={() => setLanguage('en')}
+              active={i18n.language === 'en'}
+              onPress={() => void i18n.changeLanguage('en')}
             />
           </View>
         </View>

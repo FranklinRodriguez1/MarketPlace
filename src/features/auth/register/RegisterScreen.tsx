@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -16,6 +17,7 @@ import { AuthCard } from '../components/AuthCard';
 import { AuthTextField } from '../components/AuthTextField';
 
 export function RegisterScreen() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +40,7 @@ export function RegisterScreen() {
       await saveTokens(result.accessToken, result.refreshToken);
       router.replace('/(tabs)');
     } catch (error) {
-      setServerError(error instanceof Error ? error.message : 'Error inesperado. Intenta de nuevo.');
+      setServerError(error instanceof Error ? error.message : t('common.unexpectedErrorRetry'));
     }
   }
 
@@ -47,19 +49,19 @@ export function RegisterScreen() {
       <ThemedText style={styles.headline} themeColor="primary">
         Cerca
       </ThemedText>
-      <ThemedText style={styles.subtitle}>Crear cuenta</ThemedText>
+      <ThemedText style={styles.subtitle}>{t('register.title')}</ThemedText>
 
       <Controller
         control={control}
         name="email"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthTextField
-            label="Correo electrónico"
+            label={t('register.email')}
             icon="mail-outline"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            placeholder="juan@example.com"
+            placeholder={t('register.emailPlaceholder')}
             autoCapitalize="none"
             keyboardType="email-address"
             error={errors.email?.message}
@@ -72,12 +74,12 @@ export function RegisterScreen() {
         name="password"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthTextField
-            label="Contraseña"
+            label={t('register.password')}
             icon="lock-closed-outline"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            placeholder="••••••••"
+            placeholder={t('register.passwordMask')}
             secureTextEntry={!showPassword}
             error={errors.password?.message}
             rightElement={
@@ -98,12 +100,12 @@ export function RegisterScreen() {
         name="confirmPassword"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthTextField
-            label="Confirmar contraseña"
+            label={t('register.confirmPassword')}
             icon="lock-closed-outline"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            placeholder="••••••••"
+            placeholder={t('register.passwordMask')}
             secureTextEntry={!showConfirmPassword}
             error={errors.confirmPassword?.message}
             rightElement={
@@ -129,7 +131,7 @@ export function RegisterScreen() {
       )}
 
       <AuthButton
-        label="Crear cuenta"
+        label={t('register.submit')}
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
         disabled={isSubmitting}
@@ -138,7 +140,7 @@ export function RegisterScreen() {
       <View style={styles.footerRow}>
         <Pressable onPress={() => router.push('/login')} style={styles.footerLinkRow}>
           <ThemedText type="smallBold" themeColor="primary">
-            ¿Ya tienes cuenta? Inicia sesión
+            {t('register.hasAccount')}
           </ThemedText>
           <Ionicons name="arrow-forward" size={14} color={theme.primary} />
         </Pressable>

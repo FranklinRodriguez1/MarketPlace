@@ -10,7 +10,11 @@
       "Bash(npm run *)",
       "Bash(npx tsc *)",
       "Bash(npm uninstall *)",
-      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('deps:', Object.keys\\(p.dependencies\\).join\\(', '\\)\\); console.log\\('devDeps:', Object.keys\\(p.devDependencies\\).join\\(', '\\)\\)\")"
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('deps:', Object.keys\\(p.dependencies\\).join\\(', '\\)\\); console.log\\('devDeps:', Object.keys\\(p.devDependencies\\).join\\(', '\\)\\)\")",
+      "Bash(git add *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('secure-store:', p.dependencies['expo-secure-store'] ?? 'NOT FOUND'\\)\")",
+      "Bash(npx expo *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); ['i18next','react-i18next','i18next-resources-to-backend','expo-localization'].forEach\\(k => console.log\\(k+':', p.dependencies[k] ?? 'NOT FOUND'\\)\\)\")"
     ]
   }
 }

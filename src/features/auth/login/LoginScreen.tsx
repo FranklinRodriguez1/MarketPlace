@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -16,6 +17,7 @@ import { AuthCard } from '../components/AuthCard';
 import { AuthTextField } from '../components/AuthTextField';
 
 export function LoginScreen() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +39,7 @@ export function LoginScreen() {
       await saveTokens(result.accessToken, result.refreshToken);
       router.replace('/(tabs)');
     } catch (error) {
-      setServerError(error instanceof Error ? error.message : 'Error inesperado. Intenta de nuevo.');
+      setServerError(error instanceof Error ? error.message : t('common.unexpectedErrorRetry'));
     }
   }
 
@@ -47,7 +49,7 @@ export function LoginScreen() {
         Cerca
       </ThemedText>
       <ThemedText themeColor="textSecondary" style={styles.subtitle}>
-        Inicia sesión para continuar
+        {t('login.subtitle')}
       </ThemedText>
 
       <Controller
@@ -55,12 +57,12 @@ export function LoginScreen() {
         name="email"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthTextField
-            label="Correo electrónico"
+            label={t('login.email')}
             icon="mail-outline"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            placeholder="tu@correo.com"
+            placeholder={t('login.emailPlaceholder')}
             autoCapitalize="none"
             keyboardType="email-address"
             error={errors.email?.message}
@@ -73,12 +75,12 @@ export function LoginScreen() {
         name="password"
         render={({ field: { onChange, onBlur, value } }) => (
           <AuthTextField
-            label="Contraseña"
+            label={t('login.password')}
             icon="lock-closed-outline"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
-            placeholder="••••••••"
+            placeholder={t('login.passwordMask')}
             secureTextEntry={!showPassword}
             error={errors.password?.message}
             rightElement={
@@ -105,26 +107,26 @@ export function LoginScreen() {
 
       <Pressable style={styles.forgotLink}>
         <ThemedText type="smallBold" themeColor="primary">
-          ¿Olvidaste tu contraseña?
+          {t('login.forgotPassword')}
         </ThemedText>
       </Pressable>
 
       <AuthButton
-        label="Iniciar sesión"
+        label={t('login.submit')}
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
         disabled={isSubmitting}
       />
       <View style={styles.gap} />
-      <AuthButton label="Volver" variant="outlined" onPress={() => router.back()} />
+      <AuthButton label={t('login.back')} variant="outlined" onPress={() => router.back()} />
 
       <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
       <View style={styles.footerRow}>
-        <ThemedText type="small">¿No tienes cuenta? </ThemedText>
+        <ThemedText type="small">{t('login.noAccount')}{' '}</ThemedText>
         <Pressable onPress={() => router.push('/register')}>
           <ThemedText type="smallBold" themeColor="primary">
-            Regístrate
+            {t('login.signUpLink')}
           </ThemedText>
         </Pressable>
       </View>
