@@ -2,7 +2,11 @@ import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 
-export function Step4Review() {
+interface Step4ReviewProps {
+  onPublish: () => void;
+  loading?: boolean;
+}
+export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
   return (
     <View style={styles.container}>
 
@@ -75,7 +79,7 @@ export function Step4Review() {
       </View>
 
       {/* BOTÓN */}
-      <Pressable onPress={() => router.push('/my-listings')} style={styles.publishButton}>
+      <Pressable onPress={onPublish} disabled={loading} style={styles.publishButton}>
 
         <MaterialIcons
           name="publish"
@@ -84,7 +88,7 @@ export function Step4Review() {
         />
 
         <Text style={styles.publishText}>
-          Post an ad
+          {loading ? 'Publishing...' : 'Post an ad'}
         </Text>
 
       </Pressable>

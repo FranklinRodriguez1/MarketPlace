@@ -10,6 +10,9 @@
     "ios": {
       "icon": "./assets/expo.icon"
     },
+    "androidStatusBar": {
+      "hidden": true
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -40,7 +43,8 @@
         {
           "locationWhenInUsePermission": "Cerca usa tu ubicación para mostrarte servicios cercanos."
         }
-      ]
+      ],
+      "react-native-edge-to-edge"
     ],
     "experiments": {
       "typedRoutes": true,

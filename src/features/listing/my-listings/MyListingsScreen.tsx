@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,53 +9,16 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 import {
-  ListingCard,
-  type Listing,
+  ListingCard
 } from '@/components/ListingCard';
-
-const MOCK_LISTINGS: Listing[] = [
-  {
-    id: '1',
-    image:
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd',
-    category: 'Plomería',
-    title: 'Reparación de tuberías',
-    location: 'Centro, Ciudad',
-    price: 450,
-    pricingType: 'fixed',
-    status: 'published',
-  },
-
-  {
-    id: '2',
-    image:
-      'https://images.unsplash.com/photo-1503387762-592deb58ef4e',
-    category: 'Carpintería',
-    title: 'Armado de muebles',
-    location: 'Zona Norte',
-    price: 200,
-    pricingType: 'hourly',
-    status: 'paused',
-  },
-
-  {
-    id: '3',
-    image:
-      'https://images.unsplash.com/photo-1558904541-efa843a96f01',
-    category: 'Jardinería',
-    title: 'Mantenimiento de jardines',
-    location: 'A domicilio',
-    price: 350,
-    pricingType: 'base',
-    status: 'under_review',
-  },
-];
+import { getMyListing, type Listing } from '@/services/listing.service';
 
 export default function MyListingsScreen() {
   const [selectedListing, setSelectedListing] =
     useState<Listing | null>(null);
+    const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleMenuPress = (listing: Listing) => {
     setSelectedListing(listing);
@@ -64,6 +27,55 @@ export default function MyListingsScreen() {
   const closeMenu = () => {
     setSelectedListing(null);
   };
+
+  useEffect(() =>{
+    loadListings()
+  },[])
+  async function loadListings() {
+    try{
+      const data = await getMyListing();
+      setListings(data);
+    }catch(error){
+      console.log("Error loading listing:", error)
+    } finally{
+      setLoading(false)
+    }
+  }
+  if(loading){
+    return(
+     <View>
+      <Text>Loading my ads</Text>
+     </View> 
+    )
+  }
+  if (listings.length === 0) {
+  return (
+    <View style={styles.emptyContainer}>
+      <MaterialIcons
+        name="campaign"
+        size={50}
+        color="#94A3B8"
+      />
+
+      <Text style={styles.emptyTitle}>
+        There are no ads
+      </Text>
+
+      <Text style={styles.emptyText}>
+        You haven't published any ads yet.
+      </Text>
+
+      <Pressable
+        style={styles.emptyButton}
+        onPress={() => router.push('/(provider)/listings/create')}
+      >
+        <Text style={styles.emptyButtonText}>
+          Publish an ad
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
 
   return (
     <View style={styles.container}>
@@ -92,7 +104,7 @@ export default function MyListingsScreen() {
 
       {/* LISTADO */}
       <FlatList
-        data={MOCK_LISTINGS}
+        data={listings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ListingCard
@@ -156,7 +168,7 @@ export default function MyListingsScreen() {
               </Text>
             </Pressable>
 
-            {selectedListing?.status === 'published' && (
+            {selectedListing?.statusKind === 'published' && (
               <Pressable  style={styles.menuItem}>
                 <MaterialIcons
                   name="pause"
@@ -170,7 +182,7 @@ export default function MyListingsScreen() {
               </Pressable>
             )}
 
-            {selectedListing?.status === 'paused' && (
+            {selectedListing?.statusKind === 'paused' && (
               <Pressable style={styles.menuItem}>
                 <MaterialIcons
                   name="play-arrow"
@@ -193,6 +205,38 @@ export default function MyListingsScreen() {
 }
 
 const styles = StyleSheet.create({
+   emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30,
+  },
+
+  emptyTitle: {
+    marginTop: 15,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+
+  emptyText: {
+    marginTop: 8,
+    textAlign: 'center',
+    color: '#64748B',
+  },
+
+  emptyButton: {
+    marginTop: 20,
+    backgroundColor: '#075985',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+
+  emptyButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FAFAF7',

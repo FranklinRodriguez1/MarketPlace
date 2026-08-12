@@ -1,21 +1,34 @@
 // src/services/api.ts
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;;
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const api = {
   async get<T>(endpoint: string): Promise<{ data: T }> {
     const response = await fetch(`${API_URL}${endpoint}`);
 
-    if (!response.ok) {
-      throw new Error('Error en la petición');
-    }
+    const data = await response.json().catch(() => null);
 
-    const data = await response.json();
+    if (!response.ok) {
+      console.error('GET ERROR:', {
+        url: `${API_URL}${endpoint}`,
+        status: response.status,
+        data,
+      });
+
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        `Error HTTP ${response.status}`
+      );
+    }
 
     return { data };
   },
 
-  async post<T>(endpoint: string, body: unknown): Promise<{ data: T }> {
+  async post<T>(
+    endpoint: string,
+    body: unknown
+  ): Promise<{ data: T }> {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
       headers: {
@@ -24,11 +37,22 @@ export const api = {
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      throw new Error('Error en la petición');
-    }
+    const data = await response.json().catch(() => null);
 
-    const data = await response.json();
+    if (!response.ok) {
+      console.error('POST ERROR:', {
+        url: `${API_URL}${endpoint}`,
+        status: response.status,
+        data,
+        body,
+      });
+
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        `Error HTTP ${response.status}`
+      );
+    }
 
     return { data };
   },

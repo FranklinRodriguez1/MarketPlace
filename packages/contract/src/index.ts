@@ -14,3 +14,4 @@ export * from './pricing/pricing.schema';
 export * from './geo/coordinates';
 export * from './geo/coordinates.schema';
 export * from './geo/snap-to-grid';
+export * from './review/review-policy';
