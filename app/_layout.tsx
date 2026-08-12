@@ -1,5 +1,7 @@
 import '../src/global.css';
+import '@/i18n';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { QueryClientProvider } from '@tanstack/react-query';
 import * as NavigationBar from 'expo-navigation-bar';
 import { useEffect } from 'react';
@@ -8,6 +10,10 @@ import { queryClient } from '@/infrastructure/query/query-client';
 import { SystemBars } from 'react-native-edge-to-edge';
 
 
+
+// Impide que el splash desaparezca solo. Lo ocultamos desde index.tsx
+// una vez que sabemos si hay sesión activa o no.
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useEffect(() =>{
