@@ -21,6 +21,9 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
+      "usesCleartextTraffic": true,
+
+      
       "package": "com.danna22.marketplace"
     },
     "web": {
