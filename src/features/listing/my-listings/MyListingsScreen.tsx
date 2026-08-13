@@ -127,7 +127,7 @@ export default function MyListingsScreen() {
         style={[styles.emptyButton, { backgroundColor: theme.primary }]}
         onPress={() => router.push('/(provider)/listings/create')}
       >
-        <ThemedText style={styles.emptyButton}>
+        <ThemedText style={[styles.emptyButton, { textAlign: 'center' }]}>
           {t('myListings.publishAnAd')}
         </ThemedText>
       </Pressable>
@@ -299,6 +299,8 @@ const styles = StyleSheet.create({
   emptyButton: {
     marginTop: 20,
     alignSelf: 'stretch',
+    borderRadius: 18,
+    
   },
 
   container: {
