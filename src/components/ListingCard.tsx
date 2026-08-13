@@ -1,11 +1,14 @@
 import {
   View,
-  Text,
   Pressable,
   StyleSheet,
 } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
+import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 import type { Listing } from '@/services/listing.service';
 
 interface ListingCardProps {
@@ -17,48 +20,51 @@ export function ListingCard({
   listing,
   onMenuPress,
 }: ListingCardProps) {
-  return (
-    <View style={styles.card}>
+  const theme = useTheme();
+  const { t } = useTranslation();
 
-      <View style={styles.imagePlaceholder}>
+  return (
+    <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+
+      <View style={[styles.imagePlaceholder, { backgroundColor: theme.backgroundElement }]}>
         <MaterialIcons
           name="image"
           size={40}
-          color="#94A3B8"
+          color={theme.textSecondary}
         />
       </View>
 
       <View style={styles.content}>
 
         <View style={styles.headerRow}>
-          <Text style={styles.title}>
+          <ThemedText style={styles.title}>
             {listing.title}
-          </Text>
+          </ThemedText>
 
           <Pressable onPress={() => onMenuPress(listing)}>
             <MaterialIcons
               name="more-vert"
               size={24}
-              color="#334155"
+              color={theme.text}
             />
           </Pressable>
         </View>
 
-        <Text style={styles.description}>
+        <ThemedText themeColor="textSecondary" style={styles.description}>
           {listing.description}
-        </Text>
+        </ThemedText>
 
         <View style={styles.infoRow}>
 
-          <Text style={styles.status}>
-            {getStatusText(listing.status)}
-          </Text>
+          <ThemedText themeColor="primary" style={styles.status}>
+            {getStatusText(t, listing.status)}
+          </ThemedText>
 
           {listing.priceFrom !== null && (
-            <Text style={styles.price}>
+            <ThemedText style={styles.price}>
               {listing.priceFrom.currency}{' '}
               {(listing.priceFrom.amountMinor / 100).toFixed(2)}
-            </Text>
+            </ThemedText>
           )}
 
         </View>
@@ -70,32 +76,31 @@ export function ListingCard({
 }
 
 function getStatusText(
+  t: TFunction,
   status: Listing['status'],
 ) {
   switch (status) {
     case 'published':
-      return 'Publicado';
+      return t('listingCard.statusPublished');
 
     case 'paused':
-      return 'Pausado';
+      return t('listingCard.statusPaused');
 
     case 'draft':
-      return 'Borrador';
+      return t('listingCard.statusDraft');
 
     case 'under_review':
-      return 'En revisión';
+      return t('listingCard.statusUnderReview');
 
     case 'removed':
-      return 'Eliminado';
+      return t('listingCard.statusRemoved');
   }
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     padding: 14,
     flexDirection: 'row',
     gap: 12,
@@ -105,7 +110,6 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 10,
-    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -124,12 +128,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
   },
 
   description: {
     marginTop: 6,
-    color: '#64748B',
     fontSize: 14,
   },
 
@@ -143,12 +145,10 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#0369A1',
   },
 
   price: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
   },
 });

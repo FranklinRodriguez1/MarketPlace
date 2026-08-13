@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   Pressable,
   TextInput,
   ScrollView,
@@ -12,8 +11,13 @@ import {
   useFormContext,
   useWatch,
 } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { Pricing } from '@cerca/src';
+
+import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
+import { translateFieldError } from '@/i18n/translate-field-error';
 
 // Tipado mínimo a propósito: este componente solo lee/escribe el campo
 // `pricing`, así que cualquier formulario (crear, editar) que tenga ese
@@ -25,6 +29,8 @@ export interface PricingFormValues {
 export function Step2Pricing() {
   const { control, setValue } =
     useFormContext<PricingFormValues>();
+  const theme = useTheme();
+  const { t } = useTranslation();
 
   const pricing = useWatch({
     control,
@@ -111,35 +117,25 @@ export function Step2Pricing() {
           {/* ========================= */}
 
           <View style={{ gap: 8 }}>
-            <Text
-              style={{
-                fontSize: 14,
-                color: '#64748B',
-              }}
+            <ThemedText
+              themeColor="textSecondary"
+              style={{ fontSize: 14 }}
             >
-              Prices
-            </Text>
+              {t('createListing.step2.pricesLabel')}
+            </ThemedText>
 
-            <Text
-              style={{
-                fontSize: 24,
-                fontWeight: 'bold',
-                color: '#0F172A',
-              }}
+            <ThemedText
+              style={{ fontSize: 24, fontWeight: 'bold' }}
             >
-              How do you want to charge?
-            </Text>
+              {t('createListing.step2.howChargeTitle')}
+            </ThemedText>
 
-            <Text
-              style={{
-                color: '#475569',
-                lineHeight: 21,
-              }}
+            <ThemedText
+              themeColor="textSecondary"
+              style={{ lineHeight: 21 }}
             >
-              You can select how you want to charge for this
-              service. You will be able to adjust the amounts
-              in the next step.
-            </Text>
+              {t('createListing.step2.howChargeDescription')}
+            </ThemedText>
           </View>
 
           <View style={{ gap: 12 }}>
@@ -152,41 +148,33 @@ export function Step2Pricing() {
               style={{
                 backgroundColor:
                   model === 'fixed'
-                    ? '#E0F2FE'
-                    : '#FFFFFF',
+                    ? theme.backgroundSelected
+                    : theme.surface,
 
                 borderWidth: 1,
 
                 borderColor:
                   model === 'fixed'
-                    ? '#0284C7'
-                    : '#E5E7EB',
+                    ? theme.primary
+                    : theme.border,
 
                 padding: 16,
                 borderRadius: 8,
               }}
             >
               <Pressable onPress={selectFixed}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: '#0F172A',
-                  }}
+                <ThemedText
+                  style={{ fontSize: 16, fontWeight: '600' }}
                 >
-                  {model === 'fixed' ? '●' : '○'} Fixed price
-                </Text>
+                  {model === 'fixed' ? '●' : '○'} {t('createListing.step2.fixedTitle')}
+                </ThemedText>
 
-                <Text
-                  style={{
-                    marginTop: 6,
-                    color: '#475569',
-                    lineHeight: 20,
-                  }}
+                <ThemedText
+                  themeColor="textSecondary"
+                  style={{ marginTop: 6, lineHeight: 20 }}
                 >
-                  A fixed amount for the entire job, ideal for
-                  well-defined tasks.
-                </Text>
+                  {t('createListing.step2.fixedDescription')}
+                </ThemedText>
               </Pressable>
 
               {/* SOLO EXISTE SI MODEL === FIXED */}
@@ -198,14 +186,9 @@ export function Step2Pricing() {
                     marginTop: 16,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontWeight: 'bold',
-                      color: '#0F172A',
-                    }}
-                  >
-                    Price
-                  </Text>
+                  <ThemedText style={{ fontWeight: 'bold' }}>
+                    {t('createListing.step2.priceLabel')}
+                  </ThemedText>
 
                   <Controller
                     control={control}
@@ -228,27 +211,27 @@ export function Step2Pricing() {
                           }}
                           keyboardType="numeric"
                           placeholder="50000"
+                          placeholderTextColor={theme.textSecondary}
                           style={{
                             borderWidth: 1,
                             borderColor:
                               fieldState.error
-                                ? '#DC2626'
-                                : '#CBD5E1',
+                                ? theme.danger
+                                : theme.border,
                             padding: 12,
                             borderRadius: 8,
-                            backgroundColor: '#FFFFFF',
+                            backgroundColor: theme.surface,
+                            color: theme.text,
                           }}
                         />
 
                         {fieldState.error && (
-                          <Text
-                            style={{
-                              color: '#DC2626',
-                              fontSize: 13,
-                            }}
+                          <ThemedText
+                            themeColor="danger"
+                            style={{ fontSize: 13 }}
                           >
-                            {fieldState.error.message}
-                          </Text>
+                            {translateFieldError(t, fieldState.error.message)}
+                          </ThemedText>
                         )}
                       </>
                     )}
@@ -265,41 +248,33 @@ export function Step2Pricing() {
               style={{
                 backgroundColor:
                   model === 'hourly'
-                    ? '#E0F2FE'
-                    : '#FFFFFF',
+                    ? theme.backgroundSelected
+                    : theme.surface,
 
                 borderWidth: 1,
 
                 borderColor:
                   model === 'hourly'
-                    ? '#0284C7'
-                    : '#E5E7EB',
+                    ? theme.primary
+                    : theme.border,
 
                 padding: 16,
                 borderRadius: 8,
               }}
             >
               <Pressable onPress={selectHourly}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: '#0F172A',
-                  }}
+                <ThemedText
+                  style={{ fontSize: 16, fontWeight: '600' }}
                 >
-                  {model === 'hourly' ? '●' : '○'} Per hour
-                </Text>
+                  {model === 'hourly' ? '●' : '○'} {t('createListing.step2.hourlyTitle')}
+                </ThemedText>
 
-                <Text
-                  style={{
-                    marginTop: 6,
-                    color: '#475569',
-                    lineHeight: 20,
-                  }}
+                <ThemedText
+                  themeColor="textSecondary"
+                  style={{ marginTop: 6, lineHeight: 20 }}
                 >
-                  You charge a fee for each hour of work
-                  performed.
-                </Text>
+                  {t('createListing.step2.hourlyDescription')}
+                </ThemedText>
               </Pressable>
 
               {/* SOLO EXISTE SI MODEL === HOURLY */}
@@ -315,14 +290,9 @@ export function Step2Pricing() {
                   {/* PRECIO POR HORA */}
 
                   <View style={{ gap: 8 }}>
-                    <Text
-                      style={{
-                        fontWeight: 'bold',
-                        color: '#0F172A',
-                      }}
-                    >
-                      Hourly rate
-                    </Text>
+                    <ThemedText style={{ fontWeight: 'bold' }}>
+                      {t('createListing.step2.hourlyRateLabel')}
+                    </ThemedText>
 
                     <Controller
                       control={control}
@@ -345,27 +315,27 @@ export function Step2Pricing() {
                             }}
                             keyboardType="numeric"
                             placeholder="30000"
+                            placeholderTextColor={theme.textSecondary}
                             style={{
                               borderWidth: 1,
                               borderColor:
                                 fieldState.error
-                                  ? '#DC2626'
-                                  : '#CBD5E1',
+                                  ? theme.danger
+                                  : theme.border,
                               padding: 12,
                               borderRadius: 8,
-                              backgroundColor: '#FFFFFF',
+                              backgroundColor: theme.surface,
+                              color: theme.text,
                             }}
                           />
 
                           {fieldState.error && (
-                            <Text
-                              style={{
-                                color: '#DC2626',
-                                fontSize: 13,
-                              }}
+                            <ThemedText
+                              themeColor="danger"
+                              style={{ fontSize: 13 }}
                             >
-                              {fieldState.error.message}
-                            </Text>
+                              {translateFieldError(t, fieldState.error.message)}
+                            </ThemedText>
                           )}
                         </>
                       )}
@@ -375,14 +345,9 @@ export function Step2Pricing() {
                   {/* HORAS MÍNIMAS */}
 
                   <View style={{ gap: 8 }}>
-                    <Text
-                      style={{
-                        fontWeight: 'bold',
-                        color: '#0F172A',
-                      }}
-                    >
-                      Minimum hours
-                    </Text>
+                    <ThemedText style={{ fontWeight: 'bold' }}>
+                      {t('createListing.step2.minimumHoursLabel')}
+                    </ThemedText>
 
                     <Controller
                       control={control}
@@ -405,27 +370,27 @@ export function Step2Pricing() {
                             }}
                             keyboardType="numeric"
                             placeholder="2"
+                            placeholderTextColor={theme.textSecondary}
                             style={{
                               borderWidth: 1,
                               borderColor:
                                 fieldState.error
-                                  ? '#DC2626'
-                                  : '#CBD5E1',
+                                  ? theme.danger
+                                  : theme.border,
                               padding: 12,
                               borderRadius: 8,
-                              backgroundColor: '#FFFFFF',
+                              backgroundColor: theme.surface,
+                              color: theme.text,
                             }}
                           />
 
                           {fieldState.error && (
-                            <Text
-                              style={{
-                                color: '#DC2626',
-                                fontSize: 13,
-                              }}
+                            <ThemedText
+                              themeColor="danger"
+                              style={{ fontSize: 13 }}
                             >
-                              {fieldState.error.message}
-                            </Text>
+                              {translateFieldError(t, fieldState.error.message)}
+                            </ThemedText>
                           )}
                         </>
                       )}
@@ -443,54 +408,42 @@ export function Step2Pricing() {
               style={{
                 backgroundColor:
                   model === 'quote'
-                    ? '#E0F2FE'
-                    : '#FFFFFF',
+                    ? theme.backgroundSelected
+                    : theme.surface,
 
                 borderWidth: 1,
 
                 borderColor:
                   model === 'quote'
-                    ? '#0284C7'
-                    : '#E5E7EB',
+                    ? theme.primary
+                    : theme.border,
 
                 padding: 16,
                 borderRadius: 8,
               }}
             >
               <Pressable onPress={selectQuote}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: '#0F172A',
-                  }}
+                <ThemedText
+                  style={{ fontSize: 16, fontWeight: '600' }}
                 >
-                  {model === 'quote' ? '●' : '○'} A budget
-                </Text>
+                  {model === 'quote' ? '●' : '○'} {t('createListing.step2.quoteTitle')}
+                </ThemedText>
 
-                <Text
-                  style={{
-                    marginTop: 6,
-                    color: '#475569',
-                    lineHeight: 20,
-                  }}
+                <ThemedText
+                  themeColor="textSecondary"
+                  style={{ marginTop: 6, lineHeight: 20 }}
                 >
-                  You assess the work on-site before giving a
-                  final price.
-                </Text>
+                  {t('createListing.step2.quoteDescription')}
+                </ThemedText>
               </Pressable>
 
               {model === 'quote' && (
-                <Text
-                  style={{
-                    marginTop: 16,
-                    color: '#475569',
-                    lineHeight: 20,
-                  }}
+                <ThemedText
+                  themeColor="textSecondary"
+                  style={{ marginTop: 16, lineHeight: 20 }}
                 >
-                  The customer can request a quote before the
-                  final price is agreed.
-                </Text>
+                  {t('createListing.step2.quoteNote')}
+                </ThemedText>
               )}
             </View>
 

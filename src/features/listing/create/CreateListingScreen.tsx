@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   View,
-  Text,
   Pressable,
 } from 'react-native';
 
@@ -13,6 +12,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/hooks/use-theme';
 
 import { CreateListingHeader } from './components/CreateListingHeader';
 
@@ -29,6 +33,8 @@ import { Step4Review } from './components/Step4Review';
 import { createListing } from '@/services/listing.service';
 
 export function CreateListingScreen() {
+  const theme = useTheme();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -175,7 +181,7 @@ export function CreateListingScreen() {
         onBack={previousStep}
       />
 
-      <View
+      <ThemedView
         style={{
           flex: 1,
           padding: 24,
@@ -183,9 +189,9 @@ export function CreateListingScreen() {
         }}
       >
 
-        <Text>
-          Step {step} of 4
-        </Text>
+        <ThemedText themeColor="textSecondary">
+          {t('createListing.stepOf', { step, totalSteps: 4 })}
+        </ThemedText>
 
         {/* STEP 1 */}
 
@@ -227,18 +233,14 @@ export function CreateListingScreen() {
             <Pressable
               onPress={previousStep}
               style={{
-                backgroundColor: '#075985',
+                backgroundColor: theme.primary,
                 padding: 10,
                 borderRadius: 5,
               }}
             >
-              <Text
-                style={{
-                  color: '#fff',
-                }}
-              >
-                Previous
-              </Text>
+              <ThemedText style={{ color: '#FFFFFF' }}>
+                {t('createListing.previous')}
+              </ThemedText>
             </Pressable>
           )}
 
@@ -246,24 +248,20 @@ export function CreateListingScreen() {
             <Pressable
               onPress={nextStep}
               style={{
-                backgroundColor: '#075985',
+                backgroundColor: theme.primary,
                 padding: 10,
                 borderRadius: 5,
               }}
             >
-              <Text
-                style={{
-                  color: '#fff',
-                }}
-              >
-                Next
-              </Text>
+              <ThemedText style={{ color: '#FFFFFF' }}>
+                {t('createListing.next')}
+              </ThemedText>
             </Pressable>
           )}
 
         </View>
 
-      </View>
+      </ThemedView>
 
     </FormProvider>
   );

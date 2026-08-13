@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
   Pressable,
   StyleSheet,
@@ -9,10 +8,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {
   ListingCard
 } from '@/components/ListingCard';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useTheme } from '@/hooks/use-theme';
 import type { Listing } from '@/services/listing.service';
 import { useMyListings, usePauseListing, usePublishListing } from './hooks/use-my-listings';
 
@@ -20,6 +23,8 @@ export default function MyListingsScreen() {
   const [selectedListing, setSelectedListing] =
     useState<Listing | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const theme = useTheme();
+  const { t } = useTranslation();
 
   const { data: listings = [], isLoading, isError, refetch } = useMyListings();
   const publishMutation = usePublishListing();
@@ -51,7 +56,7 @@ export default function MyListingsScreen() {
     publishMutation.mutate(selectedListing.id, {
       onSuccess: () => setSelectedListing(null),
       onError: (error) =>
-        setActionError(error instanceof Error ? error.message : 'No se pudo publicar el anuncio.'),
+        setActionError(error instanceof Error ? error.message : t('myListings.publishError')),
     });
   };
 
@@ -61,96 +66,96 @@ export default function MyListingsScreen() {
     pauseMutation.mutate(selectedListing.id, {
       onSuccess: () => setSelectedListing(null),
       onError: (error) =>
-        setActionError(error instanceof Error ? error.message : 'No se pudo pausar el anuncio.'),
+        setActionError(error instanceof Error ? error.message : t('myListings.pauseError')),
     });
   };
 
   if (isLoading) {
     return (
-     <View style={styles.emptyContainer}>
-      <ActivityIndicator size="large" color="#075985" />
-     </View>
+     <ThemedView style={styles.emptyContainer}>
+      <ActivityIndicator size="large" color={theme.primary} />
+     </ThemedView>
     )
   }
 
   if (isError) {
     return (
-      <View style={styles.emptyContainer}>
+      <ThemedView style={styles.emptyContainer}>
         <MaterialIcons
           name="error-outline"
           size={50}
-          color="#94A3B8"
+          color={theme.textSecondary}
         />
 
-        <Text style={styles.emptyTitle}>
-          No se pudieron cargar tus anuncios
-        </Text>
+        <ThemedText style={styles.emptyTitle}>
+          {t('myListings.loadError')}
+        </ThemedText>
 
         <Pressable
-          style={styles.emptyButton}
+          style={[styles.emptyButton, { backgroundColor: theme.primary }]}
           onPress={() => void refetch()}
         >
-          <Text style={styles.emptyButtonText}>
-            Reintentar
-          </Text>
+          <ThemedText style={styles.emptyButtonText}>
+            {t('common.retry')}
+          </ThemedText>
         </Pressable>
-      </View>
+      </ThemedView>
     );
   }
 
   if (listings.length === 0) {
   return (
-    <View style={styles.emptyContainer}>
+    <ThemedView style={styles.emptyContainer}>
       <MaterialIcons
         name="campaign"
         size={50}
-        color="#94A3B8"
+        color={theme.textSecondary}
       />
 
-      <Text style={styles.emptyTitle}>
-        There are no ads
-      </Text>
+      <ThemedText style={styles.emptyTitle}>
+        {t('myListings.emptyTitle')}
+      </ThemedText>
 
-      <Text style={styles.emptyText}>
-        You haven't published any ads yet.
-      </Text>
+      <ThemedText themeColor="textSecondary" style={styles.emptyText}>
+        {t('myListings.emptyText')}
+      </ThemedText>
 
       <Pressable
-        style={styles.emptyButton}
+        style={[styles.emptyButton, { backgroundColor: theme.primary }]}
         onPress={() => router.push('/(provider)/listings/create')}
       >
-        <Text style={styles.emptyButtonText}>
-          Publish an ad
-        </Text>
+        <ThemedText style={styles.emptyButtonText}>
+          {t('myListings.publishAnAd')}
+        </ThemedText>
       </Pressable>
-    </View>
+    </ThemedView>
   );
 }
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
 
       {/* HEADER */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <Pressable>
           <MaterialIcons
             name="close"
             size={24}
-            color="#0369A1"
+            color={theme.primary}
           />
         </Pressable>
 
-        <Text style={styles.logo}>
-          Cerca
-        </Text>
+        <ThemedText themeColor="primary" style={styles.logo}>
+          {t('myListings.headerLogo')}
+        </ThemedText>
 
         <View style={{ width: 24 }} />
       </View>
 
       {/* TÍTULO */}
-      <Text style={styles.heading}>
-        Mis anuncios
-      </Text>
+      <ThemedText style={styles.heading}>
+        {t('myListings.heading')}
+      </ThemedText>
 
       {/* LISTADO */}
       <FlatList
@@ -170,7 +175,7 @@ export default function MyListingsScreen() {
       />
 
       {/* BOTÓN + */}
-      <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={styles.addButton}>
+      <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={[styles.addButton, { backgroundColor: theme.primary }]}>
         <MaterialIcons
           name="add"
           size={30}
@@ -188,57 +193,57 @@ export default function MyListingsScreen() {
           style={styles.modalOverlay}
           onPress={closeMenu}
         >
-          <View style={styles.menu}>
+          <View style={[styles.menu, { backgroundColor: theme.surface }]}>
 
-            <Text style={styles.menuTitle}>
+            <ThemedText style={styles.menuTitle}>
               {selectedListing?.title}
-            </Text>
+            </ThemedText>
 
             {actionError && (
-              <Text style={styles.menuError}>
+              <ThemedText themeColor="danger" style={styles.menuError}>
                 {actionError}
-              </Text>
+              </ThemedText>
             )}
 
             <Pressable style={styles.menuItem}>
               <MaterialIcons
                 name="visibility"
                 size={20}
-                color="#334155"
+                color={theme.text}
               />
 
-              <Text style={styles.menuText}>
-                Ver anuncio
-              </Text>
+              <ThemedText style={styles.menuText}>
+                {t('myListings.menuViewAd')}
+              </ThemedText>
             </Pressable>
 
             <Pressable style={styles.menuItem} onPress={handleEdit} disabled={isActing}>
               <MaterialIcons
                 name="edit"
                 size={20}
-                color="#334155"
+                color={theme.text}
               />
 
-              <Text style={styles.menuText}>
-                Editar
-              </Text>
+              <ThemedText style={styles.menuText}>
+                {t('myListings.menuEdit')}
+              </ThemedText>
             </Pressable>
 
             {selectedListing?.status === 'published' && (
               <Pressable style={styles.menuItem} onPress={handlePause} disabled={isActing}>
                 {pauseMutation.isPending ? (
-                  <ActivityIndicator size="small" color="#334155" />
+                  <ActivityIndicator size="small" color={theme.text} />
                 ) : (
                   <MaterialIcons
                     name="pause"
                     size={20}
-                    color="#334155"
+                    color={theme.text}
                   />
                 )}
 
-                <Text style={styles.menuText}>
-                  Pausar anuncio
-                </Text>
+                <ThemedText style={styles.menuText}>
+                  {t('myListings.menuPause')}
+                </ThemedText>
               </Pressable>
             )}
 
@@ -254,9 +259,9 @@ export default function MyListingsScreen() {
                   />
                 )}
 
-                <Text style={styles.menuText}>
-                  Publicar anuncio
-                </Text>
+                <ThemedText style={styles.menuText}>
+                  {t('myListings.menuPublish')}
+                </ThemedText>
               </Pressable>
             )}
 
@@ -264,7 +269,7 @@ export default function MyListingsScreen() {
         </Pressable>
       </Modal>
 
-    </View>
+    </ThemedView>
   );
 }
 
@@ -280,18 +285,15 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
   },
 
   emptyText: {
     marginTop: 8,
     textAlign: 'center',
-    color: '#64748B',
   },
 
   emptyButton: {
     marginTop: 20,
-    backgroundColor: '#075985',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
@@ -303,7 +305,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#FAFAF7',
   },
 
   header: {
@@ -313,19 +314,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
   },
 
   logo: {
     fontSize: 27,
     fontWeight: '800',
-    color: '#075985',
   },
 
   heading: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
     paddingHorizontal: 18,
     paddingTop: 12,
     paddingBottom: 18,
@@ -343,7 +341,6 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: '#2874A6',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 5,
@@ -358,7 +355,6 @@ const styles = StyleSheet.create({
   },
 
   menu: {
-    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -373,7 +369,6 @@ const styles = StyleSheet.create({
 
   menuError: {
     fontSize: 13,
-    color: '#DC2626',
     marginBottom: 4,
   },
 
@@ -386,6 +381,5 @@ const styles = StyleSheet.create({
 
   menuText: {
     fontSize: 16,
-    color: '#334155',
   },
 });
