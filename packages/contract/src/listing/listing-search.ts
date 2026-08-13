@@ -6,6 +6,7 @@ export interface ListingSearchFilters {
     readonly categoryId?: string;
     readonly near?: Coordinates;
     readonly priceMaxMinor?: number;
+    readonly minRating?: number;
 }
 
 export interface ListingSearchResult {

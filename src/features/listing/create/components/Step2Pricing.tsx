@@ -15,6 +15,9 @@ import {
 
 import type { Pricing } from '@cerca/src';
 
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+
 // Tipado mínimo a propósito: este componente solo lee/escribe el campo
 // `pricing`, así que cualquier formulario (crear, editar) que tenga ese
 // campo puede reutilizarlo dentro de su propio FormProvider.
@@ -23,6 +26,7 @@ export interface PricingFormValues {
 }
 
 export function Step2Pricing() {
+  const theme = useTheme();
   const { control, setValue } =
     useFormContext<PricingFormValues>();
 
@@ -103,6 +107,7 @@ export function Step2Pricing() {
           gap: 20,
           padding: 16,
           paddingBottom: 40,
+          backgroundColor: theme.background,
         }}
       >
         <View style={{ gap: 20 }}>
@@ -114,7 +119,7 @@ export function Step2Pricing() {
             <Text
               style={{
                 fontSize: 14,
-                color: '#64748B',
+                color: theme.textSecondary,
               }}
             >
               Prices
@@ -124,7 +129,7 @@ export function Step2Pricing() {
               style={{
                 fontSize: 24,
                 fontWeight: 'bold',
-                color: '#0F172A',
+                color: theme.text,
               }}
             >
               How do you want to charge?
@@ -132,7 +137,7 @@ export function Step2Pricing() {
 
             <Text
               style={{
-                color: '#475569',
+                color: theme.textSecondary,
                 lineHeight: 21,
               }}
             >
@@ -152,18 +157,18 @@ export function Step2Pricing() {
               style={{
                 backgroundColor:
                   model === 'fixed'
-                    ? '#E0F2FE'
-                    : '#FFFFFF',
+                    ? theme.backgroundSelected
+                    : theme.surface,
 
                 borderWidth: 1,
 
                 borderColor:
                   model === 'fixed'
-                    ? '#0284C7'
-                    : '#E5E7EB',
+                    ? theme.primary
+                    : theme.border,
 
                 padding: 16,
-                borderRadius: 8,
+                borderRadius: BorderRadius.input,
               }}
             >
               <Pressable onPress={selectFixed}>
@@ -171,7 +176,7 @@ export function Step2Pricing() {
                   style={{
                     fontSize: 16,
                     fontWeight: '600',
-                    color: '#0F172A',
+                    color: theme.text,
                   }}
                 >
                   {model === 'fixed' ? '●' : '○'} Fixed price
@@ -180,7 +185,7 @@ export function Step2Pricing() {
                 <Text
                   style={{
                     marginTop: 6,
-                    color: '#475569',
+                    color: theme.textSecondary,
                     lineHeight: 20,
                   }}
                 >
@@ -201,7 +206,7 @@ export function Step2Pricing() {
                   <Text
                     style={{
                       fontWeight: 'bold',
-                      color: '#0F172A',
+                      color: theme.text,
                     }}
                   >
                     Price
@@ -228,22 +233,24 @@ export function Step2Pricing() {
                           }}
                           keyboardType="numeric"
                           placeholder="50000"
+                          placeholderTextColor={theme.textSecondary}
                           style={{
                             borderWidth: 1,
                             borderColor:
                               fieldState.error
-                                ? '#DC2626'
-                                : '#CBD5E1',
+                                ? theme.danger
+                                : theme.border,
                             padding: 12,
-                            borderRadius: 8,
-                            backgroundColor: '#FFFFFF',
+                            borderRadius: BorderRadius.input,
+                            backgroundColor: theme.surface,
+                            color: theme.text,
                           }}
                         />
 
                         {fieldState.error && (
                           <Text
                             style={{
-                              color: '#DC2626',
+                              color: theme.danger,
                               fontSize: 13,
                             }}
                           >
@@ -265,18 +272,18 @@ export function Step2Pricing() {
               style={{
                 backgroundColor:
                   model === 'hourly'
-                    ? '#E0F2FE'
-                    : '#FFFFFF',
+                    ? theme.backgroundSelected
+                    : theme.surface,
 
                 borderWidth: 1,
 
                 borderColor:
                   model === 'hourly'
-                    ? '#0284C7'
-                    : '#E5E7EB',
+                    ? theme.primary
+                    : theme.border,
 
                 padding: 16,
-                borderRadius: 8,
+                borderRadius: BorderRadius.input,
               }}
             >
               <Pressable onPress={selectHourly}>
@@ -284,7 +291,7 @@ export function Step2Pricing() {
                   style={{
                     fontSize: 16,
                     fontWeight: '600',
-                    color: '#0F172A',
+                    color: theme.text,
                   }}
                 >
                   {model === 'hourly' ? '●' : '○'} Per hour
@@ -293,7 +300,7 @@ export function Step2Pricing() {
                 <Text
                   style={{
                     marginTop: 6,
-                    color: '#475569',
+                    color: theme.textSecondary,
                     lineHeight: 20,
                   }}
                 >
@@ -318,7 +325,7 @@ export function Step2Pricing() {
                     <Text
                       style={{
                         fontWeight: 'bold',
-                        color: '#0F172A',
+                        color: theme.text,
                       }}
                     >
                       Hourly rate
@@ -345,22 +352,24 @@ export function Step2Pricing() {
                             }}
                             keyboardType="numeric"
                             placeholder="30000"
+                            placeholderTextColor={theme.textSecondary}
                             style={{
                               borderWidth: 1,
                               borderColor:
                                 fieldState.error
-                                  ? '#DC2626'
-                                  : '#CBD5E1',
+                                  ? theme.danger
+                                  : theme.border,
                               padding: 12,
-                              borderRadius: 8,
-                              backgroundColor: '#FFFFFF',
+                              borderRadius: BorderRadius.input,
+                              backgroundColor: theme.surface,
+                              color: theme.text,
                             }}
                           />
 
                           {fieldState.error && (
                             <Text
                               style={{
-                                color: '#DC2626',
+                                color: theme.danger,
                                 fontSize: 13,
                               }}
                             >
@@ -378,7 +387,7 @@ export function Step2Pricing() {
                     <Text
                       style={{
                         fontWeight: 'bold',
-                        color: '#0F172A',
+                        color: theme.text,
                       }}
                     >
                       Minimum hours
@@ -405,22 +414,24 @@ export function Step2Pricing() {
                             }}
                             keyboardType="numeric"
                             placeholder="2"
+                            placeholderTextColor={theme.textSecondary}
                             style={{
                               borderWidth: 1,
                               borderColor:
                                 fieldState.error
-                                  ? '#DC2626'
-                                  : '#CBD5E1',
+                                  ? theme.danger
+                                  : theme.border,
                               padding: 12,
-                              borderRadius: 8,
-                              backgroundColor: '#FFFFFF',
+                              borderRadius: BorderRadius.input,
+                              backgroundColor: theme.surface,
+                              color: theme.text,
                             }}
                           />
 
                           {fieldState.error && (
                             <Text
                               style={{
-                                color: '#DC2626',
+                                color: theme.danger,
                                 fontSize: 13,
                               }}
                             >
@@ -443,18 +454,18 @@ export function Step2Pricing() {
               style={{
                 backgroundColor:
                   model === 'quote'
-                    ? '#E0F2FE'
-                    : '#FFFFFF',
+                    ? theme.backgroundSelected
+                    : theme.surface,
 
                 borderWidth: 1,
 
                 borderColor:
                   model === 'quote'
-                    ? '#0284C7'
-                    : '#E5E7EB',
+                    ? theme.primary
+                    : theme.border,
 
                 padding: 16,
-                borderRadius: 8,
+                borderRadius: BorderRadius.input,
               }}
             >
               <Pressable onPress={selectQuote}>
@@ -462,7 +473,7 @@ export function Step2Pricing() {
                   style={{
                     fontSize: 16,
                     fontWeight: '600',
-                    color: '#0F172A',
+                    color: theme.text,
                   }}
                 >
                   {model === 'quote' ? '●' : '○'} A budget
@@ -471,7 +482,7 @@ export function Step2Pricing() {
                 <Text
                   style={{
                     marginTop: 6,
-                    color: '#475569',
+                    color: theme.textSecondary,
                     lineHeight: 20,
                   }}
                 >
@@ -484,7 +495,7 @@ export function Step2Pricing() {
                 <Text
                   style={{
                     marginTop: 16,
-                    color: '#475569',
+                    color: theme.textSecondary,
                     lineHeight: 20,
                   }}
                 >

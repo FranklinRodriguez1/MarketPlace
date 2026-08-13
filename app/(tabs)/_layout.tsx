@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 
 import { can } from '@/domain/auth/actor';
 import { getMe } from '@/features/profile/profile.api';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function TabsLayout() {
+  const theme = useTheme();
   // null = todavía verificando; false = sin permiso; true = puede moderar
   const [canModerate, setCanModerate] = useState<boolean | null>(null);
 
@@ -19,14 +21,15 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2874A6',
-        tabBarInactiveTintColor: '#94A3B8',
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textSecondary,
         tabBarStyle: {
           height: 60,
           paddingBottom: 10,
           paddingTop: 6,
           elevation: 10,
-         
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
         },
         tabBarLabelStyle: {
           fontSize: 12,

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -17,6 +18,8 @@ import {
   CATEGORY_ICONS,
   DEFAULT_CATEGORY_ICON,
 } from "@/constants/category-icons";
+import { BorderRadius } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 
 import { useCategories } from "../hooks/use-categories";
 import type { CreateListingForm } from "../schemas/create-listing.schema";
@@ -43,6 +46,7 @@ function normalizeForSearch(value: string): string {
 
 export function Step1BasicInfo() {
   const { control } = useFormContext<CreateListingForm>();
+  const theme = useTheme();
 
   const [search, setSearch] = useState("");
 
@@ -67,11 +71,13 @@ export function Step1BasicInfo() {
         ListHeaderComponent={
           <View style={styles.header}>
             {/* BASIC INFORMATION */}
-            <Text style={styles.stepLabel}>Basic Information</Text>
+            <Text style={[styles.stepLabel, { color: theme.textSecondary }]}>
+              Basic Information
+            </Text>
 
             {/* TITLE */}
             <View style={styles.section}>
-              <Text style={styles.label}>Title</Text>
+              <Text style={[styles.label, { color: theme.text }]}>Title</Text>
 
               <Controller
                 control={control}
@@ -83,14 +89,21 @@ export function Step1BasicInfo() {
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
                       placeholder="Ej. Clases de inglés"
+                      placeholderTextColor={theme.textSecondary}
                       style={[
                         styles.input,
-                        fieldState.error && styles.inputError,
+                        {
+                          borderColor: fieldState.error
+                            ? theme.danger
+                            : theme.border,
+                          backgroundColor: theme.surface,
+                          color: theme.text,
+                        },
                       ]}
                     />
 
                     {fieldState.error && (
-                      <Text style={styles.error}>
+                      <Text style={[styles.error, { color: theme.danger }]}>
                         {fieldState.error.message}
                       </Text>
                     )}
@@ -98,14 +111,16 @@ export function Step1BasicInfo() {
                 )}
               />
 
-              <Text style={styles.helper}>
+              <Text style={[styles.helper, { color: theme.textSecondary }]}>
                 A descriptive title helps users find your service easily.
               </Text>
             </View>
 
             {/* DESCRIPTION */}
             <View style={styles.section}>
-              <Text style={styles.label}>Description</Text>
+              <Text style={[styles.label, { color: theme.text }]}>
+                Description
+              </Text>
 
               <Controller
                 control={control}
@@ -117,18 +132,24 @@ export function Step1BasicInfo() {
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
                       placeholder="Describe tu servicio..."
-                      placeholderTextColor="#94A3B8"
+                      placeholderTextColor={theme.textSecondary}
                       multiline
                       numberOfLines={5}
                       textAlignVertical="top"
                       style={[
                         styles.input,
-                        fieldState.error && styles.inputError,
+                        {
+                          borderColor: fieldState.error
+                            ? theme.danger
+                            : theme.border,
+                          backgroundColor: theme.surface,
+                          color: theme.text,
+                        },
                       ]}
                     />
 
                     {fieldState.error && (
-                      <Text style={styles.error}>
+                      <Text style={[styles.error, { color: theme.danger }]}>
                         {fieldState.error.message}
                       </Text>
                     )}
@@ -136,29 +157,40 @@ export function Step1BasicInfo() {
                 )}
               />
 
-              <Text style={styles.helper}>
+              <Text style={[styles.helper, { color: theme.textSecondary }]}>
                 Describe qué servicio ofreces, qué incluye y cualquier
                 información importante para el cliente.
               </Text>
             </View>
             {/* CATEGORY */}
             <View style={styles.categoryHeader}>
-              <Text style={styles.title}>Select a category</Text>
+              <Text style={[styles.title, { color: theme.text }]}>
+                Select a category
+              </Text>
 
-              <Text style={styles.description}>
+              <Text style={[styles.description, { color: theme.textSecondary }]}>
                 Choose the category that best describes your service.
               </Text>
 
               {/* SEARCH */}
-              <View style={styles.searchContainer}>
-                <MaterialIcons name="search" size={22} color="#64748B" />
+              <View
+                style={[
+                  styles.searchContainer,
+                  { borderColor: theme.border, backgroundColor: theme.surface },
+                ]}
+              >
+                <MaterialIcons
+                  name="search"
+                  size={22}
+                  color={theme.textSecondary}
+                />
 
                 <TextInput
                   value={search}
                   onChangeText={setSearch}
                   placeholder="Buscar categoría..."
-                  placeholderTextColor="#94A3B8"
-                  style={styles.searchInput}
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.searchInput, { color: theme.text }]}
                 />
               </View>
             </View>
@@ -176,26 +208,47 @@ export function Step1BasicInfo() {
                   onPress={() => field.onChange(item.id)}
                   style={[
                     styles.card,
-                    selected && styles.cardSelected,
-                    fieldState.error && styles.cardError,
+                    {
+                      backgroundColor: selected
+                        ? theme.backgroundSelected
+                        : theme.surface,
+                      borderColor: fieldState.error
+                        ? theme.danger
+                        : selected
+                          ? theme.primary
+                          : theme.border,
+                      borderWidth: selected ? 2 : 1,
+                    },
                   ]}
                 >
                   {/* ICON */}
                   <View
                     style={[
                       styles.iconContainer,
-                      selected && styles.iconContainerSelected,
+                      {
+                        backgroundColor: selected
+                          ? theme.backgroundSelected
+                          : theme.backgroundElement,
+                      },
                     ]}
                   >
                     <MaterialIcons
                       name={CATEGORY_ICONS[item.slug] ?? DEFAULT_CATEGORY_ICON}
                       size={28}
-                      color={selected ? "#0284C7" : "#334155"}
+                      color={selected ? theme.primary : theme.text}
                     />
                   </View>
 
                   {/* NAME */}
-                  <Text style={[styles.name, selected && styles.nameSelected]}>
+                  <Text
+                    style={[
+                      styles.name,
+                      {
+                        color: selected ? theme.primary : theme.text,
+                        fontWeight: selected ? "700" : "500",
+                      },
+                    ]}
+                  >
                     {item.name}
                   </Text>
 
@@ -204,7 +257,7 @@ export function Step1BasicInfo() {
                     <MaterialIcons
                       name="check-circle"
                       size={20}
-                      color="#0284C7"
+                      color={theme.primary}
                       style={styles.check}
                     />
                   )}
@@ -216,24 +269,36 @@ export function Step1BasicInfo() {
         ListEmptyComponent={
           isPending ? (
             <View style={styles.empty}>
-              <ActivityIndicator size="large" color="#0284C7" />
-              <Text style={styles.emptyText}>Cargando categorías...</Text>
+              <ActivityIndicator size="large" color={theme.primary} />
+              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
+                Cargando categorías...
+              </Text>
             </View>
           ) : isError ? (
             <View style={styles.empty}>
-              <MaterialIcons name="error-outline" size={40} color="#EF4444" />
-              <Text style={styles.emptyText}>
+              <MaterialIcons
+                name="error-outline"
+                size={40}
+                color={theme.danger}
+              />
+              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
                 No se pudieron cargar las categorías.
               </Text>
               <Pressable onPress={() => refetch()}>
-                <Text style={styles.retryText}>Reintentar</Text>
+                <Text style={[styles.retryText, { color: theme.primary }]}>
+                  Reintentar
+                </Text>
               </Pressable>
             </View>
           ) : (
             <View style={styles.empty}>
-              <MaterialIcons name="search-off" size={40} color="#94A3B8" />
+              <MaterialIcons
+                name="search-off"
+                size={40}
+                color={theme.textSecondary}
+              />
 
-              <Text style={styles.emptyText}>
+              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
                 No se encontraron categorías.
               </Text>
             </View>
@@ -243,8 +308,6 @@ export function Step1BasicInfo() {
     </KeyboardAvoidingView>
   );
 }
-
-import { useState } from "react";
 
 const styles = StyleSheet.create({
   container: {
@@ -258,7 +321,6 @@ const styles = StyleSheet.create({
 
   stepLabel: {
     fontSize: 14,
-    color: "#64748B",
   },
 
   section: {
@@ -272,20 +334,13 @@ const styles = StyleSheet.create({
 
   input: {
     borderWidth: 1,
-    borderColor: "#CBD5E1",
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: "#FFF",
+    borderRadius: BorderRadius.input,
     fontSize: 16,
   },
 
-  inputError: {
-    borderColor: "#EF4444",
-  },
-
   helper: {
-    color: "#64748B",
     fontSize: 13,
   },
 
@@ -299,7 +354,6 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    color: "#64748B",
     fontSize: 14,
   },
 
@@ -308,9 +362,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderColor: "#CBD5E1",
-    borderRadius: 8,
-    backgroundColor: "#FFF",
+    borderRadius: BorderRadius.input,
     paddingHorizontal: 12,
     marginTop: 8,
   },
@@ -330,24 +382,12 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     minHeight: 130,
-    backgroundColor: "#FFF",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
+    borderRadius: BorderRadius.card,
     padding: 16,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
-  },
-
-  cardSelected: {
-    backgroundColor: "#E0F2FE",
-    borderColor: "#0284C7",
-    borderWidth: 2,
-  },
-
-  cardError: {
-    borderColor: "#EF4444",
   },
 
   iconContainer: {
@@ -356,24 +396,12 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F1F5F9",
-  },
-
-  iconContainerSelected: {
-    backgroundColor: "#BAE6FD",
   },
 
   name: {
     marginTop: 10,
     fontSize: 14,
-    fontWeight: "500",
     textAlign: "center",
-    color: "#334155",
-  },
-
-  nameSelected: {
-    color: "#0369A1",
-    fontWeight: "700",
   },
 
   check: {
@@ -389,18 +417,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
-  emptyText: {
-    color: "#64748B",
-  },
+  emptyText: {},
 
   retryText: {
-    color: "#0284C7",
     fontWeight: "600",
     marginTop: 4,
   },
 
   error: {
-    color: "#EF4444",
     fontSize: 13,
   },
 });

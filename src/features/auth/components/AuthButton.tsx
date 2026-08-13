@@ -1,74 +1,13 @@
-import { useRef } from 'react';
-import { ActivityIndicator, Animated, Pressable, StyleSheet } from 'react-native';
-
-import { ThemedText } from '@/components/themed-text';
-import { useTheme } from '@/hooks/use-theme';
+import { Button, type ButtonVariant } from '@/components/ui/button';
 
 interface AuthButtonProps {
   label: string;
   onPress?: () => void;
-  variant?: 'primary' | 'outlined';
+  variant?: Extract<ButtonVariant, 'primary' | 'outlined'>;
   loading?: boolean;
   disabled?: boolean;
 }
 
-export function AuthButton({
-  label,
-  onPress,
-  variant = 'primary',
-  loading = false,
-  disabled = false,
-}: AuthButtonProps) {
-  const theme = useTheme();
-  const scale = useRef(new Animated.Value(1)).current;
-
-  const pressIn = () => Animated.spring(scale, { toValue: 0.96, useNativeDriver: true }).start();
-  const pressOut = () =>
-    Animated.spring(scale, { toValue: 1, friction: 4, useNativeDriver: true }).start();
-
-  const isPrimary = variant === 'primary';
-
-  return (
-    <Animated.View style={[{ transform: [{ scale }] }, disabled && styles.disabled]}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={disabled ? undefined : pressIn}
-        onPressOut={disabled ? undefined : pressOut}
-        disabled={disabled}
-        style={[
-          styles.button,
-          isPrimary
-            ? { backgroundColor: theme.primary }
-            : { backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.border },
-        ]}
-      >
-        {loading ? (
-          <ActivityIndicator color={isPrimary ? '#FFFFFF' : theme.primary} />
-        ) : (
-          <ThemedText style={isPrimary ? styles.primaryLabel : styles.label}>{label}</ThemedText>
-        )}
-      </Pressable>
-    </Animated.View>
-  );
+export function AuthButton({ label, onPress, variant = 'primary', loading, disabled }: AuthButtonProps) {
+  return <Button label={label} onPress={onPress} variant={variant} loading={loading} disabled={disabled} />;
 }
-
-const styles = StyleSheet.create({
-  button: {
-    height: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  label: {
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  primaryLabel: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-});

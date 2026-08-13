@@ -14,7 +14,26 @@
       "Bash(git add *)",
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('secure-store:', p.dependencies['expo-secure-store'] ?? 'NOT FOUND'\\)\")",
       "Bash(npx expo *)",
-      "Bash(node -e \"const p=require\\('./package.json'\\); ['i18next','react-i18next','i18next-resources-to-backend','expo-localization'].forEach\\(k => console.log\\(k+':', p.dependencies[k] ?? 'NOT FOUND'\\)\\)\")"
+      "Bash(node -e \"const p=require\\('./package.json'\\); ['i18next','react-i18next','i18next-resources-to-backend','expo-localization'].forEach\\(k => console.log\\(k+':', p.dependencies[k] ?? 'NOT FOUND'\\)\\)\")",
+      "Bash(grep -rnE \"#[0-9a-fA-F]{3,8}\" src app --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(sort -t: -k1,1)",
+      "Bash(node -e \"console.log\\(JSON.stringify\\(require\\('./node_modules/eslint-config-expo/package.json'\\).dependencies, null, 0\\)\\)\")",
+      "Bash(git rm *)",
+      "Bash(grep -v \"^node_modules/react-native-reanimated/package.json$\")",
+      "Bash(grep -v \"^node_modules/expo-symbols/package.json$\")",
+      "Bash(grep -v \"^node_modules/expo-web-browser/package.json$\")",
+      "Bash(grep -v \"^node_modules/react-native-worklets/package.json$\")",
+      "Bash(grep -n \"color\\\\|#[0-9A-Fa-f]\\\\{3,6\\\\}\\\\|useTheme\\\\|useSafeAreaInsets\" /home/cohorte6/Documentos/MarketPlace/src/features/listing/create/components/Step2Pricing.tsx)",
+      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,6\\\\}\" /home/cohorte6/Documentos/MarketPlace/src/features/review/components/ReviewSubmitted.tsx /home/cohorte6/Documentos/MarketPlace/src/features/review/ReviewScreen.tsx)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,6\\\\}\" /home/cohorte6/Documentos/MarketPlace/src/features/listing/my-listings/MyListingsScreen.tsx)",
+      "Bash(grep -nE \"#[0-9A-Fa-f]{3,6}|rgba?\\\\\\(\" src/features/listing/create/CreateListingScreen.tsx src/features/listing/create/components/CreateListingHeader.tsx src/features/listing/create/components/Step1BasicInfo.tsx src/features/listing/create/components/Step2Pricing.tsx src/features/listing/create/components/Step3LocationPhotos.tsx src/features/listing/create/components/Step4Review.tsx)",
+      "Bash(npx eslint *)",
+      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\" src/features/listing/my-listings/MyListingsScreen.tsx)",
+      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\\\\|rgba\\\\?\\(\" /home/cohorte6/Documentos/MarketPlace/src/features/listing/edit/EditListingScreen.tsx)",
+      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\" src/features/review/ReviewScreen.tsx src/features/review/components/ReviewSubmitted.tsx)"
     ]
   }
 }

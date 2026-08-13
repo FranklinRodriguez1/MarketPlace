@@ -158,6 +158,12 @@ export class MockListingSearchRepository implements ListingSearchRepository {
         }
       }
 
+      if (filters.minRating !== undefined) {
+        if (listing.ratingAverage === undefined || listing.ratingAverage < filters.minRating) {
+          return false;
+        }
+      }
+
       if (filters.near && haversineDistanceKm(filters.near, listing.location) > SEARCH_RADIUS_KM) {
         return false;
       }

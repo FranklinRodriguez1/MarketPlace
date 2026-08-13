@@ -15,6 +15,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import { Button } from '@/components/ui/button';
+import { BorderRadius, MaxContentWidth } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+
 import { Step2Pricing } from '../create/components/Step2Pricing';
 import { useCategories } from '../create/hooks/use-categories';
 import { editListingSchema, type EditListingForm } from './schemas/edit-listing.schema';
@@ -25,6 +29,7 @@ interface EditListingScreenProps {
 }
 
 export function EditListingScreen({ id }: EditListingScreenProps) {
+  const theme = useTheme();
   const { data: listing, isLoading, isError, refetch } = useListing(id);
   const { data: categories } = useCategories();
   const updateMutation = useUpdateListing(id);
@@ -65,20 +70,18 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#075985" />
+      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
   if (isError || !listing) {
     return (
-      <View style={styles.centered}>
-        <MaterialIcons name="error-outline" size={40} color="#94A3B8" />
-        <Text style={styles.errorText}>No se pudo cargar el anuncio.</Text>
-        <Pressable style={styles.retryButton} onPress={() => void refetch()}>
-          <Text style={styles.retryButtonText}>Reintentar</Text>
-        </Pressable>
+      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+        <MaterialIcons name="error-outline" size={40} color={theme.textSecondary} />
+        <Text style={[styles.errorText, { color: theme.textSecondary }]}>No se pudo cargar el anuncio.</Text>
+        <Button label="Reintentar" variant="primary" onPress={() => void refetch()} />
       </View>
     );
   }
@@ -87,29 +90,35 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
     <FormProvider {...methods}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
+        style={[styles.flexCentered, { backgroundColor: theme.background }]}
       >
+        <View style={styles.content}>
         {/* HEADER */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: theme.background }]}>
           <Pressable onPress={() => router.back()} style={styles.headerButton}>
-            <Text style={styles.headerButtonText}> ‹ </Text>
+            <Text style={[styles.headerButtonText, { color: theme.primary }]}> ‹ </Text>
           </Pressable>
 
-          <Text style={styles.headerTitle}>Editar anuncio</Text>
+          <Text style={[styles.headerTitle, { color: theme.primary }]}>Editar anuncio</Text>
 
           <View style={styles.headerButton} />
         </View>
 
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
 
           {/* CATEGORÍA (solo lectura) */}
           {categoryName && (
             <View style={styles.section}>
-              <Text style={styles.label}>Category</Text>
-              <View style={styles.readOnlyChip}>
-                <Text style={styles.readOnlyChipText}>{categoryName}</Text>
+              <Text style={[styles.label, { color: theme.text }]}>Category</Text>
+              <View
+                style={[
+                  styles.readOnlyChip,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.border },
+                ]}
+              >
+                <Text style={[styles.readOnlyChipText, { color: theme.text }]}>{categoryName}</Text>
               </View>
-              <Text style={styles.helper}>
+              <Text style={[styles.helper, { color: theme.textSecondary }]}>
                 La categoría no se puede modificar una vez creado el anuncio.
               </Text>
             </View>
@@ -117,7 +126,7 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
 
           {/* TÍTULO */}
           <View style={styles.section}>
-            <Text style={styles.label}>Title</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Title</Text>
 
             <Controller
               control={control}
@@ -128,10 +137,14 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
                     value={field.value}
                     onChangeText={field.onChange}
                     onBlur={field.onBlur}
-                    style={[styles.input, fieldState.error && styles.inputError]}
+                    style={[
+                      styles.input,
+                      { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text },
+                      fieldState.error && { borderColor: theme.danger },
+                    ]}
                   />
                   {fieldState.error && (
-                    <Text style={styles.errorHelper}>{fieldState.error.message}</Text>
+                    <Text style={[styles.errorHelper, { color: theme.danger }]}>{fieldState.error.message}</Text>
                   )}
                 </>
               )}
@@ -140,7 +153,7 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
 
           {/* DESCRIPCIÓN */}
           <View style={styles.section}>
-            <Text style={styles.label}>Description</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Description</Text>
 
             <Controller
               control={control}
@@ -154,10 +167,15 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
                     multiline
                     numberOfLines={5}
                     textAlignVertical="top"
-                    style={[styles.input, styles.textArea, fieldState.error && styles.inputError]}
+                    style={[
+                      styles.input,
+                      styles.textArea,
+                      { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text },
+                      fieldState.error && { borderColor: theme.danger },
+                    ]}
                   />
                   {fieldState.error && (
-                    <Text style={styles.errorHelper}>{fieldState.error.message}</Text>
+                    <Text style={[styles.errorHelper, { color: theme.danger }]}>{fieldState.error.message}</Text>
                   )}
                 </>
               )}
@@ -168,30 +186,28 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
           <Step2Pricing />
 
           {errors.pricing && (
-            <Text style={styles.errorHelper}>Revisa el precio ingresado.</Text>
+            <Text style={[styles.errorHelper, { color: theme.danger }]}>Revisa el precio ingresado.</Text>
           )}
 
           {updateMutation.isError && (
-            <Text style={styles.errorHelper}>
+            <Text style={[styles.errorHelper, { color: theme.danger }]}>
               {updateMutation.error instanceof Error
                 ? updateMutation.error.message
                 : 'No se pudo guardar el anuncio.'}
             </Text>
           )}
 
-          <Pressable
-            style={[styles.saveButton, updateMutation.isPending && styles.saveButtonDisabled]}
+          <Button
+            label="Guardar cambios"
+            variant="primary"
             onPress={handleSubmit(onSubmit)}
+            loading={updateMutation.isPending}
             disabled={updateMutation.isPending}
-          >
-            {updateMutation.isPending ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.saveButtonText}>Guardar cambios</Text>
-            )}
-          </Pressable>
+            style={styles.saveButton}
+          />
 
         </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </FormProvider>
   );
@@ -206,21 +222,19 @@ const styles = StyleSheet.create({
     padding: 24,
   },
 
+  flexCentered: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  content: {
+    flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+  },
+
   errorText: {
-    color: '#64748B',
     textAlign: 'center',
-  },
-
-  retryButton: {
-    backgroundColor: '#075985',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-
-  retryButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
   },
 
   header: {
@@ -241,13 +255,11 @@ const styles = StyleSheet.create({
 
   headerButtonText: {
     fontSize: 28,
-    color: '#0369A1',
   },
 
   headerTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#075985',
   },
 
   container: {
@@ -263,16 +275,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0F172A',
   },
 
   input: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.input,
     fontSize: 16,
   },
 
@@ -280,51 +289,27 @@ const styles = StyleSheet.create({
     minHeight: 120,
   },
 
-  inputError: {
-    borderColor: '#EF4444',
-  },
-
   errorHelper: {
-    color: '#EF4444',
     fontSize: 13,
   },
 
   helper: {
-    color: '#64748B',
     fontSize: 13,
   },
 
   readOnlyChip: {
     alignSelf: 'flex-start',
-    backgroundColor: '#F1F5F9',
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
+    borderRadius: BorderRadius.input,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
 
   readOnlyChipText: {
-    color: '#334155',
     fontWeight: '600',
   },
 
   saveButton: {
     marginTop: 8,
-    minHeight: 48,
-    borderRadius: 8,
-    backgroundColor: '#075985',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  saveButtonDisabled: {
-    opacity: 0.7,
-  },
-
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

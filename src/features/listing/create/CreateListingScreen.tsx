@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-} from 'react-native';
+import { View, Text } from 'react-native';
 
 import {
   FormProvider,
@@ -27,8 +23,12 @@ import { Step3LocationPhotos } from './components/Step3LocationPhotos';
 import { Step4Review } from './components/Step4Review';
 
 import { createListing } from '@/services/listing.service';
+import { Button } from '@/components/ui/button';
+import { MaxContentWidth } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export function CreateListingScreen() {
+  const theme = useTheme();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -178,12 +178,21 @@ export function CreateListingScreen() {
       <View
         style={{
           flex: 1,
+          alignItems: 'center',
+          backgroundColor: theme.background,
+        }}
+      >
+      <View
+        style={{
+          flex: 1,
+          width: '100%',
+          maxWidth: MaxContentWidth,
           padding: 24,
           gap: 20,
         }}
       >
 
-        <Text>
+        <Text style={{ color: theme.textSecondary }}>
           Step {step} of 4
         </Text>
 
@@ -224,45 +233,24 @@ export function CreateListingScreen() {
         >
 
           {step > 1 && (
-            <Pressable
+            <Button
+              label="Previous"
               onPress={previousStep}
-              style={{
-                backgroundColor: '#075985',
-                padding: 10,
-                borderRadius: 5,
-              }}
-            >
-              <Text
-                style={{
-                  color: '#fff',
-                }}
-              >
-                Previous
-              </Text>
-            </Pressable>
+              variant="outlined"
+            />
           )}
 
           {step < 4 && (
-            <Pressable
+            <Button
+              label="Next"
               onPress={nextStep}
-              style={{
-                backgroundColor: '#075985',
-                padding: 10,
-                borderRadius: 5,
-              }}
-            >
-              <Text
-                style={{
-                  color: '#fff',
-                }}
-              >
-                Next
-              </Text>
-            </Pressable>
+              variant="primary"
+            />
           )}
 
         </View>
 
+      </View>
       </View>
 
     </FormProvider>

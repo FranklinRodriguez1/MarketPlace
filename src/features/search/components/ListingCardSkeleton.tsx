@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export function ListingCardSkeleton() {
@@ -7,7 +8,7 @@ export function ListingCardSkeleton() {
   const block = { backgroundColor: theme.backgroundElement };
 
   return (
-    <View style={[styles.card, { backgroundColor: theme.background, borderColor: theme.border }]}>
+    <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
       <View style={[styles.image, block]} />
       <View style={styles.body}>
         <View style={[styles.line, block, { width: '80%' }]} />
@@ -20,7 +21,7 @@ export function ListingCardSkeleton() {
       <View style={[styles.divider, { backgroundColor: theme.border }]} />
       <View style={styles.price}>
         <View style={[styles.line, block, { width: 56, height: 16 }]} />
-        <View style={[styles.line, block, { width: 40, height: 12, marginTop: 8 }]} />
+        <View style={[styles.line, block, { width: 40, height: 12, marginTop: Spacing.two }]} />
       </View>
     </View>
   );
@@ -30,20 +31,20 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderRadius: 16,
-    padding: 12,
-    gap: 12,
-    marginBottom: 12,
+    borderRadius: BorderRadius.card,
+    padding: Spacing.three,
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
     alignItems: 'center',
   },
   image: {
     width: 88,
     height: 88,
-    borderRadius: 12,
+    borderRadius: BorderRadius.input,
   },
   body: {
     flex: 1,
-    gap: 8,
+    gap: Spacing.two,
   },
   line: {
     height: 12,
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
   },
   tagsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing.two,
   },
   tag: {
     width: 44,

@@ -18,6 +18,7 @@ export function listingSearchKey(filters: ListingSearchFilters, near?: Coordinat
     filters.query ?? null,
     filters.categoryId ?? null,
     filters.priceMaxMinor ?? null,
+    filters.minRating ?? null,
     snapped ? `${snapped.latitude},${snapped.longitude}` : 'no-location',
   ] as const;
 }

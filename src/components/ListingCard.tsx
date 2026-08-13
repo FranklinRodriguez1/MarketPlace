@@ -1,11 +1,8 @@
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import { BorderRadius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import type { Listing } from '@/services/listing.service';
 
 interface ListingCardProps {
@@ -13,65 +10,46 @@ interface ListingCardProps {
   onMenuPress: (listing: Listing) => void;
 }
 
-export function ListingCard({
-  listing,
-  onMenuPress,
-}: ListingCardProps) {
-  return (
-    <View style={styles.card}>
+export function ListingCard({ listing, onMenuPress }: ListingCardProps) {
+  const theme = useTheme();
 
-      <View style={styles.imagePlaceholder}>
-        <MaterialIcons
-          name="image"
-          size={40}
-          color="#94A3B8"
-        />
+  return (
+    <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+      <View style={[styles.imagePlaceholder, { backgroundColor: theme.backgroundElement }]}>
+        <MaterialIcons name="image" size={40} color={theme.textSecondary} />
       </View>
 
       <View style={styles.content}>
-
         <View style={styles.headerRow}>
-          <Text style={styles.title}>
-            {listing.title}
-          </Text>
+          <Text style={[styles.title, { color: theme.text }]}>{listing.title}</Text>
 
           <Pressable onPress={() => onMenuPress(listing)}>
-            <MaterialIcons
-              name="more-vert"
-              size={24}
-              color="#334155"
-            />
+            <MaterialIcons name="more-vert" size={24} color={theme.textSecondary} />
           </Pressable>
         </View>
 
-        <Text style={styles.description}>
+        <Text style={[styles.description, { color: theme.textSecondary }]}>
           {listing.description}
         </Text>
 
         <View style={styles.infoRow}>
-
-          <Text style={styles.status}>
+          <Text style={[styles.status, { color: theme.primary }]}>
             {getStatusText(listing.status)}
           </Text>
 
           {listing.priceFrom !== null && (
-            <Text style={styles.price}>
+            <Text style={[styles.price, { color: theme.text }]}>
               {listing.priceFrom.currency}{' '}
               {(listing.priceFrom.amountMinor / 100).toFixed(2)}
             </Text>
           )}
-
         </View>
-
       </View>
-
     </View>
   );
 }
 
-function getStatusText(
-  status: Listing['status'],
-) {
+function getStatusText(status: Listing['status']) {
   switch (status) {
     case 'published':
       return 'Publicado';
@@ -92,20 +70,17 @@ function getStatusText(
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
+    borderRadius: BorderRadius.card,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 14,
+    padding: Spacing.three,
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.three,
   },
 
   imagePlaceholder: {
     width: 90,
     height: 90,
-    borderRadius: 10,
-    backgroundColor: '#F1F5F9',
+    borderRadius: BorderRadius.input,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -124,12 +99,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
   },
 
   description: {
-    marginTop: 6,
-    color: '#64748B',
+    marginTop: Spacing.two,
     fontSize: 14,
   },
 
@@ -137,18 +110,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: Spacing.three,
   },
 
   status: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#0369A1',
   },
 
   price: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
   },
 });

@@ -1,6 +1,10 @@
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFormContext } from 'react-hook-form';
+
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 import { useCategories } from '../hooks/use-categories';
 import type { CreateListingForm } from '../schemas/create-listing.schema';
@@ -27,6 +31,7 @@ function formatPrice(pricing: CreateListingForm['pricing']): { label: string; am
 }
 
 export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
+  const theme = useTheme();
   const { watch } = useFormContext<CreateListingForm>();
   const { data: categories } = useCategories();
 
@@ -38,19 +43,19 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
   const price = formatPrice(pricing);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
 
       {/* TÍTULO */}
-      <Text style={styles.title}>
+      <Text style={[styles.title, { color: theme.text }]}>
         Check your ad
       </Text>
 
-      <Text style={styles.description}>
+      <Text style={[styles.description, { color: theme.textSecondary }]}>
         This is how users will see your service listed on the bulletin board
       </Text>
 
       {/* TARJETA DE PREVISUALIZACIÓN */}
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
 
         {/* IMAGEN */}
         <Image
@@ -61,12 +66,12 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
         />
 
         {/* INFORMACIÓN */}
-        <View style={styles.info}>
+        <View style={[styles.info, { borderRightColor: theme.border }]}>
 
           {/* CATEGORÍA */}
           {categoryName !== '' && (
-            <View style={styles.categoryContainer}>
-              <Text style={styles.category}>
+            <View style={[styles.categoryContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+              <Text style={[styles.category, { color: theme.textSecondary }]}>
                 {categoryName.toUpperCase()}
               </Text>
             </View>
@@ -74,7 +79,7 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
 
           {/* TÍTULO */}
           <Text
-            style={styles.serviceTitle}
+            style={[styles.serviceTitle, { color: theme.text }]}
             numberOfLines={1}
           >
             {title}
@@ -85,10 +90,10 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
             <MaterialIcons
               name="star"
               size={16}
-              color="#111827"
+              color={theme.text}
             />
 
-            <Text style={styles.status}>
+            <Text style={[styles.status, { color: theme.text }]}>
               Nuevo
             </Text>
           </View>
@@ -100,16 +105,16 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
 
           {price ? (
             <>
-              <Text style={styles.from}>
+              <Text style={[styles.from, { color: theme.textSecondary }]}>
                 {price.label}
               </Text>
 
-              <Text style={styles.price}>
+              <Text style={[styles.price, { color: theme.danger }]}>
                 {price.amount}
               </Text>
             </>
           ) : (
-            <Text style={styles.from}>
+            <Text style={[styles.from, { color: theme.textSecondary }]}>
               A COTIZAR
             </Text>
           )}
@@ -119,19 +124,14 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
       </View>
 
       {/* BOTÓN */}
-      <Pressable onPress={onPublish} disabled={loading} style={styles.publishButton}>
-
-        <MaterialIcons
-          name="publish"
-          size={22}
-          color="#fff"
-        />
-
-        <Text style={styles.publishText}>
-          {loading ? 'Publishing...' : 'Post an ad'}
-        </Text>
-
-      </Pressable>
+      <Button
+        label={loading ? 'Publishing...' : 'Post an ad'}
+        onPress={onPublish}
+        loading={loading}
+        variant="primary"
+        style={styles.publishButton}
+        icon={(color) => <MaterialIcons name="publish" size={22} color={color} />}
+      />
 
     </View>
   );
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
 
   description: {
     fontSize: 14,
-    color: '#64748B',
     marginBottom: 20,
   },
 
@@ -163,12 +162,9 @@ const styles = StyleSheet.create({
 
     flexDirection: 'row',
 
-    backgroundColor: '#FFFFFF',
-
     borderWidth: 1,
-    borderColor: '#D1D5DB',
 
-    borderRadius: 10,
+    borderRadius: BorderRadius.card,
 
     overflow: 'hidden',
 
@@ -197,18 +193,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     borderRightWidth: 1,
-    borderRightColor: '#E5E7EB',
   },
 
   categoryContainer: {
     alignSelf: 'flex-start',
 
-    backgroundColor: '#F1F5F9',
-
     borderWidth: 1,
-    borderColor: '#CBD5E1',
 
-    borderRadius: 10,
+    borderRadius: BorderRadius.input,
 
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -218,14 +210,12 @@ const styles = StyleSheet.create({
 
   category: {
     fontSize: 10,
-    color: '#334155',
     fontWeight: '500',
   },
 
   serviceTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
 
     marginBottom: 4,
   },
@@ -238,7 +228,6 @@ const styles = StyleSheet.create({
 
   status: {
     fontSize: 12,
-    color: '#111827',
     fontWeight: '500',
   },
 
@@ -254,7 +243,6 @@ const styles = StyleSheet.create({
 
   from: {
     fontSize: 9,
-    color: '#334155',
     letterSpacing: 1,
     fontWeight: '500',
 
@@ -264,32 +252,10 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#B91C1C',
   },
 
   // BOTÓN
   publishButton: {
     marginTop: 20,
-
-    backgroundColor: '#075985',
-
-    minHeight: 48,
-
-    borderRadius: 8,
-
-    flexDirection: 'row',
-
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    gap: 8,
-  },
-
-  publishText: {
-    color: '#FFFFFF',
-
-    fontSize: 16,
-
-    fontWeight: '600',
   },
 });

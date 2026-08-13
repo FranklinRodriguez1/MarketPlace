@@ -2,14 +2,14 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
-  TextInput,
-  Alert,
 } from 'react-native';
 import { useState } from 'react';
 import { canReviewBooking } from '@cerca/src';
 import { ReviewForm } from '@/components/ReviewForm';
 import { ReviewSubmitted } from './components/ReviewSubmitted';
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 type TestReason =
   | 'not_completed'
@@ -20,6 +20,7 @@ type TestReason =
 
 
 export function ReviewScreen() {
+  const theme = useTheme();
   const [submitted, setSubmitted] = useState(false);
 
   const TEST_REASON = null as TestReason;
@@ -71,51 +72,61 @@ export function ReviewScreen() {
 
    if (!eligibility.ok) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-        <Text style={styles.title}>
+        <Text style={[styles.title, { color: theme.text }]}>
           Review
         </Text>
 
-        <View style={styles.bookingCard}>
-          <Text style={styles.bookingTitle}>
+        <View
+          style={[
+            styles.bookingCard,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.bookingTitle, { color: theme.text }]}>
             Reparación de Tubería
           </Text>
 
-          <Text style={styles.bookingInfo}>
+          <Text style={[styles.bookingInfo, { color: theme.textSecondary }]}>
             Con Juan Pérez (Plomería)
           </Text>
 
-          <Text style={styles.bookingInfo}>
+          <Text style={[styles.bookingInfo, { color: theme.textSecondary }]}>
             Fecha solicitada: 15 Oct 2023, 10:00 AM
           </Text>
 
-          <Text style={styles.bookingInfo}>
+          <Text style={[styles.bookingInfo, { color: theme.textSecondary }]}>
             Dirección: Av. Siempre Viva 742
           </Text>
         </View>
 
-        <View style={styles.blockedCard}>
+        <View
+          style={[
+            styles.blockedCard,
+            { backgroundColor: theme.surface, borderColor: theme.danger },
+          ]}
+        >
 
-          <View style={styles.iconContainer}>
-            <Text style={styles.icon}>
+          <View style={[styles.iconContainer, { backgroundColor: theme.backgroundElement }]}>
+            <Text style={[styles.icon, { color: theme.danger }]}>
               !
             </Text>
           </View>
 
-          <Text style={styles.blockedTitle}>
+          <Text style={[styles.blockedTitle, { color: theme.danger }]}>
             {getBlockedTitle(eligibility.reason)}
           </Text>
 
-          <Text style={styles.blockedMessage}>
+          <Text style={[styles.blockedMessage, { color: theme.textSecondary }]}>
             {getBlockedMessage(eligibility.reason)}
           </Text>
 
-          <Pressable style={styles.button}>
-            <Text style={styles.buttonText}>
-              ← Volver a Mis Reservas
-            </Text>
-          </Pressable>
+          <Button
+            label="← Volver a Mis Reservas"
+            variant="primary"
+            style={styles.button}
+          />
 
         </View>
 
@@ -186,7 +197,6 @@ function getBlockedMessage(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F7F2',
     padding: 24,
     gap: 20,
   },
@@ -194,35 +204,28 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#0F172A',
   },
 
   bookingCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: BorderRadius.card,
     padding: 18,
     borderWidth: 1,
-    borderColor: '#D6DCE3',
     gap: 10,
   },
 
   bookingTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
   },
 
   bookingInfo: {
     fontSize: 14,
-    color: '#334155',
   },
 
   blockedCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: BorderRadius.card,
     padding: 32,
     borderWidth: 1,
-    borderColor: '#D6DCE3',
     alignItems: 'center',
     gap: 16,
   },
@@ -231,41 +234,28 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#E7E5DF',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   icon: {
     fontSize: 28,
-    color: '#64748B',
     fontWeight: '700',
   },
 
   blockedTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
     textAlign: 'center',
   },
 
   blockedMessage: {
     fontSize: 15,
     lineHeight: 23,
-    color: '#475569',
     textAlign: 'center',
   },
 
   button: {
     marginTop: 10,
-    backgroundColor: '#075985',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-  },
-
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
   },
 });

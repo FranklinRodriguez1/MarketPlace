@@ -1,13 +1,16 @@
 import { Redirect } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
+import { ThemedView } from '@/components/themed-view';
 import { getAccessToken } from '@/features/auth/session';
+import { useTheme } from '@/hooks/use-theme';
 
 type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
 
 export default function Index() {
+  const theme = useTheme();
   const [authState, setAuthState] = useState<AuthState>('checking');
 
   useEffect(() => {
@@ -29,17 +32,17 @@ export default function Index() {
   // de que el chequeo termine, el usuario ve este spinner en vez de login.
   if (authState === 'checking') {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#2F6690" />
-      </View>
+      <ThemedView style={styles.container}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </ThemedView>
     );
   }
 
-  if (authState === 'authenticated') {
-    return <Redirect href="/(tabs)" />;
-  }
-
-  return <Redirect href="/login" />;
+  // TEMPORAL: el backend todavía no está operativo, así que se salta el
+  // chequeo de JWT para poder validar las pantallas con datos mock.
+  // Revertir a `authState === 'authenticated'` (y mandar a /login en el
+  // else) apenas haya backend real para probar el flujo de auth de verdad.
+  return <Redirect href="/(tabs)" />;
 }
 
 const styles = StyleSheet.create({
@@ -47,6 +50,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F2F1EC',
   },
 });
