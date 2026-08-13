@@ -1,0 +1,49 @@
+{
+  "common": {
+    "retry": "Reintentar",
+    "unexpectedError": "Error inesperado.",
+    "unexpectedErrorRetry": "Error inesperado. Intenta de nuevo."
+  },
+  "login": {
+    "subtitle": "Inicia sesión para continuar",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
+    "password": "Contraseña",
+    "passwordMask": "••••••••",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "submit": "Iniciar sesión",
+    "back": "Volver",
+    "noAccount": "¿No tienes cuenta?",
+    "signUpLink": "Regístrate"
+  },
+  "register": {
+    "title": "Crear cuenta",
+    "displayName": "Nombre completo",
+    "displayNamePlaceholder": "Juan Pérez",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "juan@example.com",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "passwordMask": "••••••••",
+    "submit": "Crear cuenta",
+    "hasAccount": "¿Ya tienes cuenta? Inicia sesión"
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "id": "ID",
+    "role": "Rol",
+    "capacities": "Capacidades",
+    "none": "Ninguna",
+    "becomeProvider": "Convertirme en proveedor",
+    "language": "Idioma"
+  },
+  "moderation": {
+    "title": "Cola de moderación",
+    "listing": "Anuncio",
+    "reason": "Motivo: {{value}}",
+    "underReview": "Poner en revisión",
+    "remove": "Retirar anuncio",
+    "resolve": "Resolver reporte",
+    "empty": "No hay reportes pendientes"
+  }
+}

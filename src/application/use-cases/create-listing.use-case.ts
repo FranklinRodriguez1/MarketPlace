@@ -9,7 +9,8 @@ const createListingInputSchema = z.object({
   pricing: pricingSchema,
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-  photos: z.array(z.string()).min(1),
+  // photos: z.array(z.string()).min(1),
+  photos: z.array(z.string()).optional().default([]),
 });
 
 export function createCreateListingUseCase(repository: ListingRepository) {

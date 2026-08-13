@@ -1,8 +1,42 @@
 import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from 'expo-router';
+import { useFormContext } from 'react-hook-form';
 
-export function Step4Review() {
+import { useCategories } from '../hooks/use-categories';
+import type { CreateListingForm } from '../schemas/create-listing.schema';
+
+interface Step4ReviewProps {
+  onPublish: () => void;
+  loading?: boolean;
+}
+
+function formatPrice(pricing: CreateListingForm['pricing']): { label: string; amount: string } | null {
+  if (pricing.model === 'fixed') {
+    return { label: 'PRECIO', amount: `${pricing.price.currency} ${(pricing.price.amountMinor / 100).toFixed(2)}` };
+  }
+
+  if (pricing.model === 'hourly') {
+    return { label: 'POR HORA', amount: `${pricing.hourlyRate.currency} ${(pricing.hourlyRate.amountMinor / 100).toFixed(2)}` };
+  }
+
+  if (pricing.startingFrom) {
+    return { label: 'DESDE', amount: `${pricing.startingFrom.currency} ${(pricing.startingFrom.amountMinor / 100).toFixed(2)}` };
+  }
+
+  return null;
+}
+
+export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
+  const { watch } = useFormContext<CreateListingForm>();
+  const { data: categories } = useCategories();
+
+  const title = watch('title');
+  const categoryId = watch('categoryId');
+  const pricing = watch('pricing');
+
+  const categoryName = categories?.find((category) => category.id === categoryId)?.name ?? '';
+  const price = formatPrice(pricing);
+
   return (
     <View style={styles.container}>
 
@@ -30,18 +64,20 @@ export function Step4Review() {
         <View style={styles.info}>
 
           {/* CATEGORÍA */}
-          <View style={styles.categoryContainer}>
-            <Text style={styles.category}>
-              JARDINERÍA
-            </Text>
-          </View>
+          {categoryName !== '' && (
+            <View style={styles.categoryContainer}>
+              <Text style={styles.category}>
+                {categoryName.toUpperCase()}
+              </Text>
+            </View>
+          )}
 
           {/* TÍTULO */}
           <Text
             style={styles.serviceTitle}
             numberOfLines={1}
           >
-            Mantenimiento de jardín
+            {title}
           </Text>
 
           {/* ESTADO */}
@@ -62,20 +98,28 @@ export function Step4Review() {
         {/* PRECIO */}
         <View style={styles.priceContainer}>
 
-          <Text style={styles.from}>
-            DESDE
-          </Text>
+          {price ? (
+            <>
+              <Text style={styles.from}>
+                {price.label}
+              </Text>
 
-          <Text style={styles.price}>
-            $45
-          </Text>
+              <Text style={styles.price}>
+                {price.amount}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.from}>
+              A COTIZAR
+            </Text>
+          )}
 
         </View>
 
       </View>
 
       {/* BOTÓN */}
-      <Pressable onPress={() => router.push('/my-listings')} style={styles.publishButton}>
+      <Pressable onPress={onPublish} disabled={loading} style={styles.publishButton}>
 
         <MaterialIcons
           name="publish"
@@ -84,7 +128,7 @@ export function Step4Review() {
         />
 
         <Text style={styles.publishText}>
-          Post an ad
+          {loading ? 'Publishing...' : 'Post an ad'}
         </Text>
 
       </Pressable>

@@ -1,18 +1,41 @@
-import { View, Text, Pressable, TextInput,ScrollView,  KeyboardAvoidingView, Platform } from 'react-native';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import {
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import {
+  Controller,
+  useFormContext,
+  useWatch,
+} from 'react-hook-form';
 
-import type { CreateListingForm } from '../schemas/create-listing.schema';
+import type { Pricing } from '@cerca/src';
 
+// Tipado mínimo a propósito: este componente solo lee/escribe el campo
+// `pricing`, así que cualquier formulario (crear, editar) que tenga ese
+// campo puede reutilizarlo dentro de su propio FormProvider.
+export interface PricingFormValues {
+  pricing: Pricing;
+}
 
 export function Step2Pricing() {
- const { control, setValue } =
-  useFormContext<CreateListingForm>();
+  const { control, setValue } =
+    useFormContext<PricingFormValues>();
 
-const pricing = useWatch({
-  control,
-  name: 'pricing',
-});
+  const pricing = useWatch({
+    control,
+    name: 'pricing',
+  });
+
   const model = pricing.model;
+
+  // =========================
+  // SELECCIONAR PRECIO FIJO
+  // =========================
 
   const selectFixed = () => {
     setValue(
@@ -30,6 +53,10 @@ const pricing = useWatch({
       }
     );
   };
+
+  // =========================
+  // SELECCIONAR PRECIO POR HORA
+  // =========================
 
   const selectHourly = () => {
     setValue(
@@ -49,6 +76,10 @@ const pricing = useWatch({
     );
   };
 
+  // =========================
+  // SELECCIONAR COTIZACIÓN
+  // =========================
+
   const selectQuote = () => {
     setValue(
       'pricing',
@@ -64,276 +95,408 @@ const pricing = useWatch({
 
   return (
     <KeyboardAvoidingView
-  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  style={{ flex: 1 }}
->
-
-    <ScrollView contentContainerStyle={{ gap: 20, padding: 16 }}>
-      
-    <View style={{ gap: 20 }}>
-      <Text>Prices</Text>
-
-      <Text
-        style={{
-          fontSize: 24,
-          fontWeight: 'bold',
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{ flex: 1 }}
+    >
+      <ScrollView
+        contentContainerStyle={{
+          gap: 20,
+          padding: 16,
+          paddingBottom: 40,
         }}
       >
-        How do you want to charge?
-      </Text>
+        <View style={{ gap: 20 }}>
+          {/* ========================= */}
+          {/* TÍTULO */}
+          {/* ========================= */}
 
-      <Text>
-        You can select how you want to charge for this service.
-        You will be able to adjust the amounts in the next step.
-      </Text>
-
-      <View style={{ gap: 12 }}>
-
-        {/* ========================= */}
-        {/* FIXED */}
-        {/* ========================= */}
-        <View
-          style={{
-            backgroundColor:
-              model === 'fixed' ? '#E0F2FE' : '#FFF',
-
-            borderWidth: 1,
-
-            borderColor:
-              model === 'fixed'
-                ? '#0284C7'
-                : '#E5E7EB',
-
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
-          {/* SOLO ESTA PARTE ES PRESSABLE */}
-          <Pressable onPress={selectFixed}>
-            <Text>
-              {model === 'fixed' ? '●' : '○'} Fixed price
-            </Text>
-
-            <Text>
-              A fixed amount for the entire job, ideal for
-              well-defined tasks.
-            </Text>
-          </Pressable>
-
-          {/* INPUT FUERA DEL PRESSABLE */}
-          {model === 'fixed' && (
-            <View
+          <View style={{ gap: 8 }}>
+            <Text
               style={{
-                gap: 8,
-                marginTop: 16,
+                fontSize: 14,
+                color: '#64748B',
               }}
             >
-              <Text style={{ fontWeight: 'bold' }}>
-                Price
-              </Text>
+              Prices
+            </Text>
 
-              <Controller
-                control={control}
-                name="pricing.price.amountMinor"
-                render={({ field, fieldState }) => (
-                  <>
-                    <TextInput
-                      value={String(field.value ?? '')}
-                      onChangeText={(value) =>
-                        field.onChange(
-                          value === ''
-                            ? 0
-                            : Number(value)
-                        )
-                      }
-                      keyboardType="numeric"
-                      placeholder="50000"
-                      style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 12,
-                        borderRadius: 8,
-                        backgroundColor: '#fff',
-                      }}
-                    />
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: '#0F172A',
+              }}
+            >
+              How do you want to charge?
+            </Text>
 
-                    {fieldState.error && (
-                      <Text>
-                        {fieldState.error.message}
-                      </Text>
+            <Text
+              style={{
+                color: '#475569',
+                lineHeight: 21,
+              }}
+            >
+              You can select how you want to charge for this
+              service. You will be able to adjust the amounts
+              in the next step.
+            </Text>
+          </View>
+
+          <View style={{ gap: 12 }}>
+
+            {/* ========================= */}
+            {/* FIXED */}
+            {/* ========================= */}
+
+            <View
+              style={{
+                backgroundColor:
+                  model === 'fixed'
+                    ? '#E0F2FE'
+                    : '#FFFFFF',
+
+                borderWidth: 1,
+
+                borderColor:
+                  model === 'fixed'
+                    ? '#0284C7'
+                    : '#E5E7EB',
+
+                padding: 16,
+                borderRadius: 8,
+              }}
+            >
+              <Pressable onPress={selectFixed}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: '#0F172A',
+                  }}
+                >
+                  {model === 'fixed' ? '●' : '○'} Fixed price
+                </Text>
+
+                <Text
+                  style={{
+                    marginTop: 6,
+                    color: '#475569',
+                    lineHeight: 20,
+                  }}
+                >
+                  A fixed amount for the entire job, ideal for
+                  well-defined tasks.
+                </Text>
+              </Pressable>
+
+              {/* SOLO EXISTE SI MODEL === FIXED */}
+
+              {pricing.model === 'fixed' && (
+                <View
+                  style={{
+                    gap: 8,
+                    marginTop: 16,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: '#0F172A',
+                    }}
+                  >
+                    Price
+                  </Text>
+
+                  <Controller
+                    control={control}
+                    name="pricing.price.amountMinor"
+                    render={({ field, fieldState }) => (
+                      <>
+                        <TextInput
+                          value={
+                            field.value === 0
+                              ? ''
+                              : String(field.value)
+                          }
+                          onChangeText={(value) => {
+                            const numericValue =
+                              value === ''
+                                ? 0
+                                : Number(value);
+
+                            field.onChange(numericValue);
+                          }}
+                          keyboardType="numeric"
+                          placeholder="50000"
+                          style={{
+                            borderWidth: 1,
+                            borderColor:
+                              fieldState.error
+                                ? '#DC2626'
+                                : '#CBD5E1',
+                            padding: 12,
+                            borderRadius: 8,
+                            backgroundColor: '#FFFFFF',
+                          }}
+                        />
+
+                        {fieldState.error && (
+                          <Text
+                            style={{
+                              color: '#DC2626',
+                              fontSize: 13,
+                            }}
+                          >
+                            {fieldState.error.message}
+                          </Text>
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              />
+                  />
+                </View>
+              )}
             </View>
-          )}
-        </View>
 
-        {/* ========================= */}
-        {/* HOURLY */}
-        {/* ========================= */}
-        <View
-          style={{
-            backgroundColor:
-              model === 'hourly' ? '#E0F2FE' : '#FFF',
+            {/* ========================= */}
+            {/* HOURLY */}
+            {/* ========================= */}
 
-            borderWidth: 1,
-
-            borderColor:
-              model === 'hourly'
-                ? '#0284C7'
-                : '#E5E7EB',
-
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
-          {/* SOLO EL ENCABEZADO ES PRESSABLE */}
-          <Pressable onPress={selectHourly}>
-            <Text>
-              {model === 'hourly' ? '●' : '○'} Per hour
-            </Text>
-
-            <Text>
-              You charge a fee for each hour of work performed.
-            </Text>
-          </Pressable>
-
-          {/* INPUTS FUERA DEL PRESSABLE */}
-          {model === 'hourly' && (
             <View
               style={{
-                gap: 12,
-                marginTop: 16,
+                backgroundColor:
+                  model === 'hourly'
+                    ? '#E0F2FE'
+                    : '#FFFFFF',
+
+                borderWidth: 1,
+
+                borderColor:
+                  model === 'hourly'
+                    ? '#0284C7'
+                    : '#E5E7EB',
+
+                padding: 16,
+                borderRadius: 8,
               }}
             >
-              {/* PRECIO POR HORA */}
-              <View style={{ gap: 8 }}>
-                <Text style={{ fontWeight: 'bold' }}>
-                  Hourly rate
+              <Pressable onPress={selectHourly}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: '#0F172A',
+                  }}
+                >
+                  {model === 'hourly' ? '●' : '○'} Per hour
                 </Text>
 
-                <Controller
-                  control={control}
-                  name="pricing.hourlyRate.amountMinor"
-                  render={({ field, fieldState }) => (
-                    <>
-                      <TextInput
-                        value={String(field.value ?? '')}
-                        onChangeText={(value) =>
-                          field.onChange(
-                            value === ''
-                              ? 0
-                              : Number(value)
-                          )
-                        }
-                        keyboardType="numeric"
-                        placeholder="30000"
-                        style={{
-                          borderWidth: 1,
-                          borderColor: '#ccc',
-                          padding: 12,
-                          borderRadius: 8,
-                          backgroundColor: '#fff',
-                        }}
-                      />
-
-                      {fieldState.error && (
-                        <Text>
-                          {fieldState.error.message}
-                        </Text>
-                      )}
-                    </>
-                  )}
-                />
-              </View>
-
-              {/* HORAS MÍNIMAS */}
-              <View style={{ gap: 8 }}>
-                <Text style={{ fontWeight: 'bold' }}>
-                  Minimum hours
+                <Text
+                  style={{
+                    marginTop: 6,
+                    color: '#475569',
+                    lineHeight: 20,
+                  }}
+                >
+                  You charge a fee for each hour of work
+                  performed.
                 </Text>
+              </Pressable>
 
-                <Controller
-                  control={control}
-                  name="pricing.minimumHours"
-                  render={({ field, fieldState }) => (
-                    <>
-                      <TextInput
-                        value={String(field.value ?? '')}
-                        onChangeText={(value) =>
-                          field.onChange(
-                            value === ''
-                              ? 0
-                              : Number(value)
-                          )
-                        }
-                        keyboardType="numeric"
-                        placeholder="2"
-                        style={{
-                          borderWidth: 1,
-                          borderColor: '#ccc',
-                          padding: 12,
-                          borderRadius: 8,
-                          backgroundColor: '#fff',
-                        }}
-                      />
+              {/* SOLO EXISTE SI MODEL === HOURLY */}
 
-                      {fieldState.error && (
-                        <Text>
-                          {fieldState.error.message}
-                        </Text>
+              {model === 'hourly' && (
+                <View
+                  style={{
+                    gap: 12,
+                    marginTop: 16,
+                  }}
+                >
+
+                  {/* PRECIO POR HORA */}
+
+                  <View style={{ gap: 8 }}>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: '#0F172A',
+                      }}
+                    >
+                      Hourly rate
+                    </Text>
+
+                    <Controller
+                      control={control}
+                      name="pricing.hourlyRate.amountMinor"
+                      render={({ field, fieldState }) => (
+                        <>
+                          <TextInput
+                            value={
+                              field.value === 0
+                                ? ''
+                                : String(field.value)
+                            }
+                            onChangeText={(value) => {
+                              const numericValue =
+                                value === ''
+                                  ? 0
+                                  : Number(value);
+
+                              field.onChange(numericValue);
+                            }}
+                            keyboardType="numeric"
+                            placeholder="30000"
+                            style={{
+                              borderWidth: 1,
+                              borderColor:
+                                fieldState.error
+                                  ? '#DC2626'
+                                  : '#CBD5E1',
+                              padding: 12,
+                              borderRadius: 8,
+                              backgroundColor: '#FFFFFF',
+                            }}
+                          />
+
+                          {fieldState.error && (
+                            <Text
+                              style={{
+                                color: '#DC2626',
+                                fontSize: 13,
+                              }}
+                            >
+                              {fieldState.error.message}
+                            </Text>
+                          )}
+                        </>
                       )}
-                    </>
-                  )}
-                />
-              </View>
+                    />
+                  </View>
+
+                  {/* HORAS MÍNIMAS */}
+
+                  <View style={{ gap: 8 }}>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: '#0F172A',
+                      }}
+                    >
+                      Minimum hours
+                    </Text>
+
+                    <Controller
+                      control={control}
+                      name="pricing.minimumHours"
+                      render={({ field, fieldState }) => (
+                        <>
+                          <TextInput
+                            value={
+                              field.value === 0
+                                ? ''
+                                : String(field.value)
+                            }
+                            onChangeText={(value) => {
+                              const numericValue =
+                                value === ''
+                                  ? 0
+                                  : Number(value);
+
+                              field.onChange(numericValue);
+                            }}
+                            keyboardType="numeric"
+                            placeholder="2"
+                            style={{
+                              borderWidth: 1,
+                              borderColor:
+                                fieldState.error
+                                  ? '#DC2626'
+                                  : '#CBD5E1',
+                              padding: 12,
+                              borderRadius: 8,
+                              backgroundColor: '#FFFFFF',
+                            }}
+                          />
+
+                          {fieldState.error && (
+                            <Text
+                              style={{
+                                color: '#DC2626',
+                                fontSize: 13,
+                              }}
+                            >
+                              {fieldState.error.message}
+                            </Text>
+                          )}
+                        </>
+                      )}
+                    />
+                  </View>
+                </View>
+              )}
             </View>
-          )}
+
+            {/* ========================= */}
+            {/* QUOTE */}
+            {/* ========================= */}
+
+            <View
+              style={{
+                backgroundColor:
+                  model === 'quote'
+                    ? '#E0F2FE'
+                    : '#FFFFFF',
+
+                borderWidth: 1,
+
+                borderColor:
+                  model === 'quote'
+                    ? '#0284C7'
+                    : '#E5E7EB',
+
+                padding: 16,
+                borderRadius: 8,
+              }}
+            >
+              <Pressable onPress={selectQuote}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: '#0F172A',
+                  }}
+                >
+                  {model === 'quote' ? '●' : '○'} A budget
+                </Text>
+
+                <Text
+                  style={{
+                    marginTop: 6,
+                    color: '#475569',
+                    lineHeight: 20,
+                  }}
+                >
+                  You assess the work on-site before giving a
+                  final price.
+                </Text>
+              </Pressable>
+
+              {model === 'quote' && (
+                <Text
+                  style={{
+                    marginTop: 16,
+                    color: '#475569',
+                    lineHeight: 20,
+                  }}
+                >
+                  The customer can request a quote before the
+                  final price is agreed.
+                </Text>
+              )}
+            </View>
+
+          </View>
         </View>
-
-        {/* ========================= */}
-        {/* QUOTE */}
-        {/* ========================= */}
-        <View
-          style={{
-            backgroundColor:
-              model === 'quote' ? '#E0F2FE' : '#FFF',
-
-            borderWidth: 1,
-
-            borderColor:
-              model === 'quote'
-                ? '#0284C7'
-                : '#E5E7EB',
-
-            padding: 16,
-            borderRadius: 8,
-          }}
-        >
-          {/* SOLO ESTA PARTE ES PRESSABLE */}
-          <Pressable onPress={selectQuote}>
-            <Text>
-              {model === 'quote' ? '●' : '○'} A budget
-            </Text>
-
-            <Text>
-              You assess the work on-site before giving a
-              final price.
-            </Text>
-          </Pressable>
-
-          {model === 'quote' && (
-            <Text style={{ marginTop: 16 }}>
-              The customer can request a quote before the
-              final price is agreed.
-            </Text>
-          )}
-        </View>
-
-      </View>
-    </View>
-    </ScrollView>
-</KeyboardAvoidingView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

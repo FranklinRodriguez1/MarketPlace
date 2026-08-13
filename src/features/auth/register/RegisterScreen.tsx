@@ -1,83 +1,162 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 
+import { signUp } from '../auth.api';
+import { registerFormSchema, type RegisterFormData } from '../auth.schemas';
+import { saveTokens } from '../session';
 import { AuthButton } from '../components/AuthButton';
 import { AuthCard } from '../components/AuthCard';
-import { AuthCheckbox } from '../components/AuthCheckbox';
 import { AuthTextField } from '../components/AuthTextField';
 
 export function RegisterScreen() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [emailTaken, setEmailTaken] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: { displayName: '', email: '', password: '', confirmPassword: '' },
+  });
+
+  async function onSubmit(data: RegisterFormData): Promise<void> {
+    setServerError(null);
+    try {
+      const result = await signUp(data.email, data.password, data.displayName);
+      await saveTokens(result.accessToken, result.refreshToken);
+      router.replace('/(tabs)');
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : t('common.unexpectedErrorRetry'));
+    }
+  }
 
   return (
     <AuthCard>
       <ThemedText style={styles.headline} themeColor="primary">
         Cerca
       </ThemedText>
-      <ThemedText style={styles.subtitle}>Crear cuenta</ThemedText>
+      <ThemedText style={styles.subtitle}>{t('register.title')}</ThemedText>
 
-      <AuthTextField
-        label="Nombre completo"
-        icon="person-outline"
-        value={name}
-        onChangeText={setName}
-        placeholder="Ej. Juan Pérez"
+      <Controller
+        control={control}
+        name="displayName"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <AuthTextField
+            label={t('register.displayName')}
+            icon="person-outline"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            placeholder={t('register.displayNamePlaceholder')}
+            error={errors.displayName?.message}
+          />
+        )}
       />
 
-      <AuthTextField
-        label="Correo electrónico"
-        icon="mail-outline"
-        value={email}
-        onChangeText={setEmail}
-        placeholder="juan@example.com"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        error={emailTaken ? 'Este correo ya está registrado' : undefined}
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <AuthTextField
+            label={t('register.email')}
+            icon="mail-outline"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            placeholder={t('register.emailPlaceholder')}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            error={errors.email?.message}
+          />
+        )}
       />
 
-      <AuthTextField
-        label="Contraseña"
-        icon="lock-closed-outline"
-        value={password}
-        onChangeText={setPassword}
-        placeholder="••••••••"
-        secureTextEntry={!showPassword}
-        rightElement={
-          <Pressable onPress={() => setShowPassword((current) => !current)} hitSlop={8}>
-            <Ionicons
-              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-              size={18}
-              color={theme.textSecondary}
-            />
-          </Pressable>
-        }
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <AuthTextField
+            label={t('register.password')}
+            icon="lock-closed-outline"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            placeholder={t('register.passwordMask')}
+            secureTextEntry={!showPassword}
+            error={errors.password?.message}
+            rightElement={
+              <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={8}>
+                <Ionicons
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={18}
+                  color={theme.textSecondary}
+                />
+              </Pressable>
+            }
+          />
+        )}
       />
 
-      <AuthCheckbox
-        checked={acceptedTerms}
-        onToggle={() => setAcceptedTerms((current) => !current)}
-        label="Acepto los términos y condiciones"
+      <Controller
+        control={control}
+        name="confirmPassword"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <AuthTextField
+            label={t('register.confirmPassword')}
+            icon="lock-closed-outline"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            placeholder={t('register.passwordMask')}
+            secureTextEntry={!showConfirmPassword}
+            error={errors.confirmPassword?.message}
+            rightElement={
+              <Pressable onPress={() => setShowConfirmPassword((v) => !v)} hitSlop={8}>
+                <Ionicons
+                  name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={18}
+                  color={theme.textSecondary}
+                />
+              </Pressable>
+            }
+          />
+        )}
       />
 
-      <AuthButton label="Crear cuenta" onPress={() => setEmailTaken(true)} />
+      {serverError && (
+        <View style={styles.serverErrorRow}>
+          <Ionicons name="alert-circle-outline" size={14} color={theme.danger} />
+          <ThemedText type="small" themeColor="danger">
+            {serverError}
+          </ThemedText>
+        </View>
+      )}
+
+      <AuthButton
+        label={t('register.submit')}
+        onPress={handleSubmit(onSubmit)}
+        loading={isSubmitting}
+        disabled={isSubmitting}
+      />
 
       <View style={styles.footerRow}>
         <Pressable onPress={() => router.push('/login')} style={styles.footerLinkRow}>
           <ThemedText type="smallBold" themeColor="primary">
-            ¿Ya tienes cuenta? Inicia sesión
+            {t('register.hasAccount')}
           </ThemedText>
           <Ionicons name="arrow-forward" size={14} color={theme.primary} />
         </Pressable>
@@ -98,6 +177,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     textAlign: 'center',
+  },
+  serverErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
   },
   footerRow: {
     marginTop: 20,

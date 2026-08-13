@@ -8,7 +8,13 @@ import { useTheme } from '@/hooks/use-theme';
 interface AuthTextFieldProps
   extends Pick<
     TextInputProps,
-    'value' | 'onChangeText' | 'placeholder' | 'secureTextEntry' | 'keyboardType' | 'autoCapitalize'
+    | 'value'
+    | 'onChangeText'
+    | 'onBlur'
+    | 'placeholder'
+    | 'secureTextEntry'
+    | 'keyboardType'
+    | 'autoCapitalize'
   > {
   label: string;
   icon: ComponentProps<typeof Ionicons>['name'];

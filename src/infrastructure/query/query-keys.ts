@@ -1,6 +1,14 @@
 import { snapToGrid } from '@cerca/src';
 import type { Coordinates, ListingSearchFilters } from '@cerca/src';
 
+export function myListingsKey() {
+  return ['listings', 'my'] as const;
+}
+
+export function listingKey(id: string) {
+  return ['listings', 'detail', id] as const;
+}
+
 export function listingSearchKey(filters: ListingSearchFilters, near?: Coordinates) {
   const snapped = near ? snapToGrid(near) : undefined;
 

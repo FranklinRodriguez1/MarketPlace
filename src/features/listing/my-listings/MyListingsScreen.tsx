@@ -6,64 +6,126 @@ import {
   Pressable,
   StyleSheet,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 import {
-  ListingCard,
-  type Listing,
+  ListingCard
 } from '@/components/ListingCard';
-
-const MOCK_LISTINGS: Listing[] = [
-  {
-    id: '1',
-    image:
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd',
-    category: 'Plomería',
-    title: 'Reparación de tuberías',
-    location: 'Centro, Ciudad',
-    price: 450,
-    pricingType: 'fixed',
-    status: 'published',
-  },
-
-  {
-    id: '2',
-    image:
-      'https://images.unsplash.com/photo-1503387762-592deb58ef4e',
-    category: 'Carpintería',
-    title: 'Armado de muebles',
-    location: 'Zona Norte',
-    price: 200,
-    pricingType: 'hourly',
-    status: 'paused',
-  },
-
-  {
-    id: '3',
-    image:
-      'https://images.unsplash.com/photo-1558904541-efa843a96f01',
-    category: 'Jardinería',
-    title: 'Mantenimiento de jardines',
-    location: 'A domicilio',
-    price: 350,
-    pricingType: 'base',
-    status: 'under_review',
-  },
-];
+import type { Listing } from '@/services/listing.service';
+import { useMyListings, usePauseListing, usePublishListing } from './hooks/use-my-listings';
 
 export default function MyListingsScreen() {
   const [selectedListing, setSelectedListing] =
     useState<Listing | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const { data: listings = [], isLoading, isError, refetch } = useMyListings();
+  const publishMutation = usePublishListing();
+  const pauseMutation = usePauseListing();
+
+  const isActing = publishMutation.isPending || pauseMutation.isPending;
 
   const handleMenuPress = (listing: Listing) => {
+    setActionError(null);
     setSelectedListing(listing);
   };
 
   const closeMenu = () => {
+    if (isActing) return;
     setSelectedListing(null);
+    setActionError(null);
   };
+
+  const handleEdit = () => {
+    if (selectedListing === null) return;
+    const id = selectedListing.id;
+    setSelectedListing(null);
+    router.push({ pathname: '/(provider)/listings/edit/[id]', params: { id } });
+  };
+
+  const handlePublish = () => {
+    if (selectedListing === null) return;
+    setActionError(null);
+    publishMutation.mutate(selectedListing.id, {
+      onSuccess: () => setSelectedListing(null),
+      onError: (error) =>
+        setActionError(error instanceof Error ? error.message : 'No se pudo publicar el anuncio.'),
+    });
+  };
+
+  const handlePause = () => {
+    if (selectedListing === null) return;
+    setActionError(null);
+    pauseMutation.mutate(selectedListing.id, {
+      onSuccess: () => setSelectedListing(null),
+      onError: (error) =>
+        setActionError(error instanceof Error ? error.message : 'No se pudo pausar el anuncio.'),
+    });
+  };
+
+  if (isLoading) {
+    return (
+     <View style={styles.emptyContainer}>
+      <ActivityIndicator size="large" color="#075985" />
+     </View>
+    )
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.emptyContainer}>
+        <MaterialIcons
+          name="error-outline"
+          size={50}
+          color="#94A3B8"
+        />
+
+        <Text style={styles.emptyTitle}>
+          No se pudieron cargar tus anuncios
+        </Text>
+
+        <Pressable
+          style={styles.emptyButton}
+          onPress={() => void refetch()}
+        >
+          <Text style={styles.emptyButtonText}>
+            Reintentar
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  if (listings.length === 0) {
+  return (
+    <View style={styles.emptyContainer}>
+      <MaterialIcons
+        name="campaign"
+        size={50}
+        color="#94A3B8"
+      />
+
+      <Text style={styles.emptyTitle}>
+        There are no ads
+      </Text>
+
+      <Text style={styles.emptyText}>
+        You haven't published any ads yet.
+      </Text>
+
+      <Pressable
+        style={styles.emptyButton}
+        onPress={() => router.push('/(provider)/listings/create')}
+      >
+        <Text style={styles.emptyButtonText}>
+          Publish an ad
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
 
   return (
     <View style={styles.container}>
@@ -92,7 +154,7 @@ export default function MyListingsScreen() {
 
       {/* LISTADO */}
       <FlatList
-        data={MOCK_LISTINGS}
+        data={listings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ListingCard
@@ -132,6 +194,12 @@ export default function MyListingsScreen() {
               {selectedListing?.title}
             </Text>
 
+            {actionError && (
+              <Text style={styles.menuError}>
+                {actionError}
+              </Text>
+            )}
+
             <Pressable style={styles.menuItem}>
               <MaterialIcons
                 name="visibility"
@@ -144,7 +212,7 @@ export default function MyListingsScreen() {
               </Text>
             </Pressable>
 
-            <Pressable style={styles.menuItem}>
+            <Pressable style={styles.menuItem} onPress={handleEdit} disabled={isActing}>
               <MaterialIcons
                 name="edit"
                 size={20}
@@ -157,12 +225,16 @@ export default function MyListingsScreen() {
             </Pressable>
 
             {selectedListing?.status === 'published' && (
-              <Pressable  style={styles.menuItem}>
-                <MaterialIcons
-                  name="pause"
-                  size={20}
-                  color="#334155"
-                />
+              <Pressable style={styles.menuItem} onPress={handlePause} disabled={isActing}>
+                {pauseMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#334155" />
+                ) : (
+                  <MaterialIcons
+                    name="pause"
+                    size={20}
+                    color="#334155"
+                  />
+                )}
 
                 <Text style={styles.menuText}>
                   Pausar anuncio
@@ -170,13 +242,17 @@ export default function MyListingsScreen() {
               </Pressable>
             )}
 
-            {selectedListing?.status === 'paused' && (
-              <Pressable style={styles.menuItem}>
-                <MaterialIcons
-                  name="play-arrow"
-                  size={20}
-                  color="#15803D"
-                />
+            {(selectedListing?.status === 'paused' || selectedListing?.status === 'draft') && (
+              <Pressable style={styles.menuItem} onPress={handlePublish} disabled={isActing}>
+                {publishMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#15803D" />
+                ) : (
+                  <MaterialIcons
+                    name="play-arrow"
+                    size={20}
+                    color="#15803D"
+                  />
+                )}
 
                 <Text style={styles.menuText}>
                   Publicar anuncio
@@ -193,6 +269,38 @@ export default function MyListingsScreen() {
 }
 
 const styles = StyleSheet.create({
+   emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30,
+  },
+
+  emptyTitle: {
+    marginTop: 15,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+
+  emptyText: {
+    marginTop: 8,
+    textAlign: 'center',
+    color: '#64748B',
+  },
+
+  emptyButton: {
+    marginTop: 20,
+    backgroundColor: '#075985',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+
+  emptyButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FAFAF7',
@@ -246,7 +354,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
     justifyContent: 'flex-end',
     marginBottom:20,
-   
+
   },
 
   menu: {
@@ -261,6 +369,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
     marginBottom: 8,
+  },
+
+  menuError: {
+    fontSize: 13,
+    color: '#DC2626',
+    marginBottom: 4,
   },
 
   menuItem: {

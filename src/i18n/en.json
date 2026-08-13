@@ -1,0 +1,49 @@
+{
+  "common": {
+    "retry": "Retry",
+    "unexpectedError": "Unexpected error.",
+    "unexpectedErrorRetry": "Unexpected error. Please try again."
+  },
+  "login": {
+    "subtitle": "Sign in to continue",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordMask": "••••••••",
+    "forgotPassword": "Forgot your password?",
+    "submit": "Sign in",
+    "back": "Back",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up"
+  },
+  "register": {
+    "title": "Create account",
+    "displayName": "Full name",
+    "displayNamePlaceholder": "Jane Doe",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "passwordMask": "••••••••",
+    "submit": "Create account",
+    "hasAccount": "Already have an account? Sign in"
+  },
+  "profile": {
+    "title": "My profile",
+    "id": "ID",
+    "role": "Role",
+    "capacities": "Capacities",
+    "none": "None",
+    "becomeProvider": "Become a provider",
+    "language": "Language"
+  },
+  "moderation": {
+    "title": "Moderation queue",
+    "listing": "Listing",
+    "reason": "Reason: {{value}}",
+    "underReview": "Put under review",
+    "remove": "Remove listing",
+    "resolve": "Resolve report",
+    "empty": "No pending reports"
+  }
+}
