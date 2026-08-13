@@ -18,6 +18,8 @@
   },
   "register": {
     "title": "Crear cuenta",
+    "displayName": "Nombre completo",
+    "displayNamePlaceholder": "Juan Pérez",
     "email": "Correo electrónico",
     "emailPlaceholder": "juan@example.com",
     "password": "Contraseña",

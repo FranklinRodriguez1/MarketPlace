@@ -8,8 +8,8 @@ export const createListingSchema = z.object({
     .string()
     .min(20, 'The description must be at least 20 characters long'),
     pricing: pricingSchema,
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z.number({ message: 'Confirm your service location' }),
+    longitude: z.number({ message: 'Confirm your service location' }),
     photos: z.array(z.string()).min(1, 'At least one photo is required'),
 });
 

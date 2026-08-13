@@ -68,19 +68,10 @@ export function CreateListingScreen() {
       );
 
       // --------------------------------
-      // Obtener precio
-      // --------------------------------
-
-      const price =
-        data.pricing.model === 'fixed'
-          ? data.pricing.price
-          : data.pricing.model === 'hourly'
-            ? data.pricing.hourlyRate
-            : data.pricing.startingFrom;
-
-      // --------------------------------
       // Crear anuncio
       // --------------------------------
+      // priceMinorFrom/currency no se envían: el backend los deriva de
+      // `pricing` y rechaza (422) cualquier campo que no reconoce.
 
       const listing = await createListing({
         categoryId: data.categoryId,
@@ -90,12 +81,6 @@ export function CreateListingScreen() {
         description: data.description,
 
         pricing: data.pricing,
-
-        priceMinorFrom:
-          price?.amountMinor,
-
-        currency:
-          price?.currency,
 
         location:
           data.latitude !== undefined &&
@@ -117,7 +102,7 @@ export function CreateListingScreen() {
       // --------------------------------
 
       router.replace(
-        './(provider)/my-listings',
+        './my-listings',
       );
 
     } catch (error) {

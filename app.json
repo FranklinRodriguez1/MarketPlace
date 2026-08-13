@@ -44,7 +44,8 @@
           "locationWhenInUsePermission": "Cerca usa tu ubicación para mostrarte servicios cercanos."
         }
       ],
-      "react-native-edge-to-edge"
+      "react-native-edge-to-edge",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

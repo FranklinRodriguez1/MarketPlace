@@ -13,11 +13,18 @@ import {
   useWatch,
 } from 'react-hook-form';
 
-import type { CreateListingForm } from '../schemas/create-listing.schema';
+import type { Pricing } from '@cerca/src';
+
+// Tipado mínimo a propósito: este componente solo lee/escribe el campo
+// `pricing`, así que cualquier formulario (crear, editar) que tenga ese
+// campo puede reutilizarlo dentro de su propio FormProvider.
+export interface PricingFormValues {
+  pricing: Pricing;
+}
 
 export function Step2Pricing() {
   const { control, setValue } =
-    useFormContext<CreateListingForm>();
+    useFormContext<PricingFormValues>();
 
   const pricing = useWatch({
     control,

@@ -9,6 +9,9 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
+import { refreshSession } from '@/features/auth/auth.api';
+import { getRefreshToken, saveTokens } from '@/features/auth/session';
+
 import { activateProvider, getMe, type MeData } from './profile.api';
 
 // Máquina de estados de la pantalla
@@ -46,6 +49,17 @@ export default function ProfileScreen() {
     setIsActivating(true);
     try {
       const updatedMe = await activateProvider();
+
+      // El accessToken actual todavía tiene las capacities viejas como
+      // claims — sin renovarlo, los endpoints que chequean capacity
+      // (ej. crear anuncio) seguirían devolviendo 403 aunque el perfil
+      // ya muestre "provider".
+      const refreshToken = await getRefreshToken();
+      if (refreshToken !== null) {
+        const renewed = await refreshSession(refreshToken);
+        await saveTokens(renewed.accessToken, renewed.refreshToken);
+      }
+
       // Actualiza la pantalla con el actor nuevo sin recargar
       setState({ status: 'success', me: updatedMe });
     } catch (error) {

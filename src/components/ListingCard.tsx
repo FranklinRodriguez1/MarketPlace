@@ -51,13 +51,13 @@ export function ListingCard({
         <View style={styles.infoRow}>
 
           <Text style={styles.status}>
-            {getStatusText(listing.statusKind)}
+            {getStatusText(listing.status)}
           </Text>
 
-          {listing.priceMinorFrom !== null && (
+          {listing.priceFrom !== null && (
             <Text style={styles.price}>
-              {listing.currency ?? '$'}{' '}
-              {(listing.priceMinorFrom / 100).toFixed(2)}
+              {listing.priceFrom.currency}{' '}
+              {(listing.priceFrom.amountMinor / 100).toFixed(2)}
             </Text>
           )}
 
@@ -70,7 +70,7 @@ export function ListingCard({
 }
 
 function getStatusText(
-  status: Listing['statusKind'],
+  status: Listing['status'],
 ) {
   switch (status) {
     case 'published':

@@ -16,7 +16,7 @@ export class AuthApiError extends Error {
 
 async function postAuth(
   endpoint: string,
-  body: { email: string; password: string },
+  body: { email: string; password: string; displayName?: string },
 ): Promise<AuthResponse> {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
@@ -43,6 +43,25 @@ export function signIn(email: string, password: string): Promise<AuthResponse> {
   return postAuth('/auth/sign-in', { email, password });
 }
 
-export function signUp(email: string, password: string): Promise<AuthResponse> {
-  return postAuth('/auth/sign-up', { email, password });
+export function signUp(email: string, password: string, displayName: string): Promise<AuthResponse> {
+  return postAuth('/auth/sign-up', { email, password, displayName });
+}
+
+// El accessToken lleva las capacities embebidas como claims: activar una
+// capacidad nueva (ej. provider) no la refleja en el token ya emitido.
+// Hay que canjear el refreshToken para obtener un accessToken con los
+// claims al día.
+export async function refreshSession(refreshToken: string): Promise<AuthResponse> {
+  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  });
+
+  if (!response.ok) {
+    throw new AuthApiError('No se pudo renovar la sesión.', response.status);
+  }
+
+  const raw: unknown = await response.json();
+  return authResponseSchema.parse(raw);
 }

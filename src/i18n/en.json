@@ -18,6 +18,8 @@
   },
   "register": {
     "title": "Create account",
+    "displayName": "Full name",
+    "displayNamePlaceholder": "Jane Doe",
     "email": "Email address",
     "emailPlaceholder": "you@example.com",
     "password": "Password",

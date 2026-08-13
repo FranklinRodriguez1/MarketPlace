@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -6,48 +6,98 @@ import {
   Pressable,
   StyleSheet,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {
   ListingCard
 } from '@/components/ListingCard';
-import { getMyListing, type Listing } from '@/services/listing.service';
+import type { Listing } from '@/services/listing.service';
+import { useMyListings, usePauseListing, usePublishListing } from './hooks/use-my-listings';
 
 export default function MyListingsScreen() {
   const [selectedListing, setSelectedListing] =
     useState<Listing | null>(null);
-    const [listings, setListings] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const { data: listings = [], isLoading, isError, refetch } = useMyListings();
+  const publishMutation = usePublishListing();
+  const pauseMutation = usePauseListing();
+
+  const isActing = publishMutation.isPending || pauseMutation.isPending;
 
   const handleMenuPress = (listing: Listing) => {
+    setActionError(null);
     setSelectedListing(listing);
   };
 
   const closeMenu = () => {
+    if (isActing) return;
     setSelectedListing(null);
+    setActionError(null);
   };
 
-  useEffect(() =>{
-    loadListings()
-  },[])
-  async function loadListings() {
-    try{
-      const data = await getMyListing();
-      setListings(data);
-    }catch(error){
-      console.log("Error loading listing:", error)
-    } finally{
-      setLoading(false)
-    }
-  }
-  if(loading){
-    return(
-     <View>
-      <Text>Loading my ads</Text>
-     </View> 
+  const handleEdit = () => {
+    if (selectedListing === null) return;
+    const id = selectedListing.id;
+    setSelectedListing(null);
+    router.push({ pathname: '/(provider)/listings/edit/[id]', params: { id } });
+  };
+
+  const handlePublish = () => {
+    if (selectedListing === null) return;
+    setActionError(null);
+    publishMutation.mutate(selectedListing.id, {
+      onSuccess: () => setSelectedListing(null),
+      onError: (error) =>
+        setActionError(error instanceof Error ? error.message : 'No se pudo publicar el anuncio.'),
+    });
+  };
+
+  const handlePause = () => {
+    if (selectedListing === null) return;
+    setActionError(null);
+    pauseMutation.mutate(selectedListing.id, {
+      onSuccess: () => setSelectedListing(null),
+      onError: (error) =>
+        setActionError(error instanceof Error ? error.message : 'No se pudo pausar el anuncio.'),
+    });
+  };
+
+  if (isLoading) {
+    return (
+     <View style={styles.emptyContainer}>
+      <ActivityIndicator size="large" color="#075985" />
+     </View>
     )
   }
+
+  if (isError) {
+    return (
+      <View style={styles.emptyContainer}>
+        <MaterialIcons
+          name="error-outline"
+          size={50}
+          color="#94A3B8"
+        />
+
+        <Text style={styles.emptyTitle}>
+          No se pudieron cargar tus anuncios
+        </Text>
+
+        <Pressable
+          style={styles.emptyButton}
+          onPress={() => void refetch()}
+        >
+          <Text style={styles.emptyButtonText}>
+            Reintentar
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   if (listings.length === 0) {
   return (
     <View style={styles.emptyContainer}>
@@ -144,6 +194,12 @@ export default function MyListingsScreen() {
               {selectedListing?.title}
             </Text>
 
+            {actionError && (
+              <Text style={styles.menuError}>
+                {actionError}
+              </Text>
+            )}
+
             <Pressable style={styles.menuItem}>
               <MaterialIcons
                 name="visibility"
@@ -156,7 +212,7 @@ export default function MyListingsScreen() {
               </Text>
             </Pressable>
 
-            <Pressable style={styles.menuItem}>
+            <Pressable style={styles.menuItem} onPress={handleEdit} disabled={isActing}>
               <MaterialIcons
                 name="edit"
                 size={20}
@@ -168,13 +224,17 @@ export default function MyListingsScreen() {
               </Text>
             </Pressable>
 
-            {selectedListing?.statusKind === 'published' && (
-              <Pressable  style={styles.menuItem}>
-                <MaterialIcons
-                  name="pause"
-                  size={20}
-                  color="#334155"
-                />
+            {selectedListing?.status === 'published' && (
+              <Pressable style={styles.menuItem} onPress={handlePause} disabled={isActing}>
+                {pauseMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#334155" />
+                ) : (
+                  <MaterialIcons
+                    name="pause"
+                    size={20}
+                    color="#334155"
+                  />
+                )}
 
                 <Text style={styles.menuText}>
                   Pausar anuncio
@@ -182,13 +242,17 @@ export default function MyListingsScreen() {
               </Pressable>
             )}
 
-            {selectedListing?.statusKind === 'paused' && (
-              <Pressable style={styles.menuItem}>
-                <MaterialIcons
-                  name="play-arrow"
-                  size={20}
-                  color="#15803D"
-                />
+            {(selectedListing?.status === 'paused' || selectedListing?.status === 'draft') && (
+              <Pressable style={styles.menuItem} onPress={handlePublish} disabled={isActing}>
+                {publishMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#15803D" />
+                ) : (
+                  <MaterialIcons
+                    name="play-arrow"
+                    size={20}
+                    color="#15803D"
+                  />
+                )}
 
                 <Text style={styles.menuText}>
                   Publicar anuncio
@@ -290,7 +354,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
     justifyContent: 'flex-end',
     marginBottom:20,
-   
+
   },
 
   menu: {
@@ -305,6 +369,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '700',
     marginBottom: 8,
+  },
+
+  menuError: {
+    fontSize: 13,
+    color: '#DC2626',
+    marginBottom: 4,
   },
 
   menuItem: {
