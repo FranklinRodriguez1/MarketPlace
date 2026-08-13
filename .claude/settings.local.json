@@ -33,7 +33,9 @@
       "Bash(npx eslint *)",
       "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\" src/features/listing/my-listings/MyListingsScreen.tsx)",
       "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\\\\|rgba\\\\?\\(\" /home/cohorte6/Documentos/MarketPlace/src/features/listing/edit/EditListingScreen.tsx)",
-      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\" src/features/review/ReviewScreen.tsx src/features/review/components/ReviewSubmitted.tsx)"
+      "Bash(grep -n \"#[0-9A-Fa-f]\\\\{3,8\\\\}\" src/features/review/ReviewScreen.tsx src/features/review/components/ReviewSubmitted.tsx)",
+      "Bash(grep -rniE \"#[0-9a-fA-F]{3,6}\\\\b\" --include='*.ts' --include='*.tsx' -n src app)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} in %{time_total}s\\\\n\" https://cerca-api-59bn.onrender.com/v1/categories --max-time 90)"
     ]
   }
 }

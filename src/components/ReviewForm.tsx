@@ -86,8 +86,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
               <Text
                 style={[
                   styles.star,
-                  { color: theme.border },
-                  star <= rating && styles.starSelected,
+                  { color: star <= rating ? theme.primary : theme.border },
                 ]}
               >
                 ★
@@ -197,10 +196,6 @@ const styles = StyleSheet.create({
 
   star: {
     fontSize: 42,
-  },
-
-  starSelected: {
-    color: '#F59E0B',
   },
 
   ratingText: {
