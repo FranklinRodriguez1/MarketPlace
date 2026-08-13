@@ -18,8 +18,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useTheme } from '@/hooks/use-theme';
+import { BorderRadius, MaxContentWidth } from '@/constants/theme';
 import { translateFieldError } from '@/i18n/translate-field-error';
-
 import { Step2Pricing } from '../create/components/Step2Pricing';
 import { useCategories } from '../create/hooks/use-categories';
 import { editListingSchema, type EditListingForm } from './schemas/edit-listing.schema';
@@ -30,10 +30,10 @@ interface EditListingScreenProps {
 }
 
 export function EditListingScreen({ id }: EditListingScreenProps) {
+  const theme = useTheme();
   const { data: listing, isLoading, isError, refetch } = useListing(id);
   const { data: categories } = useCategories();
   const updateMutation = useUpdateListing(id);
-  const theme = useTheme();
   const { t } = useTranslation();
 
   const methods = useForm<EditListingForm>({
@@ -94,7 +94,7 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
     <FormProvider {...methods}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
+        style={[styles.flexCentered, { backgroundColor: theme.background }]}
       >
         <ThemedView style={{ flex: 1 }}>
           {/* HEADER */}
@@ -224,6 +224,17 @@ const styles = StyleSheet.create({
     padding: 24,
   },
 
+  flexCentered: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  content: {
+    flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
+  },
+
   errorText: {
     textAlign: 'center',
   },
@@ -283,9 +294,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: BorderRadius.input,
     fontSize: 16,
   },
+
 
   textArea: {
     minHeight: 120,
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
   readOnlyChip: {
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: BorderRadius.input,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },

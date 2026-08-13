@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useTheme } from '@/hooks/use-theme';
 
 import { CreateListingHeader } from './components/CreateListingHeader';
 
@@ -31,6 +30,9 @@ import { Step3LocationPhotos } from './components/Step3LocationPhotos';
 import { Step4Review } from './components/Step4Review';
 
 import { createListing } from '@/services/listing.service';
+import { Button } from '@/components/ui/button';
+import { MaxContentWidth } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export function CreateListingScreen() {
   const theme = useTheme();
@@ -184,6 +186,15 @@ export function CreateListingScreen() {
       <ThemedView
         style={{
           flex: 1,
+          alignItems: 'center',
+          backgroundColor: theme.background,
+        }}
+      >
+      <View
+        style={{
+          flex: 1,
+          width: '100%',
+          maxWidth: MaxContentWidth,
           padding: 24,
           gap: 20,
         }}
@@ -222,7 +233,7 @@ export function CreateListingScreen() {
 
         {/* BOTONES */}
 
-        <View
+         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -230,35 +241,22 @@ export function CreateListingScreen() {
         >
 
           {step > 1 && (
-            <Pressable
+            <Button
+              label="Previous"
               onPress={previousStep}
-              style={{
-                backgroundColor: theme.primary,
-                padding: 10,
-                borderRadius: 5,
-              }}
-            >
-              <ThemedText style={{ color: '#FFFFFF' }}>
-                {t('createListing.previous')}
-              </ThemedText>
-            </Pressable>
+              variant="outlined"
+            />
           )}
 
           {step < 4 && (
-            <Pressable
+            <Button
+              label="Next"
               onPress={nextStep}
-              style={{
-                backgroundColor: theme.primary,
-                padding: 10,
-                borderRadius: 5,
-              }}
-            >
-              <ThemedText style={{ color: '#FFFFFF' }}>
-                {t('createListing.next')}
-              </ThemedText>
-            </Pressable>
+              variant="primary"
+            />
           )}
 
+        </View>
         </View>
 
       </ThemedView>

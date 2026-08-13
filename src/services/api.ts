@@ -2,7 +2,7 @@
 import { refreshSession } from '@/features/auth/auth.api';
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from '@/features/auth/session';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { API_URL, fetchWithTimeout, parseApiError } from './api-client';
 
 async function authHeaders(): Promise<Record<string, string>> {
   const token = await getAccessToken();
@@ -38,19 +38,12 @@ async function tryRefreshAccessToken(): Promise<boolean> {
   }
 }
 
-// El backend responde errores en formato Problem+JSON (RFC 7807):
-// { detail, title, code }, no { message, error }.
-function extractErrorMessage(data: unknown, status: number): string {
-  const body = data as { message?: string; error?: string; detail?: string; title?: string } | null;
-  return body?.message || body?.error || body?.detail || body?.title || `Error HTTP ${status}`;
-}
-
 async function request<T>(
   endpoint: string,
   init: RequestInit,
   logLabel: string,
 ): Promise<{ data: T }> {
-  let response = await fetch(`${API_URL}${endpoint}`, {
+  let response = await fetchWithTimeout(`${API_URL}${endpoint}`, {
     ...init,
     headers: { ...init.headers, ...(await authHeaders()) },
   });
@@ -60,25 +53,25 @@ async function request<T>(
   if (response.status === 401) {
     const refreshed = await tryRefreshAccessToken();
     if (refreshed) {
-      response = await fetch(`${API_URL}${endpoint}`, {
+      response = await fetchWithTimeout(`${API_URL}${endpoint}`, {
         ...init,
         headers: { ...init.headers, ...(await authHeaders()) },
       });
     }
   }
 
-  const data = await response.json().catch(() => null);
-
   if (!response.ok) {
+    const error = await parseApiError(response);
     console.error(logLabel, {
       url: `${API_URL}${endpoint}`,
       status: response.status,
-      data,
+      code: error.code,
+      traceId: error.traceId,
     });
-
-    throw new Error(extractErrorMessage(data, response.status));
+    throw error;
   }
 
+  const data = await response.json().catch(() => null);
   return { data };
 }
 

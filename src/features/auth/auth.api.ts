@@ -1,24 +1,19 @@
+import { API_URL, ApiError, fetchWithTimeout, parseApiError } from '@/services/api-client';
+
 import { authResponseSchema, type AuthResponse } from './auth.schemas';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+// Alias del error del cliente HTTP compartido — se mantiene el nombre por
+// compatibilidad con quien distinga errores de auth vía `instanceof`.
+export { ApiError as AuthApiError };
 
-// Error específico de autenticación que incluye el HTTP status.
-// Permite distinguir 401 (credenciales) de 409 (correo existente) en el catch.
-export class AuthApiError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-  ) {
-    super(message);
-    this.name = 'AuthApiError';
-  }
-}
-
+// Mensajes canned para los dos status que la UI de login/registro distingue
+// explícitamente; para el resto se usa el .detail/.errors del problem+json
+// (validación, cold start, etc.) que ya arma parseApiError.
 async function postAuth(
   endpoint: string,
   body: { email: string; password: string; displayName?: string },
 ): Promise<AuthResponse> {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  const response = await fetchWithTimeout(`${API_URL}${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -26,12 +21,12 @@ async function postAuth(
 
   if (!response.ok) {
     if (response.status === 401) {
-      throw new AuthApiError('Correo o contraseña incorrectos.', 401);
+      throw new ApiError('Correo o contraseña incorrectos.', 401);
     }
     if (response.status === 409) {
-      throw new AuthApiError('Este correo ya está registrado.', 409);
+      throw new ApiError('Este correo ya está registrado.', 409);
     }
-    throw new AuthApiError('Error inesperado. Intenta de nuevo.', response.status);
+    throw await parseApiError(response);
   }
 
   // parse() valida la forma exacta de la respuesta — falla si el servidor cambia el contrato.
@@ -50,16 +45,17 @@ export function signUp(email: string, password: string, displayName: string): Pr
 // El accessToken lleva las capacities embebidas como claims: activar una
 // capacidad nueva (ej. provider) no la refleja en el token ya emitido.
 // Hay que canjear el refreshToken para obtener un accessToken con los
-// claims al día.
+// claims al día. El refreshToken rota en cada canje — services/api.ts
+// guarda el par nuevo y descarta el refreshToken usado.
 export async function refreshSession(refreshToken: string): Promise<AuthResponse> {
-  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+  const response = await fetchWithTimeout(`${API_URL}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
   });
 
   if (!response.ok) {
-    throw new AuthApiError('No se pudo renovar la sesión.', response.status);
+    throw await parseApiError(response);
   }
 
   const raw: unknown = await response.json();

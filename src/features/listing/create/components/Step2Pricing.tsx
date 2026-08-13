@@ -14,7 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import type { Pricing } from '@cerca/src';
-
+import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { translateFieldError } from '@/i18n/translate-field-error';
@@ -27,9 +27,9 @@ export interface PricingFormValues {
 }
 
 export function Step2Pricing() {
+  const theme = useTheme();
   const { control, setValue } =
     useFormContext<PricingFormValues>();
-  const theme = useTheme();
   const { t } = useTranslation();
 
   const pricing = useWatch({
@@ -109,6 +109,7 @@ export function Step2Pricing() {
           gap: 20,
           padding: 16,
           paddingBottom: 40,
+          backgroundColor: theme.background,
         }}
       >
         <View style={{ gap: 20 }}>
@@ -159,7 +160,7 @@ export function Step2Pricing() {
                     : theme.border,
 
                 padding: 16,
-                borderRadius: 8,
+                borderRadius: BorderRadius.input,
               }}
             >
               <Pressable onPress={selectFixed}>
@@ -259,7 +260,7 @@ export function Step2Pricing() {
                     : theme.border,
 
                 padding: 16,
-                borderRadius: 8,
+                borderRadius: BorderRadius.input,
               }}
             >
               <Pressable onPress={selectHourly}>
@@ -419,7 +420,7 @@ export function Step2Pricing() {
                     : theme.border,
 
                 padding: 16,
-                borderRadius: 8,
+                borderRadius: BorderRadius.input,
               }}
             >
               <Pressable onPress={selectQuote}>

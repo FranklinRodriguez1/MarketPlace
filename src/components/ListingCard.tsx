@@ -6,6 +6,7 @@ import {
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import {  Spacing } from '@/constants/theme';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -35,7 +36,6 @@ export function ListingCard({
       </View>
 
       <View style={styles.content}>
-
         <View style={styles.headerRow}>
           <ThemedText style={styles.title}>
             {listing.title}
@@ -66,11 +66,8 @@ export function ListingCard({
               {(listing.priceFrom.amountMinor / 100).toFixed(2)}
             </ThemedText>
           )}
-
         </View>
-
       </View>
-
     </View>
   );
 }
@@ -103,7 +100,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 14,
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.three,
   },
 
   imagePlaceholder: {
@@ -139,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: Spacing.three,
   },
 
   status: {

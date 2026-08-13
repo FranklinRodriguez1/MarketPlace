@@ -6,18 +6,21 @@ import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
-import { useTheme } from '@/hooks/use-theme';
 import { translateFieldError } from '@/i18n/translate-field-error';
+
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 import type { CreateListingForm } from '../schemas/create-listing.schema';
 
 export function Step3LocationPhotos() {
+  const theme = useTheme();
   const {
     setValue,
     watch,
     formState: { errors },
   } = useFormContext<CreateListingForm>();
-  const theme = useTheme();
   const { t } = useTranslation();
 
   const [isLocating, setIsLocating] = useState(false);
@@ -53,7 +56,7 @@ export function Step3LocationPhotos() {
       style={{ flex: 1 }}
     >
 
-      <ScrollView contentContainerStyle={{ gap: 20, padding: 16 }}>
+      <ScrollView contentContainerStyle={{ gap: 20, padding: 16, backgroundColor: theme.background }}>
 
         <View style={styles.container}>
 
@@ -169,7 +172,7 @@ const styles = StyleSheet.create({
   mapContainer: {
     marginTop: 8,
     height: 220,
-    borderRadius: 16,
+    borderRadius: BorderRadius.card,
     overflow: 'hidden',
   },
 
@@ -217,7 +220,7 @@ const styles = StyleSheet.create({
     height: 220,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderRadius: 16,
+    borderRadius: BorderRadius.card,
     alignItems: 'center',
     justifyContent: 'center',
   },

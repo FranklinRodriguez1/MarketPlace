@@ -2,8 +2,10 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { formatMoney } from '@cerca/src';
 import type { Listing } from '@cerca/src';
 import { getLocales } from 'expo-localization';
+import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed-text';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 import { CATEGORY_OPTIONS } from '../types/search.types';
@@ -35,9 +37,9 @@ export function ListingCard({ listing, onPress }: ListingCardProps) {
   return (
     <Pressable
       onPress={() => onPress(listing.id)}
-      style={[styles.card, { backgroundColor: theme.background, borderColor: theme.border }]}
+      style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
     >
-      <Image source={{ uri: listing.photos[0] }} style={styles.image} />
+      <Image source={{ uri: listing.photos[0] }} style={[styles.image, { backgroundColor: theme.backgroundElement }]} />
       <View style={styles.body}>
         <ThemedText type="smallBold" numberOfLines={1}>
           {listing.title}
@@ -45,13 +47,25 @@ export function ListingCard({ listing, onPress }: ListingCardProps) {
         <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
           {listing.providerName}
         </ThemedText>
-        {category && (
-          <View style={[styles.tag, { backgroundColor: theme.backgroundElement }]}>
-            <ThemedText type="small" themeColor="textSecondary">
-              {category.label}
-            </ThemedText>
-          </View>
-        )}
+
+        <View style={styles.metaRow}>
+          {category && (
+            <View style={[styles.tag, { backgroundColor: theme.backgroundElement }]}>
+              <ThemedText type="small" themeColor="textSecondary">
+                {category.label}
+              </ThemedText>
+            </View>
+          )}
+
+          {listing.ratingAverage !== undefined && (
+            <View style={styles.rating}>
+              <Ionicons name="star" size={13} color={theme.primary} />
+              <ThemedText type="small" themeColor="textSecondary">
+                {listing.ratingAverage.toFixed(1)}
+              </ThemedText>
+            </View>
+          )}
+        </View>
       </View>
       <View style={[styles.divider, { backgroundColor: theme.border }]} />
       <View style={styles.price}>
@@ -70,27 +84,37 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderRadius: 16,
-    padding: 12,
-    gap: 12,
-    marginBottom: 12,
+    borderRadius: BorderRadius.card,
+    padding: Spacing.three,
+    gap: Spacing.three,
+    marginBottom: Spacing.three,
     alignItems: 'center',
   },
   image: {
     width: 88,
     height: 88,
-    borderRadius: 12,
+    borderRadius: BorderRadius.input,
   },
   body: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.one,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    marginTop: Spacing.one,
   },
   tag: {
     alignSelf: 'flex-start',
-    borderRadius: 999,
-    paddingHorizontal: 8,
+    borderRadius: BorderRadius.pill,
+    paddingHorizontal: Spacing.two,
     paddingVertical: 2,
-    marginTop: 4,
+  },
+  rating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
   },
   divider: {
     width: 1,

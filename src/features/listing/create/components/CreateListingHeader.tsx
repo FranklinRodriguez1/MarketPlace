@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 
+import { useTheme } from '@/hooks/use-theme';
+
 interface CreateListingHeaderProps {
     step: number;
     totalSteps: number;
@@ -16,6 +18,8 @@ export function CreateListingHeader({
     onBack,
 }: CreateListingHeaderProps) {
     const { t } = useTranslation();
+    const theme = useTheme();
+    const progress = step / totalSteps;
 
     return(
         <View style={{
@@ -25,6 +29,7 @@ export function CreateListingHeader({
           justifyContent: 'space-between',
           marginTop: 15,
           paddingHorizontal: 16,
+          backgroundColor: theme.background,
         }}>
             <View style={{ flex: 1, alignItems: 'flex-start' }}>
                 <Pressable onPress={onBack}

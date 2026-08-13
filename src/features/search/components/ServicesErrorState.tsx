@@ -1,14 +1,16 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
+import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-interface SearchErrorStateProps {
+interface ServicesErrorStateProps {
   onRetry: () => void;
 }
 
-export function SearchErrorState({ onRetry }: SearchErrorStateProps) {
+export function ServicesErrorState({ onRetry }: ServicesErrorStateProps) {
   const theme = useTheme();
 
   return (
@@ -18,11 +20,7 @@ export function SearchErrorState({ onRetry }: SearchErrorStateProps) {
       <ThemedText type="default" themeColor="textSecondary" style={styles.description}>
         Revisa tu conexión e inténtalo de nuevo.
       </ThemedText>
-      <Pressable onPress={onRetry} style={[styles.button, { backgroundColor: theme.primary }]}>
-        <ThemedText type="smallBold" style={{ color: '#fff' }}>
-          Reintentar
-        </ThemedText>
-      </Pressable>
+      <Button label="Reintentar" variant="primary" onPress={onRetry} style={styles.button} />
     </View>
   );
 }
@@ -32,9 +30,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    paddingTop: 80,
-    gap: 12,
+    paddingHorizontal: Spacing.five,
+    paddingTop: Spacing.six,
+    gap: Spacing.three,
   },
   title: {
     fontSize: 18,
@@ -45,9 +43,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   button: {
-    marginTop: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 999,
+    marginTop: Spacing.two,
   },
 });

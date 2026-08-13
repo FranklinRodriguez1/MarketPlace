@@ -12,29 +12,45 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Octicons from '@expo/vector-icons/Octicons';
 import { router } from 'expo-router';
 
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+
 export function ReviewSubmitted() {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
 
       {/* HEADER */}
-      <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: theme.background, borderBottomColor: theme.border },
+        ]}
+      >
         <Pressable onPress={() => router.push('/')} style={styles.backButton}>
           <MaterialIcons
             name="arrow-back"
             size={24}
-            color="#0369A1"
+            color={theme.primary}
           />
         </Pressable>
 
-        <Text style={styles.headerTitle}>
+        <Text style={[styles.headerTitle, { color: theme.primary }]}>
           Cerca
         </Text>
 
-        <View style={styles.profileButton}>
+        <View
+          style={[
+            styles.profileButton,
+            { borderColor: theme.border, backgroundColor: theme.surface },
+          ]}
+        >
           <AntDesign
             name="user"
             size={20}
-            color="#0369A1"
+            color={theme.primary}
           />
         </View>
       </View>
@@ -45,7 +61,12 @@ export function ReviewSubmitted() {
       >
 
         {/* INFORMACIÓN DE LA RESERVA */}
-        <View style={styles.bookingCard}>
+        <View
+          style={[
+            styles.bookingCard,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
 
           <Image
             source={{
@@ -58,14 +79,14 @@ export function ReviewSubmitted() {
 
             <View style={styles.titleRow}>
               <Text
-                style={styles.bookingTitle}
+                style={[styles.bookingTitle, { color: theme.text }]}
                 numberOfLines={1}
               >
                 Reparación de Tubería
               </Text>
 
-              <View style={styles.completedBadge}>
-                <Text style={styles.completedText}>
+              <View style={[styles.completedBadge, { backgroundColor: theme.backgroundSelected }]}>
+                <Text style={[styles.completedText, { color: theme.text }]}>
                   Completado
                 </Text>
               </View>
@@ -75,10 +96,10 @@ export function ReviewSubmitted() {
               <MaterialIcons
                 name="person-outline"
                 size={17}
-                color="#64748B"
+                color={theme.textSecondary}
               />
 
-              <Text style={styles.infoText}>
+              <Text style={[styles.infoText, { color: theme.textSecondary }]}>
                 Proveedor: Juan Pérez
               </Text>
             </View>
@@ -87,10 +108,10 @@ export function ReviewSubmitted() {
               <MaterialIcons
                 name="calendar-today"
                 size={16}
-                color="#64748B"
+                color={theme.textSecondary}
               />
 
-              <Text style={styles.infoText}>
+              <Text style={[styles.infoText, { color: theme.textSecondary }]}>
                 Fecha: 12 de Octubre, 2023
               </Text>
             </View>
@@ -99,42 +120,40 @@ export function ReviewSubmitted() {
         </View>
 
         {/* MENSAJE DE RESEÑA ENVIADA */}
-        <View style={styles.successCard}>
+        <View
+          style={[
+            styles.successCard,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
 
-          <View style={styles.checkCircle}>
+          <View style={[styles.checkCircle, { backgroundColor: theme.backgroundElement }]}>
             <Octicons
               name="check"
               size={30}
-              color="#0369A1"
+              color={theme.primary}
             />
           </View>
 
-          <Text style={styles.successTitle}>
+          <Text style={[styles.successTitle, { color: theme.text }]}>
             Ya reseñaste esta reserva
           </Text>
 
-          <Text style={styles.successDescription}>
+          <Text style={[styles.successDescription, { color: theme.textSecondary }]}>
             Gracias por compartir tu experiencia con la
             comunidad. Tu opinión ayuda a mantener la
             calidad en nuestro servicio.
           </Text>
 
-          <Pressable
-            style={styles.viewReviewButton}
+          <Button
+            label="Ver tu reseña"
+            variant="outlined"
             onPress={() => {
               console.log('Ver reseña');
             }}
-          >
-            <Text style={styles.viewReviewText}>
-              Ver tu reseña
-            </Text>
-
-            <AntDesign
-              name="arrow-right"
-              size={16}
-              color="#0369A1"
-            />
-          </Pressable>
+            style={styles.viewReviewButton}
+            trailingIcon={(color) => <AntDesign name="arrow-right" size={16} color={color} />}
+          />
 
         </View>
 
@@ -147,7 +166,6 @@ export function ReviewSubmitted() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F7F2',
   },
 
   header: {
@@ -157,8 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    backgroundColor: '#F8F7F2',
   },
 
   backButton: {
@@ -170,7 +186,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#075985',
   },
 
   profileButton: {
@@ -178,10 +193,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFF',
   },
 
   content: {
@@ -191,10 +204,8 @@ const styles = StyleSheet.create({
   },
 
   bookingCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: BorderRadius.card,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     overflow: 'hidden',
   },
 
@@ -220,18 +231,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
   },
 
   completedBadge: {
-    backgroundColor: '#E2E8D8',
-    borderRadius: 15,
+    borderRadius: BorderRadius.pill,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
 
   completedText: {
-    color: '#166534',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -244,14 +252,11 @@ const styles = StyleSheet.create({
 
   infoText: {
     fontSize: 13,
-    color: '#64748B',
   },
 
   successCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: BorderRadius.card,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     paddingHorizontal: 32,
     paddingVertical: 46,
     alignItems: 'center',
@@ -261,7 +266,6 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#E7E4DA',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 28,
@@ -270,7 +274,6 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 19,
     fontWeight: '700',
-    color: '#0F172A',
     textAlign: 'center',
     marginBottom: 18,
   },
@@ -278,25 +281,12 @@ const styles = StyleSheet.create({
   successDescription: {
     fontSize: 14,
     lineHeight: 22,
-    color: '#475569',
     textAlign: 'center',
     maxWidth: 270,
   },
 
   viewReviewButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
     marginTop: 28,
+    alignSelf: 'center',
   },
-
-  viewReviewText: {
-    color: '#0369A1',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-
-  
-
-  
 });

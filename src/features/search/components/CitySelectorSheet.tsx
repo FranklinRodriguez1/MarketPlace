@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { Coordinates } from '@cerca/src';
 
 import { ThemedText } from '@/components/themed-text';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 interface CityOption {
@@ -69,32 +70,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   sheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-    gap: 12,
+    borderTopLeftRadius: BorderRadius.card,
+    borderTopRightRadius: BorderRadius.card,
+    padding: Spacing.four,
+    gap: Spacing.two,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
   },
   description: {
-    marginBottom: 4,
+    marginBottom: Spacing.one,
   },
   cityRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: BorderRadius.input,
+    padding: Spacing.three,
   },
   retry: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.one,
     justifyContent: 'center',
-    marginTop: 8,
-    paddingVertical: 8,
+    marginTop: Spacing.two,
+    paddingVertical: Spacing.two,
   },
 });

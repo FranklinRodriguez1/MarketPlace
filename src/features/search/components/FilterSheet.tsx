@@ -3,9 +3,11 @@ import { Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-import { CATEGORY_OPTIONS } from '../types/search.types';
+import { CATEGORY_OPTIONS, RATING_OPTIONS } from '../types/search.types';
 import type { FilterState } from '../types/search.types';
 
 interface FilterSheetProps {
@@ -18,6 +20,7 @@ interface FilterSheetProps {
 export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetProps) {
   const theme = useTheme();
   const [categoryId, setCategoryId] = useState(filters.categoryId);
+  const [minRating, setMinRating] = useState(filters.minRating);
   const [priceMaxText, setPriceMaxText] = useState(
     filters.priceMaxMinor ? String(filters.priceMaxMinor / 100) : ''
   );
@@ -25,13 +28,14 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
   const apply = () => {
     const parsed = priceMaxText.trim() ? Math.round(Number(priceMaxText) * 100) : undefined;
     const priceMaxMinor = parsed !== undefined && Number.isFinite(parsed) ? parsed : undefined;
-    onApply({ categoryId, priceMaxMinor });
+    onApply({ categoryId, priceMaxMinor, minRating });
     onClose();
   };
 
   const clear = () => {
     setCategoryId(undefined);
     setPriceMaxText('');
+    setMinRating(undefined);
     onApply({});
     onClose();
   };
@@ -48,7 +52,7 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
           </View>
 
           <ThemedText type="smallBold">Categoría</ThemedText>
-          <View style={styles.categoryGrid}>
+          <View style={styles.chipGrid}>
             {CATEGORY_OPTIONS.map((category) => {
               const selected = category.id === categoryId;
 
@@ -58,7 +62,7 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
                   onPress={() => setCategoryId(selected ? undefined : category.id)}
                   style={[styles.pill, { backgroundColor: selected ? theme.primary : theme.backgroundElement }]}
                 >
-                  <ThemedText type="small" style={{ color: selected ? '#fff' : theme.text }}>
+                  <ThemedText type="small" style={{ color: selected ? '#FFFFFF' : theme.text }}>
                     {category.label}
                   </ThemedText>
                 </Pressable>
@@ -66,7 +70,28 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
             })}
           </View>
 
-          <ThemedText type="smallBold" style={styles.priceLabel}>
+          <ThemedText type="smallBold" style={styles.sectionLabel}>
+            Calificación mínima
+          </ThemedText>
+          <View style={styles.chipGrid}>
+            {RATING_OPTIONS.map((rating) => {
+              const selected = rating === minRating;
+
+              return (
+                <Pressable
+                  key={rating}
+                  onPress={() => setMinRating(selected ? undefined : rating)}
+                  style={[styles.pill, { backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement }]}
+                >
+                  <ThemedText type="small" style={{ color: selected ? theme.primary : theme.text }}>
+                    {rating}+
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <ThemedText type="smallBold" style={styles.sectionLabel}>
             Precio máximo (COP)
           </ThemedText>
           <TextInput
@@ -79,14 +104,8 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
           />
 
           <View style={styles.actions}>
-            <Pressable onPress={clear} style={[styles.button, styles.secondaryButton, { borderColor: theme.border }]}>
-              <ThemedText type="smallBold">Limpiar</ThemedText>
-            </Pressable>
-            <Pressable onPress={apply} style={[styles.button, { backgroundColor: theme.primary }]}>
-              <ThemedText type="smallBold" style={{ color: '#fff' }}>
-                Aplicar
-              </ThemedText>
-            </Pressable>
+            <Button label="Limpiar" variant="outlined" onPress={clear} style={styles.actionButton} />
+            <Button label="Aplicar" variant="primary" onPress={apply} style={styles.actionButton} />
           </View>
         </View>
       </View>
@@ -101,10 +120,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   sheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 24,
-    gap: 12,
+    borderTopLeftRadius: BorderRadius.card,
+    borderTopRightRadius: BorderRadius.card,
+    padding: Spacing.four,
+    gap: Spacing.two,
   },
   header: {
     flexDirection: 'row',
@@ -115,38 +134,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  categoryGrid: {
+  chipGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Spacing.two,
   },
   pill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    borderRadius: BorderRadius.pill,
   },
-  priceLabel: {
-    marginTop: 8,
+  sectionLabel: {
+    marginTop: Spacing.two,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    borderRadius: BorderRadius.input,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
     fontSize: 16,
   },
   actions: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 12,
+    gap: Spacing.three,
+    marginTop: Spacing.three,
   },
-  button: {
+  actionButton: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  secondaryButton: {
-    borderWidth: 1,
   },
 });

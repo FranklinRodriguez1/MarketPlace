@@ -1,5 +1,5 @@
-import { SearchScreen } from '@/features/search/SearchScreen';
+import { CatalogScreen } from '@/features/catalog/CatalogScreen';
 
 export default function Home() {
-  return <SearchScreen />;
+  return <CatalogScreen />;
 }

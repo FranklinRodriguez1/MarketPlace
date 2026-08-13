@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 import { refreshSession } from '@/features/auth/auth.api';
@@ -104,7 +104,7 @@ export default function ProfileScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={styles.content}>
         <ThemedText type="subtitle" style={styles.heading}>
           {t('profile.title')}
         </ThemedText>
@@ -245,11 +245,16 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     borderWidth: 1,
   },
   container: {
     flex: 1,
+    alignItems: 'center',
+  },
+  content: {
+    width: '100%',
+    maxWidth: MaxContentWidth,
     padding: Spacing.four,
   },
   heading: {
@@ -302,7 +307,7 @@ const styles = StyleSheet.create({
   },
   providerButton: {
     height: 48,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -322,7 +327,7 @@ const styles = StyleSheet.create({
   langButton: {
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     borderWidth: 1,
     minWidth: 64,
     alignItems: 'center',

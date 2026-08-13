@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 import {
@@ -276,21 +276,24 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     borderWidth: 1,
   },
   container: {
     flex: 1,
+    alignItems: 'center',
   },
   safeArea: {
     flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
     padding: Spacing.four,
   },
   heading: {
     marginBottom: Spacing.three,
   },
   card: {
-    borderRadius: Spacing.three,
+    borderRadius: BorderRadius.card,
     padding: Spacing.three,
     marginBottom: Spacing.three,
     gap: Spacing.two,
@@ -316,7 +319,7 @@ const styles = StyleSheet.create({
   moderateButton: {
     flex: 1,
     height: 36,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -326,7 +329,7 @@ const styles = StyleSheet.create({
   },
   resolveButton: {
     height: 40,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

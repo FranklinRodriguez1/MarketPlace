@@ -15,15 +15,18 @@ import {
 } from '@/components/ListingCard';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
+
 import { useTheme } from '@/hooks/use-theme';
 import type { Listing } from '@/services/listing.service';
 import { useMyListings, usePauseListing, usePublishListing } from './hooks/use-my-listings';
 
 export default function MyListingsScreen() {
+  const theme = useTheme();
   const [selectedListing, setSelectedListing] =
     useState<Listing | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const theme = useTheme();
+
   const { t } = useTranslation();
 
   const { data: listings = [], isLoading, isError, refetch } = useMyListings();
@@ -95,7 +98,7 @@ export default function MyListingsScreen() {
           style={[styles.emptyButton, { backgroundColor: theme.primary }]}
           onPress={() => void refetch()}
         >
-          <ThemedText style={styles.emptyButtonText}>
+          <ThemedText style={styles.emptyButton}>
             {t('common.retry')}
           </ThemedText>
         </Pressable>
@@ -124,7 +127,7 @@ export default function MyListingsScreen() {
         style={[styles.emptyButton, { backgroundColor: theme.primary }]}
         onPress={() => router.push('/(provider)/listings/create')}
       >
-        <ThemedText style={styles.emptyButtonText}>
+        <ThemedText style={styles.emptyButton}>
           {t('myListings.publishAnAd')}
         </ThemedText>
       </Pressable>
@@ -156,7 +159,7 @@ export default function MyListingsScreen() {
       <ThemedText style={styles.heading}>
         {t('myListings.heading')}
       </ThemedText>
-
+      <View>
       {/* LISTADO */}
       <FlatList
         data={listings}
@@ -173,6 +176,7 @@ export default function MyListingsScreen() {
         )}
         showsVerticalScrollIndicator={false}
       />
+      </View>
 
       {/* BOTÓN + */}
       <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={[styles.addButton, { backgroundColor: theme.primary }]}>
@@ -250,12 +254,12 @@ export default function MyListingsScreen() {
             {(selectedListing?.status === 'paused' || selectedListing?.status === 'draft') && (
               <Pressable style={styles.menuItem} onPress={handlePublish} disabled={isActing}>
                 {publishMutation.isPending ? (
-                  <ActivityIndicator size="small" color="#15803D" />
+                  <ActivityIndicator size="small" color={theme.primary} />
                 ) : (
                   <MaterialIcons
                     name="play-arrow"
                     size={20}
-                    color="#15803D"
+                    color={theme.primary}
                   />
                 )}
 
@@ -294,15 +298,9 @@ const styles = StyleSheet.create({
 
   emptyButton: {
     marginTop: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
+    alignSelf: 'stretch',
   },
 
-  emptyButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
   container: {
     flex: 1,
   },
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 18,
+    paddingHorizontal: Spacing.three,
     borderBottomWidth: 1,
   },
 
@@ -330,7 +328,7 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    paddingHorizontal: 18,
+    paddingHorizontal: Spacing.three,
     paddingBottom: 100,
   },
 
@@ -348,23 +346,22 @@ const styles = StyleSheet.create({
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
     marginBottom:20,
 
   },
-
-  menu: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    gap: 8,
+menu: {
+    borderTopLeftRadius: BorderRadius.card,
+    borderTopRightRadius: BorderRadius.card,
+    padding: Spacing.four,
+    gap: Spacing.two,
   },
 
   menuTitle: {
     fontSize: 17,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: Spacing.two,
   },
 
   menuError: {
@@ -375,7 +372,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.three,
     paddingVertical: 14,
   },
 

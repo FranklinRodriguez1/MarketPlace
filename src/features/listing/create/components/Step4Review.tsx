@@ -3,8 +3,9 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-
 import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 import { useCategories } from '../hooks/use-categories';
@@ -32,9 +33,9 @@ function formatPrice(t: TFunction, pricing: CreateListingForm['pricing']): { lab
 }
 
 export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
+  const theme = useTheme();
   const { watch } = useFormContext<CreateListingForm>();
   const { data: categories } = useCategories();
-  const theme = useTheme();
   const { t } = useTranslation();
 
   const title = watch('title');
@@ -45,7 +46,7 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
   const price = formatPrice(t, pricing);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
 
       {/* TÍTULO */}
       <ThemedText style={styles.title}>
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
 
-    borderRadius: 10,
+    borderRadius: BorderRadius.card,
 
     overflow: 'hidden',
 
@@ -207,7 +208,7 @@ const styles = StyleSheet.create({
 
     borderWidth: 1,
 
-    borderRadius: 10,
+    borderRadius: BorderRadius.input,
 
     paddingHorizontal: 8,
     paddingVertical: 2,
