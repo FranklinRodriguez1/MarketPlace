@@ -30,13 +30,13 @@ export function RegisterScreen() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
-    defaultValues: { email: '', password: '', confirmPassword: '' },
+    defaultValues: { displayName: '', email: '', password: '', confirmPassword: '' },
   });
 
   async function onSubmit(data: RegisterFormData): Promise<void> {
     setServerError(null);
     try {
-      const result = await signUp(data.email, data.password);
+      const result = await signUp(data.email, data.password, data.displayName);
       await saveTokens(result.accessToken, result.refreshToken);
       router.replace('/(tabs)');
     } catch (error) {
@@ -50,6 +50,22 @@ export function RegisterScreen() {
         Cerca
       </ThemedText>
       <ThemedText style={styles.subtitle}>{t('register.title')}</ThemedText>
+
+      <Controller
+        control={control}
+        name="displayName"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <AuthTextField
+            label={t('register.displayName')}
+            icon="person-outline"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            placeholder={t('register.displayNamePlaceholder')}
+            error={errors.displayName?.message}
+          />
+        )}
+      />
 
       <Controller
         control={control}

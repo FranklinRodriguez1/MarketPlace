@@ -18,6 +18,8 @@
   },
   "register": {
     "title": "Crear cuenta",
+    "displayName": "Nombre completo",
+    "displayNamePlaceholder": "Juan Pérez",
     "email": "Correo electrónico",
     "emailPlaceholder": "juan@example.com",
     "password": "Contraseña",
@@ -43,5 +45,111 @@
     "remove": "Retirar anuncio",
     "resolve": "Resolver reporte",
     "empty": "No hay reportes pendientes"
+  },
+  "createListing": {
+    "stepOf": "Paso {{step}} de {{totalSteps}}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "step1": {
+      "basicInformation": "Información básica",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ej. Clases de inglés",
+      "titleHelper": "Un título descriptivo ayuda a que los usuarios encuentren tu servicio fácilmente.",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Describe tu servicio...",
+      "descriptionHelper": "Describe qué servicio ofreces, qué incluye y cualquier información importante para el cliente.",
+      "selectCategory": "Selecciona una categoría",
+      "selectCategoryDescription": "Elige la categoría que mejor describe tu servicio.",
+      "searchPlaceholder": "Buscar categoría...",
+      "loadingCategories": "Cargando categorías...",
+      "loadErrorCategories": "No se pudieron cargar las categorías.",
+      "noCategoriesFound": "No se encontraron categorías."
+    },
+    "step2": {
+      "pricesLabel": "Precios",
+      "howChargeTitle": "¿Cómo quieres cobrar?",
+      "howChargeDescription": "Puedes elegir cómo quieres cobrar por este servicio. Podrás ajustar los montos en el siguiente paso.",
+      "fixedTitle": "Precio fijo",
+      "fixedDescription": "Un monto fijo por todo el trabajo, ideal para tareas bien definidas.",
+      "priceLabel": "Precio",
+      "hourlyTitle": "Por hora",
+      "hourlyDescription": "Cobras una tarifa por cada hora de trabajo realizado.",
+      "hourlyRateLabel": "Tarifa por hora",
+      "minimumHoursLabel": "Horas mínimas",
+      "quoteTitle": "Una cotización",
+      "quoteDescription": "Evalúas el trabajo en el lugar antes de dar un precio final.",
+      "quoteNote": "El cliente puede solicitar una cotización antes de acordar el precio final."
+    },
+    "step3": {
+      "locationTitle": "Ubicación",
+      "locationDescription": "Confirma la ubicación de tu servicio",
+      "noLocationSet": "Aún no se ha establecido la ubicación",
+      "useCurrentLocation": "Usar mi ubicación actual",
+      "updateCurrentLocation": "Actualizar ubicación actual",
+      "locationPermissionDenied": "Se denegó el permiso de ubicación.",
+      "locationError": "No se pudo obtener tu ubicación. Intenta de nuevo.",
+      "locationHelper": "Usamos esto para mostrar tu servicio a clientes cercanos.",
+      "photosTitle": "Fotos",
+      "photosDescription": "Agrega fotos de tu trabajo para generar más confianza. (Opcional)",
+      "addPhotos": "Agregar fotos",
+      "uploadPhotosDescription": "Sube fotos de tu trabajo"
+    },
+    "review": {
+      "checkYourAd": "Revisa tu anuncio",
+      "previewDescription": "Así es como los usuarios verán tu servicio publicado en la cartelera",
+      "new": "Nuevo",
+      "priceTag": "PRECIO",
+      "perHourTag": "POR HORA",
+      "startingFromTag": "DESDE",
+      "quoteOnlyTag": "A COTIZAR",
+      "publishing": "Publicando...",
+      "postAd": "Publicar anuncio"
+    },
+    "errors": {
+      "categoryRequired": "La categoría es obligatoria",
+      "titleRequired": "El título es obligatorio",
+      "titleTooLong": "El título debe tener como máximo 80 caracteres",
+      "descriptionTooShort": "La descripción debe tener al menos 20 caracteres",
+      "confirmLocation": "Confirma la ubicación de tu servicio",
+      "photosRequired": "Se requiere al menos una foto"
+    }
+  },
+  "editListing": {
+    "headerTitle": "Editar anuncio",
+    "loadError": "No se pudo cargar el anuncio.",
+    "categoryLabel": "Categoría",
+    "categoryHelper": "La categoría no se puede modificar una vez creado el anuncio.",
+    "titleLabel": "Título",
+    "descriptionLabel": "Descripción",
+    "pricingError": "Revisa el precio ingresado.",
+    "saveError": "No se pudo guardar el anuncio.",
+    "saveButton": "Guardar cambios",
+    "errors": {
+      "titleTooShort": "El título debe tener al menos 3 caracteres",
+      "titleTooLong": "El título debe tener como máximo 120 caracteres",
+      "descriptionRequired": "La descripción es obligatoria",
+      "descriptionTooLong": "La descripción debe tener como máximo 4000 caracteres"
+    }
+  },
+  "myListings": {
+    "loadError": "No se pudieron cargar tus anuncios.",
+    "emptyTitle": "No hay anuncios",
+    "emptyText": "Todavía no has publicado ningún anuncio.",
+    "publishAnAd": "Publicar un anuncio",
+    "headerLogo": "Cerca",
+    "heading": "Mis anuncios",
+    "menuViewAd": "Ver anuncio",
+    "menuEdit": "Editar",
+    "menuPause": "Pausar anuncio",
+    "menuPublish": "Publicar anuncio",
+    "publishError": "No se pudo publicar el anuncio.",
+    "pauseError": "No se pudo pausar el anuncio."
+  },
+  "listingCard": {
+    "statusPublished": "Publicado",
+    "statusPaused": "Pausado",
+    "statusDraft": "Borrador",
+    "statusUnderReview": "En revisión",
+    "statusRemoved": "Eliminado"
   }
 }

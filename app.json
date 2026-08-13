@@ -10,6 +10,9 @@
     "ios": {
       "icon": "./assets/expo.icon"
     },
+    "androidStatusBar": {
+      "hidden": true
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -18,6 +21,9 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
+      "usesCleartextTraffic": true,
+
+      
       "package": "com.danna22.marketplace"
     },
     "web": {
@@ -40,7 +46,9 @@
         {
           "locationWhenInUsePermission": "Cerca usa tu ubicación para mostrarte servicios cercanos."
         }
-      ]
+      ],
+      "react-native-edge-to-edge",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

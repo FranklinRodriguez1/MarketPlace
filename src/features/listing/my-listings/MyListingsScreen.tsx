@@ -1,98 +1,168 @@
 import { useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
   Pressable,
   StyleSheet,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 import {
-  ListingCard,
-  type Listing,
+  ListingCard
 } from '@/components/ListingCard';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 
-const MOCK_LISTINGS: Listing[] = [
-  {
-    id: '1',
-    image:
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd',
-    category: 'Plomería',
-    title: 'Reparación de tuberías',
-    location: 'Centro, Ciudad',
-    price: 450,
-    pricingType: 'fixed',
-    status: 'published',
-  },
-
-  {
-    id: '2',
-    image:
-      'https://images.unsplash.com/photo-1503387762-592deb58ef4e',
-    category: 'Carpintería',
-    title: 'Armado de muebles',
-    location: 'Zona Norte',
-    price: 200,
-    pricingType: 'hourly',
-    status: 'paused',
-  },
-
-  {
-    id: '3',
-    image:
-      'https://images.unsplash.com/photo-1558904541-efa843a96f01',
-    category: 'Jardinería',
-    title: 'Mantenimiento de jardines',
-    location: 'A domicilio',
-    price: 350,
-    pricingType: 'base',
-    status: 'under_review',
-  },
-];
+import { useTheme } from '@/hooks/use-theme';
+import type { Listing } from '@/services/listing.service';
+import { useMyListings, usePauseListing, usePublishListing } from './hooks/use-my-listings';
 
 export default function MyListingsScreen() {
+  const theme = useTheme();
   const [selectedListing, setSelectedListing] =
     useState<Listing | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const { t } = useTranslation();
+
+  const { data: listings = [], isLoading, isError, refetch } = useMyListings();
+  const publishMutation = usePublishListing();
+  const pauseMutation = usePauseListing();
+
+  const isActing = publishMutation.isPending || pauseMutation.isPending;
 
   const handleMenuPress = (listing: Listing) => {
+    setActionError(null);
     setSelectedListing(listing);
   };
 
   const closeMenu = () => {
+    if (isActing) return;
     setSelectedListing(null);
+    setActionError(null);
   };
 
+  const handleEdit = () => {
+    if (selectedListing === null) return;
+    const id = selectedListing.id;
+    setSelectedListing(null);
+    router.push({ pathname: '/(provider)/listings/edit/[id]', params: { id } });
+  };
+
+  const handlePublish = () => {
+    if (selectedListing === null) return;
+    setActionError(null);
+    publishMutation.mutate(selectedListing.id, {
+      onSuccess: () => setSelectedListing(null),
+      onError: (error) =>
+        setActionError(error instanceof Error ? error.message : t('myListings.publishError')),
+    });
+  };
+
+  const handlePause = () => {
+    if (selectedListing === null) return;
+    setActionError(null);
+    pauseMutation.mutate(selectedListing.id, {
+      onSuccess: () => setSelectedListing(null),
+      onError: (error) =>
+        setActionError(error instanceof Error ? error.message : t('myListings.pauseError')),
+    });
+  };
+
+  if (isLoading) {
+    return (
+     <ThemedView style={styles.emptyContainer}>
+      <ActivityIndicator size="large" color={theme.primary} />
+     </ThemedView>
+    )
+  }
+
+  if (isError) {
+    return (
+      <ThemedView style={styles.emptyContainer}>
+        <MaterialIcons
+          name="error-outline"
+          size={50}
+          color={theme.textSecondary}
+        />
+
+        <ThemedText style={styles.emptyTitle}>
+          {t('myListings.loadError')}
+        </ThemedText>
+
+        <Pressable
+          style={[styles.emptyButton, { backgroundColor: theme.primary }]}
+          onPress={() => void refetch()}
+        >
+          <ThemedText style={styles.emptyButton}>
+            {t('common.retry')}
+          </ThemedText>
+        </Pressable>
+      </ThemedView>
+    );
+  }
+
+  if (listings.length === 0) {
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.emptyContainer}>
+      <MaterialIcons
+        name="campaign"
+        size={50}
+        color={theme.textSecondary}
+      />
+
+      <ThemedText style={styles.emptyTitle}>
+        {t('myListings.emptyTitle')}
+      </ThemedText>
+
+      <ThemedText themeColor="textSecondary" style={styles.emptyText}>
+        {t('myListings.emptyText')}
+      </ThemedText>
+
+      <Pressable
+        style={[styles.emptyButton, { backgroundColor: theme.primary }]}
+        onPress={() => router.push('/(provider)/listings/create')}
+      >
+        <ThemedText style={[styles.emptyButton, { textAlign: 'center' }]}>
+          {t('myListings.publishAnAd')}
+        </ThemedText>
+      </Pressable>
+    </ThemedView>
+  );
+}
+
+  return (
+    <ThemedView style={styles.container}>
 
       {/* HEADER */}
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <Pressable>
           <MaterialIcons
             name="close"
             size={24}
-            color="#0369A1"
+            color={theme.primary}
           />
         </Pressable>
 
-        <Text style={styles.logo}>
-          Cerca
-        </Text>
+        <ThemedText themeColor="primary" style={styles.logo}>
+          {t('myListings.headerLogo')}
+        </ThemedText>
 
         <View style={{ width: 24 }} />
       </View>
 
       {/* TÍTULO */}
-      <Text style={styles.heading}>
-        Mis anuncios
-      </Text>
-
+      <ThemedText style={styles.heading}>
+        {t('myListings.heading')}
+      </ThemedText>
+      <View>
       {/* LISTADO */}
       <FlatList
-        data={MOCK_LISTINGS}
+        data={listings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ListingCard
@@ -106,9 +176,10 @@ export default function MyListingsScreen() {
         )}
         showsVerticalScrollIndicator={false}
       />
+      </View>
 
       {/* BOTÓN + */}
-      <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={styles.addButton}>
+      <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={[styles.addButton, { backgroundColor: theme.primary }]}>
         <MaterialIcons
           name="add"
           size={30}
@@ -126,61 +197,75 @@ export default function MyListingsScreen() {
           style={styles.modalOverlay}
           onPress={closeMenu}
         >
-          <View style={styles.menu}>
+          <View style={[styles.menu, { backgroundColor: theme.surface }]}>
 
-            <Text style={styles.menuTitle}>
+            <ThemedText style={styles.menuTitle}>
               {selectedListing?.title}
-            </Text>
+            </ThemedText>
+
+            {actionError && (
+              <ThemedText themeColor="danger" style={styles.menuError}>
+                {actionError}
+              </ThemedText>
+            )}
 
             <Pressable style={styles.menuItem}>
               <MaterialIcons
                 name="visibility"
                 size={20}
-                color="#334155"
+                color={theme.text}
               />
 
-              <Text style={styles.menuText}>
-                Ver anuncio
-              </Text>
+              <ThemedText style={styles.menuText}>
+                {t('myListings.menuViewAd')}
+              </ThemedText>
             </Pressable>
 
-            <Pressable style={styles.menuItem}>
+            <Pressable style={styles.menuItem} onPress={handleEdit} disabled={isActing}>
               <MaterialIcons
                 name="edit"
                 size={20}
-                color="#334155"
+                color={theme.text}
               />
 
-              <Text style={styles.menuText}>
-                Editar
-              </Text>
+              <ThemedText style={styles.menuText}>
+                {t('myListings.menuEdit')}
+              </ThemedText>
             </Pressable>
 
             {selectedListing?.status === 'published' && (
-              <Pressable  style={styles.menuItem}>
-                <MaterialIcons
-                  name="pause"
-                  size={20}
-                  color="#334155"
-                />
+              <Pressable style={styles.menuItem} onPress={handlePause} disabled={isActing}>
+                {pauseMutation.isPending ? (
+                  <ActivityIndicator size="small" color={theme.text} />
+                ) : (
+                  <MaterialIcons
+                    name="pause"
+                    size={20}
+                    color={theme.text}
+                  />
+                )}
 
-                <Text style={styles.menuText}>
-                  Pausar anuncio
-                </Text>
+                <ThemedText style={styles.menuText}>
+                  {t('myListings.menuPause')}
+                </ThemedText>
               </Pressable>
             )}
 
-            {selectedListing?.status === 'paused' && (
-              <Pressable style={styles.menuItem}>
-                <MaterialIcons
-                  name="play-arrow"
-                  size={20}
-                  color="#15803D"
-                />
+            {(selectedListing?.status === 'paused' || selectedListing?.status === 'draft') && (
+              <Pressable style={styles.menuItem} onPress={handlePublish} disabled={isActing}>
+                {publishMutation.isPending ? (
+                  <ActivityIndicator size="small" color={theme.primary} />
+                ) : (
+                  <MaterialIcons
+                    name="play-arrow"
+                    size={20}
+                    color={theme.primary}
+                  />
+                )}
 
-                <Text style={styles.menuText}>
-                  Publicar anuncio
-                </Text>
+                <ThemedText style={styles.menuText}>
+                  {t('myListings.menuPublish')}
+                </ThemedText>
               </Pressable>
             )}
 
@@ -188,14 +273,38 @@ export default function MyListingsScreen() {
         </Pressable>
       </Modal>
 
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+   emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 30,
+  },
+
+  emptyTitle: {
+    marginTop: 15,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+
+  emptyText: {
+    marginTop: 8,
+    textAlign: 'center',
+  },
+
+  emptyButton: {
+    marginTop: 20,
+    alignSelf: 'stretch',
+    borderRadius: 18,
+    
+  },
+
   container: {
     flex: 1,
-    backgroundColor: '#FAFAF7',
   },
 
   header: {
@@ -203,28 +312,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 18,
+    paddingHorizontal: Spacing.three,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
   },
 
   logo: {
     fontSize: 27,
     fontWeight: '800',
-    color: '#075985',
   },
 
   heading: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
     paddingHorizontal: 18,
     paddingTop: 12,
     paddingBottom: 18,
   },
 
   list: {
-    paddingHorizontal: 18,
+    paddingHorizontal: Spacing.three,
     paddingBottom: 100,
   },
 
@@ -235,7 +341,6 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: '#2874A6',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 5,
@@ -243,35 +348,37 @@ const styles = StyleSheet.create({
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
     marginBottom:20,
-   
-  },
 
-  menu: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    gap: 8,
+  },
+menu: {
+    borderTopLeftRadius: BorderRadius.card,
+    borderTopRightRadius: BorderRadius.card,
+    padding: Spacing.four,
+    gap: Spacing.two,
   },
 
   menuTitle: {
     fontSize: 17,
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: Spacing.two,
+  },
+
+  menuError: {
+    fontSize: 13,
+    marginBottom: 4,
   },
 
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.three,
     paddingVertical: 14,
   },
 
   menuText: {
     fontSize: 16,
-    color: '#334155',
   },
 });

@@ -6,8 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+
+import { refreshSession } from '@/features/auth/auth.api';
+import { getRefreshToken, saveTokens } from '@/features/auth/session';
 
 import { activateProvider, getMe, type MeData } from './profile.api';
 
@@ -46,6 +49,17 @@ export default function ProfileScreen() {
     setIsActivating(true);
     try {
       const updatedMe = await activateProvider();
+
+      // El accessToken actual todavía tiene las capacities viejas como
+      // claims — sin renovarlo, los endpoints que chequean capacity
+      // (ej. crear anuncio) seguirían devolviendo 403 aunque el perfil
+      // ya muestre "provider".
+      const refreshToken = await getRefreshToken();
+      if (refreshToken !== null) {
+        const renewed = await refreshSession(refreshToken);
+        await saveTokens(renewed.accessToken, renewed.refreshToken);
+      }
+
       // Actualiza la pantalla con el actor nuevo sin recargar
       setState({ status: 'success', me: updatedMe });
     } catch (error) {
@@ -90,7 +104,7 @@ export default function ProfileScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={styles.content}>
         <ThemedText type="subtitle" style={styles.heading}>
           {t('profile.title')}
         </ThemedText>
@@ -231,11 +245,16 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     borderWidth: 1,
   },
   container: {
     flex: 1,
+    alignItems: 'center',
+  },
+  content: {
+    width: '100%',
+    maxWidth: MaxContentWidth,
     padding: Spacing.four,
   },
   heading: {
@@ -288,7 +307,7 @@ const styles = StyleSheet.create({
   },
   providerButton: {
     height: 48,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -308,7 +327,7 @@ const styles = StyleSheet.create({
   langButton: {
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
+    borderRadius: BorderRadius.button,
     borderWidth: 1,
     minWidth: 64,
     alignItems: 'center',

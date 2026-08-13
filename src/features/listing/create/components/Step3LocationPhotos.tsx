@@ -1,79 +1,152 @@
-import { View, Text, Pressable, StyleSheet, ScrollView,  KeyboardAvoidingView, Platform  } from 'react-native';
+import { useState } from 'react';
+import { View, Pressable, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as Location from 'expo-location';
+import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { ThemedText } from '@/components/themed-text';
+import { translateFieldError } from '@/i18n/translate-field-error';
+
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+
+import type { CreateListingForm } from '../schemas/create-listing.schema';
 
 export function Step3LocationPhotos() {
+  const theme = useTheme();
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext<CreateListingForm>();
+  const { t } = useTranslation();
+
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const latitude = watch('latitude');
+  const longitude = watch('longitude');
+  const hasLocation = latitude !== undefined && longitude !== undefined;
+
+  async function handleUseCurrentLocation(): Promise<void> {
+    setLocationError(null);
+    setIsLocating(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocationError(t('createListing.step3.locationPermissionDenied'));
+        return;
+      }
+
+      const position = await Location.getCurrentPositionAsync({});
+      setValue('latitude', position.coords.latitude, { shouldValidate: true });
+      setValue('longitude', position.coords.longitude, { shouldValidate: true });
+    } catch {
+      setLocationError(t('createListing.step3.locationError'));
+    } finally {
+      setIsLocating(false);
+    }
+  }
+
   return (
     <KeyboardAvoidingView
-  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  style={{ flex: 1 }}
->
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{ flex: 1 }}
+    >
 
-    <ScrollView contentContainerStyle={{ gap: 20, padding: 16,  }}>
+      <ScrollView contentContainerStyle={{ gap: 20, padding: 16, backgroundColor: theme.background }}>
 
-    <View style={styles.container}>
+        <View style={styles.container}>
 
-      {/* LOCATION */}
-      <View style={styles.section}>
-        <Text style={styles.title}>
-          Location
-        </Text>
+          {/* LOCATION */}
+          <View style={styles.section}>
+            <ThemedText style={styles.title}>
+              {t('createListing.step3.locationTitle')}
+            </ThemedText>
 
-        <Text style={styles.description}>
-          Confirm your service location on the map
-        </Text>
+            <ThemedText themeColor="textSecondary" style={styles.description}>
+              {t('createListing.step3.locationDescription')}
+            </ThemedText>
 
-        {/* MAPA */}
-        <View style={styles.mapContainer}>
-          <View style={styles.mapPlaceholder}>
-            <MaterialIcons
-              name="location-on"
-              size={42}
-              color="#0284C7"
-            />
+            {/* MAPA */}
+            <View style={styles.mapContainer}>
+              <View style={[styles.mapPlaceholder, { backgroundColor: theme.backgroundElement }]}>
+                <MaterialIcons
+                  name="location-on"
+                  size={42}
+                  color={hasLocation ? theme.primary : theme.textSecondary}
+                />
 
-            <Text style={styles.mapText}>
-              Service location
-            </Text>
+                <ThemedText themeColor="textSecondary" style={styles.mapText}>
+                  {hasLocation
+                    ? `${latitude!.toFixed(5)}, ${longitude!.toFixed(5)}`
+                    : t('createListing.step3.noLocationSet')}
+                </ThemedText>
+              </View>
+            </View>
+
+            <Pressable
+              style={[styles.locateButton, { backgroundColor: theme.primary }, isLocating && styles.locateButtonDisabled]}
+              onPress={() => void handleUseCurrentLocation()}
+              disabled={isLocating}
+            >
+              {isLocating ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <MaterialIcons name="my-location" size={18} color="#FFFFFF" />
+                  <ThemedText style={styles.locateButtonText}>
+                    {hasLocation ? t('createListing.step3.updateCurrentLocation') : t('createListing.step3.useCurrentLocation')}
+                  </ThemedText>
+                </>
+              )}
+            </Pressable>
+
+            {(locationError || errors.latitude || errors.longitude) && (
+              <ThemedText themeColor="danger" style={styles.error}>
+                {locationError ?? translateFieldError(t, errors.latitude?.message) ?? translateFieldError(t, errors.longitude?.message)}
+              </ThemedText>
+            )}
+
+            <ThemedText themeColor="textSecondary" style={styles.helper}>
+              {t('createListing.step3.locationHelper')}
+            </ThemedText>
           </View>
+
+          {/* PHOTOS */}
+          <View style={styles.section}>
+            <ThemedText style={styles.title}>
+              {t('createListing.step3.photosTitle')}
+            </ThemedText>
+
+            <ThemedText themeColor="textSecondary" style={styles.description}>
+              {t('createListing.step3.photosDescription')}
+            </ThemedText>
+
+            {/* ÁREA PARA AGREGAR FOTOS */}
+            <Pressable style={[styles.uploadContainer, { borderColor: theme.border, backgroundColor: theme.backgroundElement }]}>
+              <View style={[styles.uploadIcon, { backgroundColor: theme.background }]}>
+                <MaterialIcons
+                  name="add-a-photo"
+                  size={32}
+                  color={theme.textSecondary}
+                />
+              </View>
+
+              <ThemedText style={styles.uploadTitle}>
+                {t('createListing.step3.addPhotos')}
+              </ThemedText>
+
+              <ThemedText themeColor="textSecondary" style={styles.uploadDescription}>
+                {t('createListing.step3.uploadPhotosDescription')}
+              </ThemedText>
+            </Pressable>
+          </View>
+
         </View>
-
-        <Text style={styles.helper}>
-          Drag the pin to adjust the exact location
-        </Text>
-      </View>
-
-      {/* PHOTOS */}
-      <View style={styles.section}>
-        <Text style={styles.title}>
-          Photos
-        </Text>
-
-        <Text style={styles.description}>
-          Add photos of your work to build more trust. (Optional)
-        </Text>
-
-        {/* ÁREA PARA AGREGAR FOTOS */}
-        <Pressable style={styles.uploadContainer}>
-          <View style={styles.uploadIcon}>
-            <MaterialIcons
-              name="add-a-photo"
-              size={32}
-              color="#64748B"
-            />
-          </View>
-
-          <Text style={styles.uploadTitle}>
-            Add photos
-          </Text>
-
-          <Text style={styles.uploadDescription}>
-            Upload photos of your work
-          </Text>
-        </Pressable>
-      </View>
-
-    </View>
-    </ScrollView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -90,56 +163,72 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0F172A',
   },
 
   description: {
     fontSize: 14,
-    color: '#64748B',
   },
 
   mapContainer: {
     marginTop: 8,
     height: 220,
-    borderRadius: 16,
+    borderRadius: BorderRadius.card,
     overflow: 'hidden',
   },
 
   mapPlaceholder: {
     flex: 1,
-    backgroundColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   mapText: {
     marginTop: 8,
-    color: '#475569',
     fontWeight: '600',
   },
 
   helper: {
     fontSize: 13,
-    color: '#64748B',
+  },
+
+  locateButton: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 10,
+    paddingVertical: 12,
+  },
+
+  locateButtonDisabled: {
+    opacity: 0.7,
+  },
+
+  locateButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+
+  error: {
+    fontSize: 13,
   },
 
   uploadContainer: {
     marginTop: 8,
     height: 220,
     borderWidth: 2,
-    borderColor: '#CBD5E1',
     borderStyle: 'dashed',
-    borderRadius: 16,
+    borderRadius: BorderRadius.card,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F8FAFC',
   },
 
   uploadIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -148,12 +237,10 @@ const styles = StyleSheet.create({
   uploadTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#334155',
   },
 
   uploadDescription: {
     marginTop: 4,
     fontSize: 13,
-    color: '#64748B',
   },
 });

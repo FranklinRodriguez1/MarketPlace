@@ -1,22 +1,64 @@
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Pressable, StyleSheet, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from 'expo-router';
+import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/button';
+import { BorderRadius } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
-export function Step4Review() {
+import { useCategories } from '../hooks/use-categories';
+import type { CreateListingForm } from '../schemas/create-listing.schema';
+
+interface Step4ReviewProps {
+  onPublish: () => void;
+  loading?: boolean;
+}
+
+function formatPrice(t: TFunction, pricing: CreateListingForm['pricing']): { label: string; amount: string } | null {
+  if (pricing.model === 'fixed') {
+    return { label: t('createListing.review.priceTag'), amount: `${pricing.price.currency} ${(pricing.price.amountMinor / 100).toFixed(2)}` };
+  }
+
+  if (pricing.model === 'hourly') {
+    return { label: t('createListing.review.perHourTag'), amount: `${pricing.hourlyRate.currency} ${(pricing.hourlyRate.amountMinor / 100).toFixed(2)}` };
+  }
+
+  if (pricing.startingFrom) {
+    return { label: t('createListing.review.startingFromTag'), amount: `${pricing.startingFrom.currency} ${(pricing.startingFrom.amountMinor / 100).toFixed(2)}` };
+  }
+
+  return null;
+}
+
+export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
+  const theme = useTheme();
+  const { watch } = useFormContext<CreateListingForm>();
+  const { data: categories } = useCategories();
+  const { t } = useTranslation();
+
+  const title = watch('title');
+  const categoryId = watch('categoryId');
+  const pricing = watch('pricing');
+
+  const categoryName = categories?.find((category) => category.id === categoryId)?.name ?? '';
+  const price = formatPrice(t, pricing);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
 
       {/* TÍTULO */}
-      <Text style={styles.title}>
-        Check your ad
-      </Text>
+      <ThemedText style={styles.title}>
+        {t('createListing.review.checkYourAd')}
+      </ThemedText>
 
-      <Text style={styles.description}>
-        This is how users will see your service listed on the bulletin board
-      </Text>
+      <ThemedText themeColor="textSecondary" style={styles.description}>
+        {t('createListing.review.previewDescription')}
+      </ThemedText>
 
       {/* TARJETA DE PREVISUALIZACIÓN */}
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
 
         {/* IMAGEN */}
         <Image
@@ -27,34 +69,36 @@ export function Step4Review() {
         />
 
         {/* INFORMACIÓN */}
-        <View style={styles.info}>
+        <View style={[styles.info, { borderRightColor: theme.border }]}>
 
           {/* CATEGORÍA */}
-          <View style={styles.categoryContainer}>
-            <Text style={styles.category}>
-              JARDINERÍA
-            </Text>
-          </View>
+          {categoryName !== '' && (
+            <View style={[styles.categoryContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+              <ThemedText style={styles.category}>
+                {categoryName.toUpperCase()}
+              </ThemedText>
+            </View>
+          )}
 
           {/* TÍTULO */}
-          <Text
+          <ThemedText
             style={styles.serviceTitle}
             numberOfLines={1}
           >
-            Mantenimiento de jardín
-          </Text>
+            {title}
+          </ThemedText>
 
           {/* ESTADO */}
           <View style={styles.statusContainer}>
             <MaterialIcons
               name="star"
               size={16}
-              color="#111827"
+              color={theme.text}
             />
 
-            <Text style={styles.status}>
-              Nuevo
-            </Text>
+            <ThemedText style={styles.status}>
+              {t('createListing.review.new')}
+            </ThemedText>
           </View>
 
         </View>
@@ -62,30 +106,38 @@ export function Step4Review() {
         {/* PRECIO */}
         <View style={styles.priceContainer}>
 
-          <Text style={styles.from}>
-            DESDE
-          </Text>
+          {price ? (
+            <>
+              <ThemedText themeColor="textSecondary" style={styles.from}>
+                {price.label}
+              </ThemedText>
 
-          <Text style={styles.price}>
-            $45
-          </Text>
+              <ThemedText themeColor="danger" style={styles.price}>
+                {price.amount}
+              </ThemedText>
+            </>
+          ) : (
+            <ThemedText themeColor="textSecondary" style={styles.from}>
+              {t('createListing.review.quoteOnlyTag')}
+            </ThemedText>
+          )}
 
         </View>
 
       </View>
 
       {/* BOTÓN */}
-      <Pressable onPress={() => router.push('/my-listings')} style={styles.publishButton}>
+      <Pressable onPress={onPublish} disabled={loading} style={[styles.publishButton, { backgroundColor: theme.primary }]}>
 
         <MaterialIcons
           name="publish"
           size={22}
-          color="#fff"
+          color="#FFFFFF"
         />
 
-        <Text style={styles.publishText}>
-          Post an ad
-        </Text>
+        <ThemedText style={styles.publishText}>
+          {loading ? t('createListing.review.publishing') : t('createListing.review.postAd')}
+        </ThemedText>
 
       </Pressable>
 
@@ -108,7 +160,6 @@ const styles = StyleSheet.create({
 
   description: {
     fontSize: 14,
-    color: '#64748B',
     marginBottom: 20,
   },
 
@@ -119,12 +170,9 @@ const styles = StyleSheet.create({
 
     flexDirection: 'row',
 
-    backgroundColor: '#FFFFFF',
-
     borderWidth: 1,
-    borderColor: '#D1D5DB',
 
-    borderRadius: 10,
+    borderRadius: BorderRadius.card,
 
     overflow: 'hidden',
 
@@ -153,18 +201,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     borderRightWidth: 1,
-    borderRightColor: '#E5E7EB',
   },
 
   categoryContainer: {
     alignSelf: 'flex-start',
 
-    backgroundColor: '#F1F5F9',
-
     borderWidth: 1,
-    borderColor: '#CBD5E1',
 
-    borderRadius: 10,
+    borderRadius: BorderRadius.input,
 
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -174,14 +218,12 @@ const styles = StyleSheet.create({
 
   category: {
     fontSize: 10,
-    color: '#334155',
     fontWeight: '500',
   },
 
   serviceTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
 
     marginBottom: 4,
   },
@@ -194,7 +236,6 @@ const styles = StyleSheet.create({
 
   status: {
     fontSize: 12,
-    color: '#111827',
     fontWeight: '500',
   },
 
@@ -210,7 +251,6 @@ const styles = StyleSheet.create({
 
   from: {
     fontSize: 9,
-    color: '#334155',
     letterSpacing: 1,
     fontWeight: '500',
 
@@ -220,14 +260,11 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#B91C1C',
   },
 
   // BOTÓN
   publishButton: {
     marginTop: 20,
-
-    backgroundColor: '#075985',
 
     minHeight: 48,
 

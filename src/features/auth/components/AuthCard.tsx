@@ -1,6 +1,7 @@
 import { useEffect, useRef, type PropsWithChildren } from 'react';
 import { Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 
+import { BorderRadius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export function AuthCard({ children }: PropsWithChildren) {
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 420,
     alignSelf: 'center',
-    borderRadius: 20,
+    borderRadius: BorderRadius.card,
     padding: 24,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },

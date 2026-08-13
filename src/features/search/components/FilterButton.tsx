@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { BorderRadius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 interface FilterButtonProps {
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   button: {
     width: 48,
     height: 48,
-    borderRadius: 12,
+    borderRadius: BorderRadius.input,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

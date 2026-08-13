@@ -72,5 +72,13 @@ export const Spacing = {
   six: 64,
 } as const;
 
+// Radios consistentes por familia de elemento — ver RULES.md ("Otros patrones de UI").
+export const BorderRadius = {
+  input: 12,
+  button: 12,
+  card: 16,
+  pill: 999,
+} as const;
+
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
