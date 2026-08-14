@@ -35,7 +35,11 @@
     "capacities": "Capacidades",
     "none": "Ninguna",
     "becomeProvider": "Convertirme en proveedor",
-    "language": "Idioma"
+    "language": "Idioma",
+    "security": "Seguridad",
+    "biometricToggle": "Desbloquear con huella dactilar",
+    "biometricConfirmPrompt": "Confirma tu identidad para activar el desbloqueo con huella",
+    "biometricConfirmError": "No se pudo verificar tu huella. Intenta de nuevo."
   },
   "moderation": {
     "title": "Cola de moderación",
@@ -151,5 +155,13 @@
     "statusDraft": "Borrador",
     "statusUnderReview": "En revisión",
     "statusRemoved": "Eliminado"
+  },
+  "biometric": {
+    "unlockTitle": "Bienvenido de vuelta",
+    "unlockSubtitle": "Usa tu huella dactilar para desbloquear Cerca",
+    "unlockPrompt": "Desbloquea Cerca con tu huella",
+    "unlockCta": "Desbloquear",
+    "usePassword": "Usar contraseña",
+    "error": "No se pudo verificar tu identidad. Intenta de nuevo."
   }
 }

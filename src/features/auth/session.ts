@@ -2,6 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 
 const ACCESS_TOKEN_KEY = 'cerca_access_token';
 const REFRESH_TOKEN_KEY = 'cerca_refresh_token';
+const BIOMETRICS_ENABLED_KEY = 'cerca_biometrics_enabled';
 
 // expo-secure-store no tiene implementación nativa en web (su build .web.ts
 // exporta un objeto vacío), así que ahí usamos localStorage como fallback.
@@ -51,4 +52,12 @@ export async function getRefreshToken(): Promise<string | null> {
 export async function clearTokens(): Promise<void> {
   await store.deleteItem(ACCESS_TOKEN_KEY);
   await store.deleteItem(REFRESH_TOKEN_KEY);
+}
+
+export async function getBiometricsEnabled(): Promise<boolean> {
+  return (await store.getItem(BIOMETRICS_ENABLED_KEY)) === 'true';
+}
+
+export async function setBiometricsEnabled(enabled: boolean): Promise<void> {
+  await store.setItem(BIOMETRICS_ENABLED_KEY, enabled ? 'true' : 'false');
 }

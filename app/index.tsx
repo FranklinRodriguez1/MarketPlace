@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
 import { ThemedView } from '@/components/themed-view';
-import { getAccessToken } from '@/features/auth/session';
+import { BiometricLockScreen } from '@/features/auth/components/BiometricLockScreen';
+import { getAccessToken, getBiometricsEnabled } from '@/features/auth/session';
 import { useTheme } from '@/hooks/use-theme';
 
-type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
+type AuthState = 'checking' | 'locked' | 'authenticated' | 'unauthenticated';
 
 export default function Index() {
   const theme = useTheme();
@@ -17,7 +18,12 @@ export default function Index() {
     async function checkSession(): Promise<void> {
       const token = await getAccessToken();
 
-      setAuthState(token !== null ? 'authenticated' : 'unauthenticated');
+      if (token === null) {
+        setAuthState('unauthenticated');
+      } else {
+        const biometricsEnabled = await getBiometricsEnabled();
+        setAuthState(biometricsEnabled ? 'locked' : 'authenticated');
+      }
 
       // Ocultamos el splash aquí, cuando ya sabemos a dónde vamos.
       // El Redirect de abajo ya está listo en el próximo render,
@@ -36,6 +42,10 @@ export default function Index() {
         <ActivityIndicator size="large" color={theme.primary} />
       </ThemedView>
     );
+  }
+
+  if (authState === 'locked') {
+    return <BiometricLockScreen onUnlock={() => setAuthState('authenticated')} />;
   }
 
   return <Redirect href={authState === 'authenticated' ? '/(tabs)' : '/login'} />;
