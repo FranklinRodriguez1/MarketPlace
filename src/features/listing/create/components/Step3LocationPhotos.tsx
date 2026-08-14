@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Pressable, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Location from 'expo-location';
 import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import { ThemedText } from '@/components/themed-text';
+import { translateFieldError } from '@/i18n/translate-field-error';
 
 import { Button } from '@/components/ui/button';
 import { BorderRadius } from '@/constants/theme';
@@ -17,6 +21,7 @@ export function Step3LocationPhotos() {
     watch,
     formState: { errors },
   } = useFormContext<CreateListingForm>();
+  const { t } = useTranslation();
 
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -31,7 +36,7 @@ export function Step3LocationPhotos() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setLocationError('Location permission was denied.');
+        setLocationError(t('createListing.step3.locationPermissionDenied'));
         return;
       }
 
@@ -39,7 +44,7 @@ export function Step3LocationPhotos() {
       setValue('latitude', position.coords.latitude, { shouldValidate: true });
       setValue('longitude', position.coords.longitude, { shouldValidate: true });
     } catch {
-      setLocationError('Could not get your location. Try again.');
+      setLocationError(t('createListing.step3.locationError'));
     } finally {
       setIsLocating(false);
     }
@@ -57,13 +62,13 @@ export function Step3LocationPhotos() {
 
           {/* LOCATION */}
           <View style={styles.section}>
-            <Text style={[styles.title, { color: theme.text }]}>
-              Location
-            </Text>
+            <ThemedText style={styles.title}>
+              {t('createListing.step3.locationTitle')}
+            </ThemedText>
 
-            <Text style={[styles.description, { color: theme.textSecondary }]}>
-              Confirm your service location
-            </Text>
+            <ThemedText themeColor="textSecondary" style={styles.description}>
+              {t('createListing.step3.locationDescription')}
+            </ThemedText>
 
             {/* MAPA */}
             <View style={styles.mapContainer}>
@@ -74,47 +79,55 @@ export function Step3LocationPhotos() {
                   color={hasLocation ? theme.primary : theme.textSecondary}
                 />
 
-                <Text style={[styles.mapText, { color: theme.textSecondary }]}>
+                <ThemedText themeColor="textSecondary" style={styles.mapText}>
                   {hasLocation
                     ? `${latitude!.toFixed(5)}, ${longitude!.toFixed(5)}`
-                    : 'No location set yet'}
-                </Text>
+                    : t('createListing.step3.noLocationSet')}
+                </ThemedText>
               </View>
             </View>
 
-            <Button
-              label={hasLocation ? 'Update current location' : 'Use my current location'}
+            <Pressable
+              style={[styles.locateButton, { backgroundColor: theme.primary }, isLocating && styles.locateButtonDisabled]}
               onPress={() => void handleUseCurrentLocation()}
-              loading={isLocating}
-              variant="primary"
-              style={styles.locateButton}
-              icon={(color) => <MaterialIcons name="my-location" size={18} color={color} />}
-            />
+              disabled={isLocating}
+            >
+              {isLocating ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <MaterialIcons name="my-location" size={18} color="#FFFFFF" />
+                  <ThemedText style={styles.locateButtonText}>
+                    {hasLocation ? t('createListing.step3.updateCurrentLocation') : t('createListing.step3.useCurrentLocation')}
+                  </ThemedText>
+                </>
+              )}
+            </Pressable>
 
             {(locationError || errors.latitude || errors.longitude) && (
-              <Text style={[styles.error, { color: theme.danger }]}>
-                {locationError ?? errors.latitude?.message ?? errors.longitude?.message}
-              </Text>
+              <ThemedText themeColor="danger" style={styles.error}>
+                {locationError ?? translateFieldError(t, errors.latitude?.message) ?? translateFieldError(t, errors.longitude?.message)}
+              </ThemedText>
             )}
 
-            <Text style={[styles.helper, { color: theme.textSecondary }]}>
-              We use this to show your service to nearby customers.
-            </Text>
+            <ThemedText themeColor="textSecondary" style={styles.helper}>
+              {t('createListing.step3.locationHelper')}
+            </ThemedText>
           </View>
 
           {/* PHOTOS */}
           <View style={styles.section}>
-            <Text style={[styles.title, { color: theme.text }]}>
-              Photos
-            </Text>
+            <ThemedText style={styles.title}>
+              {t('createListing.step3.photosTitle')}
+            </ThemedText>
 
-            <Text style={[styles.description, { color: theme.textSecondary }]}>
-              Add photos of your work to build more trust. (Optional)
-            </Text>
+            <ThemedText themeColor="textSecondary" style={styles.description}>
+              {t('createListing.step3.photosDescription')}
+            </ThemedText>
 
             {/* ÁREA PARA AGREGAR FOTOS */}
-            <Pressable style={[styles.uploadContainer, { borderColor: theme.border, backgroundColor: theme.background }]}>
-              <View style={[styles.uploadIcon, { backgroundColor: theme.backgroundElement }]}>
+            <Pressable style={[styles.uploadContainer, { borderColor: theme.border, backgroundColor: theme.backgroundElement }]}>
+              <View style={[styles.uploadIcon, { backgroundColor: theme.background }]}>
                 <MaterialIcons
                   name="add-a-photo"
                   size={32}
@@ -122,13 +135,13 @@ export function Step3LocationPhotos() {
                 />
               </View>
 
-              <Text style={[styles.uploadTitle, { color: theme.text }]}>
-                Add photos
-              </Text>
+              <ThemedText style={styles.uploadTitle}>
+                {t('createListing.step3.addPhotos')}
+              </ThemedText>
 
-              <Text style={[styles.uploadDescription, { color: theme.textSecondary }]}>
-                Upload photos of your work
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.uploadDescription}>
+                {t('createListing.step3.uploadPhotosDescription')}
+              </ThemedText>
             </Pressable>
           </View>
 
@@ -180,6 +193,22 @@ const styles = StyleSheet.create({
 
   locateButton: {
     marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 10,
+    paddingVertical: 12,
+  },
+
+  locateButtonDisabled: {
+    opacity: 0.7,
+  },
+
+  locateButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 15,
   },
 
   error: {

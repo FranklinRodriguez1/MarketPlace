@@ -1,7 +1,14 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import {
+  View,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import {  Spacing } from '@/constants/theme';
 
-import { BorderRadius, Spacing } from '@/constants/theme';
+import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import type { Listing } from '@/services/listing.service';
 
@@ -10,38 +17,54 @@ interface ListingCardProps {
   onMenuPress: (listing: Listing) => void;
 }
 
-export function ListingCard({ listing, onMenuPress }: ListingCardProps) {
+export function ListingCard({
+  listing,
+  onMenuPress,
+}: ListingCardProps) {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+
       <View style={[styles.imagePlaceholder, { backgroundColor: theme.backgroundElement }]}>
-        <MaterialIcons name="image" size={40} color={theme.textSecondary} />
+        <MaterialIcons
+          name="image"
+          size={40}
+          color={theme.textSecondary}
+        />
       </View>
 
       <View style={styles.content}>
         <View style={styles.headerRow}>
-          <Text style={[styles.title, { color: theme.text }]}>{listing.title}</Text>
+          <ThemedText style={styles.title}>
+            {listing.title}
+          </ThemedText>
 
           <Pressable onPress={() => onMenuPress(listing)}>
-            <MaterialIcons name="more-vert" size={24} color={theme.textSecondary} />
+            <MaterialIcons
+              name="more-vert"
+              size={24}
+              color={theme.text}
+            />
           </Pressable>
         </View>
 
-        <Text style={[styles.description, { color: theme.textSecondary }]}>
+        <ThemedText themeColor="textSecondary" style={styles.description}>
           {listing.description}
-        </Text>
+        </ThemedText>
 
         <View style={styles.infoRow}>
-          <Text style={[styles.status, { color: theme.primary }]}>
-            {getStatusText(listing.status)}
-          </Text>
+
+          <ThemedText themeColor="primary" style={styles.status}>
+            {getStatusText(t, listing.status)}
+          </ThemedText>
 
           {listing.priceFrom !== null && (
-            <Text style={[styles.price, { color: theme.text }]}>
+            <ThemedText style={styles.price}>
               {listing.priceFrom.currency}{' '}
               {(listing.priceFrom.amountMinor / 100).toFixed(2)}
-            </Text>
+            </ThemedText>
           )}
         </View>
       </View>
@@ -49,30 +72,33 @@ export function ListingCard({ listing, onMenuPress }: ListingCardProps) {
   );
 }
 
-function getStatusText(status: Listing['status']) {
+function getStatusText(
+  t: TFunction,
+  status: Listing['status'],
+) {
   switch (status) {
     case 'published':
-      return 'Publicado';
+      return t('listingCard.statusPublished');
 
     case 'paused':
-      return 'Pausado';
+      return t('listingCard.statusPaused');
 
     case 'draft':
-      return 'Borrador';
+      return t('listingCard.statusDraft');
 
     case 'under_review':
-      return 'En revisión';
+      return t('listingCard.statusUnderReview');
 
     case 'removed':
-      return 'Eliminado';
+      return t('listingCard.statusRemoved');
   }
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: BorderRadius.card,
+    borderRadius: 14,
     borderWidth: 1,
-    padding: Spacing.three,
+    padding: 14,
     flexDirection: 'row',
     gap: Spacing.three,
   },
@@ -80,7 +106,7 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: 90,
     height: 90,
-    borderRadius: BorderRadius.input,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -102,7 +128,7 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    marginTop: Spacing.two,
+    marginTop: 6,
     fontSize: 14,
   },
 

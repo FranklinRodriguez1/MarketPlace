@@ -6,20 +6,21 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from "react-native";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Controller, useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
+import { ThemedText } from "@/components/themed-text";
+import { useTheme } from "@/hooks/use-theme";
 import {
   CATEGORY_ICONS,
   DEFAULT_CATEGORY_ICON,
 } from "@/constants/category-icons";
-import { BorderRadius } from "@/constants/theme";
-import { useTheme } from "@/hooks/use-theme";
+import { translateFieldError } from "@/i18n/translate-field-error";
 
 import { useCategories } from "../hooks/use-categories";
 import type { CreateListingForm } from "../schemas/create-listing.schema";
@@ -47,6 +48,7 @@ function normalizeForSearch(value: string): string {
 export function Step1BasicInfo() {
   const { control } = useFormContext<CreateListingForm>();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const [search, setSearch] = useState("");
 
@@ -71,13 +73,11 @@ export function Step1BasicInfo() {
         ListHeaderComponent={
           <View style={styles.header}>
             {/* BASIC INFORMATION */}
-            <Text style={[styles.stepLabel, { color: theme.textSecondary }]}>
-              Basic Information
-            </Text>
+            <ThemedText themeColor="textSecondary" style={styles.stepLabel}>{t('createListing.step1.basicInformation')}</ThemedText>
 
             {/* TITLE */}
             <View style={styles.section}>
-              <Text style={[styles.label, { color: theme.text }]}>Title</Text>
+              <ThemedText style={styles.label}>{t('createListing.step1.titleLabel')}</ThemedText>
 
               <Controller
                 control={control}
@@ -88,39 +88,32 @@ export function Step1BasicInfo() {
                       value={field.value}
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
-                      placeholder="Ej. Clases de inglés"
+                      placeholder={t('createListing.step1.titlePlaceholder')}
                       placeholderTextColor={theme.textSecondary}
                       style={[
                         styles.input,
-                        {
-                          borderColor: fieldState.error
-                            ? theme.danger
-                            : theme.border,
-                          backgroundColor: theme.surface,
-                          color: theme.text,
-                        },
+                        { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text },
+                        fieldState.error && { borderColor: theme.danger },
                       ]}
                     />
 
                     {fieldState.error && (
-                      <Text style={[styles.error, { color: theme.danger }]}>
-                        {fieldState.error.message}
-                      </Text>
+                      <ThemedText themeColor="danger" style={styles.error}>
+                        {translateFieldError(t, fieldState.error.message)}
+                      </ThemedText>
                     )}
                   </>
                 )}
               />
 
-              <Text style={[styles.helper, { color: theme.textSecondary }]}>
-                A descriptive title helps users find your service easily.
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.helper}>
+                {t('createListing.step1.titleHelper')}
+              </ThemedText>
             </View>
 
             {/* DESCRIPTION */}
             <View style={styles.section}>
-              <Text style={[styles.label, { color: theme.text }]}>
-                Description
-              </Text>
+              <ThemedText style={styles.label}>{t('createListing.step1.descriptionLabel')}</ThemedText>
 
               <Controller
                 control={control}
@@ -131,64 +124,47 @@ export function Step1BasicInfo() {
                       value={field.value}
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
-                      placeholder="Describe tu servicio..."
+                      placeholder={t('createListing.step1.descriptionPlaceholder')}
                       placeholderTextColor={theme.textSecondary}
                       multiline
                       numberOfLines={5}
                       textAlignVertical="top"
                       style={[
                         styles.input,
-                        {
-                          borderColor: fieldState.error
-                            ? theme.danger
-                            : theme.border,
-                          backgroundColor: theme.surface,
-                          color: theme.text,
-                        },
+                        { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text },
+                        fieldState.error && { borderColor: theme.danger },
                       ]}
                     />
 
                     {fieldState.error && (
-                      <Text style={[styles.error, { color: theme.danger }]}>
-                        {fieldState.error.message}
-                      </Text>
+                      <ThemedText themeColor="danger" style={styles.error}>
+                        {translateFieldError(t, fieldState.error.message)}
+                      </ThemedText>
                     )}
                   </>
                 )}
               />
 
-              <Text style={[styles.helper, { color: theme.textSecondary }]}>
-                Describe qué servicio ofreces, qué incluye y cualquier
-                información importante para el cliente.
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.helper}>
+                {t('createListing.step1.descriptionHelper')}
+              </ThemedText>
             </View>
             {/* CATEGORY */}
             <View style={styles.categoryHeader}>
-              <Text style={[styles.title, { color: theme.text }]}>
-                Select a category
-              </Text>
+              <ThemedText style={styles.title}>{t('createListing.step1.selectCategory')}</ThemedText>
 
-              <Text style={[styles.description, { color: theme.textSecondary }]}>
-                Choose the category that best describes your service.
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.description}>
+                {t('createListing.step1.selectCategoryDescription')}
+              </ThemedText>
 
               {/* SEARCH */}
-              <View
-                style={[
-                  styles.searchContainer,
-                  { borderColor: theme.border, backgroundColor: theme.surface },
-                ]}
-              >
-                <MaterialIcons
-                  name="search"
-                  size={22}
-                  color={theme.textSecondary}
-                />
+              <View style={[styles.searchContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                <MaterialIcons name="search" size={22} color={theme.textSecondary} />
 
                 <TextInput
                   value={search}
                   onChangeText={setSearch}
-                  placeholder="Buscar categoría..."
+                  placeholder={t('createListing.step1.searchPlaceholder')}
                   placeholderTextColor={theme.textSecondary}
                   style={[styles.searchInput, { color: theme.text }]}
                 />
@@ -208,28 +184,17 @@ export function Step1BasicInfo() {
                   onPress={() => field.onChange(item.id)}
                   style={[
                     styles.card,
-                    {
-                      backgroundColor: selected
-                        ? theme.backgroundSelected
-                        : theme.surface,
-                      borderColor: fieldState.error
-                        ? theme.danger
-                        : selected
-                          ? theme.primary
-                          : theme.border,
-                      borderWidth: selected ? 2 : 1,
-                    },
+                    { backgroundColor: theme.surface, borderColor: theme.border },
+                    selected && { backgroundColor: theme.backgroundSelected, borderColor: theme.primary, borderWidth: 2 },
+                    fieldState.error && { borderColor: theme.danger },
                   ]}
                 >
                   {/* ICON */}
                   <View
                     style={[
                       styles.iconContainer,
-                      {
-                        backgroundColor: selected
-                          ? theme.backgroundSelected
-                          : theme.backgroundElement,
-                      },
+                      { backgroundColor: theme.backgroundElement },
+                      selected && { backgroundColor: theme.backgroundSelected },
                     ]}
                   >
                     <MaterialIcons
@@ -240,17 +205,12 @@ export function Step1BasicInfo() {
                   </View>
 
                   {/* NAME */}
-                  <Text
-                    style={[
-                      styles.name,
-                      {
-                        color: selected ? theme.primary : theme.text,
-                        fontWeight: selected ? "700" : "500",
-                      },
-                    ]}
+                  <ThemedText
+                    themeColor={selected ? "primary" : "text"}
+                    style={[styles.name, selected && styles.nameSelected]}
                   >
                     {item.name}
-                  </Text>
+                  </ThemedText>
 
                   {/* CHECK */}
                   {selected && (
@@ -270,37 +230,25 @@ export function Step1BasicInfo() {
           isPending ? (
             <View style={styles.empty}>
               <ActivityIndicator size="large" color={theme.primary} />
-              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-                Cargando categorías...
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.emptyText}>{t('createListing.step1.loadingCategories')}</ThemedText>
             </View>
           ) : isError ? (
             <View style={styles.empty}>
-              <MaterialIcons
-                name="error-outline"
-                size={40}
-                color={theme.danger}
-              />
-              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-                No se pudieron cargar las categorías.
-              </Text>
+              <MaterialIcons name="error-outline" size={40} color={theme.danger} />
+              <ThemedText themeColor="textSecondary" style={styles.emptyText}>
+                {t('createListing.step1.loadErrorCategories')}
+              </ThemedText>
               <Pressable onPress={() => refetch()}>
-                <Text style={[styles.retryText, { color: theme.primary }]}>
-                  Reintentar
-                </Text>
+                <ThemedText themeColor="primary" style={styles.retryText}>{t('common.retry')}</ThemedText>
               </Pressable>
             </View>
           ) : (
             <View style={styles.empty}>
-              <MaterialIcons
-                name="search-off"
-                size={40}
-                color={theme.textSecondary}
-              />
+              <MaterialIcons name="search-off" size={40} color={theme.textSecondary} />
 
-              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-                No se encontraron categorías.
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.emptyText}>
+                {t('createListing.step1.noCategoriesFound')}
+              </ThemedText>
             </View>
           )
         }
@@ -336,7 +284,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: BorderRadius.input,
+    borderRadius: 8,
     fontSize: 16,
   },
 
@@ -362,7 +310,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderRadius: BorderRadius.input,
+    borderRadius: 8,
     paddingHorizontal: 12,
     marginTop: 8,
   },
@@ -383,7 +331,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 130,
     borderWidth: 1,
-    borderRadius: BorderRadius.card,
+    borderRadius: 14,
     padding: 16,
     alignItems: "center",
     justifyContent: "center",
@@ -404,6 +352,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  nameSelected: {
+    fontWeight: "700",
+  },
+
   check: {
     position: "absolute",
     top: 10,
@@ -417,7 +369,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
-  emptyText: {},
+  emptyText: {
+    textAlign: 'center',
+  },
 
   retryText: {
     fontWeight: "600",

@@ -45,5 +45,111 @@
     "remove": "Remove listing",
     "resolve": "Resolve report",
     "empty": "No pending reports"
+  },
+  "createListing": {
+    "stepOf": "Step {{step}} of {{totalSteps}}",
+    "previous": "Previous",
+    "next": "Next",
+    "step1": {
+      "basicInformation": "Basic Information",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. English classes",
+      "titleHelper": "A descriptive title helps users find your service easily.",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe your service...",
+      "descriptionHelper": "Describe what service you offer, what it includes, and any important information for the client.",
+      "selectCategory": "Select a category",
+      "selectCategoryDescription": "Choose the category that best describes your service.",
+      "searchPlaceholder": "Search category...",
+      "loadingCategories": "Loading categories...",
+      "loadErrorCategories": "Categories could not be loaded.",
+      "noCategoriesFound": "No categories found."
+    },
+    "step2": {
+      "pricesLabel": "Prices",
+      "howChargeTitle": "How do you want to charge?",
+      "howChargeDescription": "You can select how you want to charge for this service. You will be able to adjust the amounts in the next step.",
+      "fixedTitle": "Fixed price",
+      "fixedDescription": "A fixed amount for the entire job, ideal for well-defined tasks.",
+      "priceLabel": "Price",
+      "hourlyTitle": "Per hour",
+      "hourlyDescription": "You charge a fee for each hour of work performed.",
+      "hourlyRateLabel": "Hourly rate",
+      "minimumHoursLabel": "Minimum hours",
+      "quoteTitle": "A budget",
+      "quoteDescription": "You assess the work on-site before giving a final price.",
+      "quoteNote": "The customer can request a quote before the final price is agreed."
+    },
+    "step3": {
+      "locationTitle": "Location",
+      "locationDescription": "Confirm your service location",
+      "noLocationSet": "No location set yet",
+      "useCurrentLocation": "Use my current location",
+      "updateCurrentLocation": "Update current location",
+      "locationPermissionDenied": "Location permission was denied.",
+      "locationError": "Could not get your location. Try again.",
+      "locationHelper": "We use this to show your service to nearby customers.",
+      "photosTitle": "Photos",
+      "photosDescription": "Add photos of your work to build more trust. (Optional)",
+      "addPhotos": "Add photos",
+      "uploadPhotosDescription": "Upload photos of your work"
+    },
+    "review": {
+      "checkYourAd": "Check your ad",
+      "previewDescription": "This is how users will see your service listed on the bulletin board",
+      "new": "New",
+      "priceTag": "PRICE",
+      "perHourTag": "PER HOUR",
+      "startingFromTag": "STARTING FROM",
+      "quoteOnlyTag": "QUOTE ONLY",
+      "publishing": "Publishing...",
+      "postAd": "Post an ad"
+    },
+    "errors": {
+      "categoryRequired": "Category is required",
+      "titleRequired": "Title is required",
+      "titleTooLong": "Title must be at most 80 characters",
+      "descriptionTooShort": "The description must be at least 20 characters long",
+      "confirmLocation": "Confirm your service location",
+      "photosRequired": "At least one photo is required"
+    }
+  },
+  "editListing": {
+    "headerTitle": "Edit ad",
+    "loadError": "Could not load the ad.",
+    "categoryLabel": "Category",
+    "categoryHelper": "The category cannot be changed once the ad is created.",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "pricingError": "Please check the entered price.",
+    "saveError": "Could not save the ad.",
+    "saveButton": "Save changes",
+    "errors": {
+      "titleTooShort": "Title must be at least 3 characters",
+      "titleTooLong": "Title must be at most 120 characters",
+      "descriptionRequired": "Description is required",
+      "descriptionTooLong": "Description must be at most 4000 characters"
+    }
+  },
+  "myListings": {
+    "loadError": "Your ads could not be loaded.",
+    "emptyTitle": "There are no ads",
+    "emptyText": "You haven't published any ads yet.",
+    "publishAnAd": "Publish an ad",
+    "headerLogo": "Cerca",
+    "heading": "My ads",
+    "menuViewAd": "View ad",
+    "menuEdit": "Edit",
+    "menuPause": "Pause ad",
+    "menuPublish": "Publish ad",
+    "publishError": "Could not publish the ad.",
+    "pauseError": "Could not pause the ad."
+  },
+  "listingCard": {
+    "statusPublished": "Published",
+    "statusPaused": "Paused",
+    "statusDraft": "Draft",
+    "statusUnderReview": "Under review",
+    "statusRemoved": "Removed"
   }
 }

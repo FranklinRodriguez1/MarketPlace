@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { View, Text } from 'react-native';
+import {
+  View,
+  Pressable,
+} from 'react-native';
 
 import {
   FormProvider,
@@ -9,6 +12,10 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 
 import { CreateListingHeader } from './components/CreateListingHeader';
 
@@ -29,6 +36,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 export function CreateListingScreen() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -175,7 +183,7 @@ export function CreateListingScreen() {
         onBack={previousStep}
       />
 
-      <View
+      <ThemedView
         style={{
           flex: 1,
           alignItems: 'center',
@@ -192,9 +200,9 @@ export function CreateListingScreen() {
         }}
       >
 
-        <Text style={{ color: theme.textSecondary }}>
-          Step {step} of 4
-        </Text>
+        <ThemedText themeColor="textSecondary">
+          {t('createListing.stepOf', { step, totalSteps: 4 })}
+        </ThemedText>
 
         {/* STEP 1 */}
 
@@ -225,7 +233,7 @@ export function CreateListingScreen() {
 
         {/* BOTONES */}
 
-        <View
+         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -249,9 +257,9 @@ export function CreateListingScreen() {
           )}
 
         </View>
+        </View>
 
-      </View>
-      </View>
+      </ThemedView>
 
     </FormProvider>
   );

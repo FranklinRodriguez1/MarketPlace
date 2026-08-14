@@ -38,11 +38,7 @@ export default function Index() {
     );
   }
 
-  // TEMPORAL: el backend todavía no está operativo, así que se salta el
-  // chequeo de JWT para poder validar las pantallas con datos mock.
-  // Revertir a `authState === 'authenticated'` (y mandar a /login en el
-  // else) apenas haya backend real para probar el flujo de auth de verdad.
-  return <Redirect href="/(tabs)" />;
+  return <Redirect href={authState === 'authenticated' ? '/(tabs)' : '/login'} />;
 }
 
 const styles = StyleSheet.create({

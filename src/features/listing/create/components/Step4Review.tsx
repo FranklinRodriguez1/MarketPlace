@@ -1,7 +1,9 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Pressable, StyleSheet, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFormContext } from 'react-hook-form';
-
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import { ThemedText } from '@/components/themed-text';
 import { Button } from '@/components/ui/button';
 import { BorderRadius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -14,17 +16,17 @@ interface Step4ReviewProps {
   loading?: boolean;
 }
 
-function formatPrice(pricing: CreateListingForm['pricing']): { label: string; amount: string } | null {
+function formatPrice(t: TFunction, pricing: CreateListingForm['pricing']): { label: string; amount: string } | null {
   if (pricing.model === 'fixed') {
-    return { label: 'PRECIO', amount: `${pricing.price.currency} ${(pricing.price.amountMinor / 100).toFixed(2)}` };
+    return { label: t('createListing.review.priceTag'), amount: `${pricing.price.currency} ${(pricing.price.amountMinor / 100).toFixed(2)}` };
   }
 
   if (pricing.model === 'hourly') {
-    return { label: 'POR HORA', amount: `${pricing.hourlyRate.currency} ${(pricing.hourlyRate.amountMinor / 100).toFixed(2)}` };
+    return { label: t('createListing.review.perHourTag'), amount: `${pricing.hourlyRate.currency} ${(pricing.hourlyRate.amountMinor / 100).toFixed(2)}` };
   }
 
   if (pricing.startingFrom) {
-    return { label: 'DESDE', amount: `${pricing.startingFrom.currency} ${(pricing.startingFrom.amountMinor / 100).toFixed(2)}` };
+    return { label: t('createListing.review.startingFromTag'), amount: `${pricing.startingFrom.currency} ${(pricing.startingFrom.amountMinor / 100).toFixed(2)}` };
   }
 
   return null;
@@ -34,25 +36,26 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
   const theme = useTheme();
   const { watch } = useFormContext<CreateListingForm>();
   const { data: categories } = useCategories();
+  const { t } = useTranslation();
 
   const title = watch('title');
   const categoryId = watch('categoryId');
   const pricing = watch('pricing');
 
   const categoryName = categories?.find((category) => category.id === categoryId)?.name ?? '';
-  const price = formatPrice(pricing);
+  const price = formatPrice(t, pricing);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
 
       {/* TÍTULO */}
-      <Text style={[styles.title, { color: theme.text }]}>
-        Check your ad
-      </Text>
+      <ThemedText style={styles.title}>
+        {t('createListing.review.checkYourAd')}
+      </ThemedText>
 
-      <Text style={[styles.description, { color: theme.textSecondary }]}>
-        This is how users will see your service listed on the bulletin board
-      </Text>
+      <ThemedText themeColor="textSecondary" style={styles.description}>
+        {t('createListing.review.previewDescription')}
+      </ThemedText>
 
       {/* TARJETA DE PREVISUALIZACIÓN */}
       <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -71,19 +74,19 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
           {/* CATEGORÍA */}
           {categoryName !== '' && (
             <View style={[styles.categoryContainer, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
-              <Text style={[styles.category, { color: theme.textSecondary }]}>
+              <ThemedText style={styles.category}>
                 {categoryName.toUpperCase()}
-              </Text>
+              </ThemedText>
             </View>
           )}
 
           {/* TÍTULO */}
-          <Text
-            style={[styles.serviceTitle, { color: theme.text }]}
+          <ThemedText
+            style={styles.serviceTitle}
             numberOfLines={1}
           >
             {title}
-          </Text>
+          </ThemedText>
 
           {/* ESTADO */}
           <View style={styles.statusContainer}>
@@ -93,9 +96,9 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
               color={theme.text}
             />
 
-            <Text style={[styles.status, { color: theme.text }]}>
-              Nuevo
-            </Text>
+            <ThemedText style={styles.status}>
+              {t('createListing.review.new')}
+            </ThemedText>
           </View>
 
         </View>
@@ -105,18 +108,18 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
 
           {price ? (
             <>
-              <Text style={[styles.from, { color: theme.textSecondary }]}>
+              <ThemedText themeColor="textSecondary" style={styles.from}>
                 {price.label}
-              </Text>
+              </ThemedText>
 
-              <Text style={[styles.price, { color: theme.danger }]}>
+              <ThemedText themeColor="danger" style={styles.price}>
                 {price.amount}
-              </Text>
+              </ThemedText>
             </>
           ) : (
-            <Text style={[styles.from, { color: theme.textSecondary }]}>
-              A COTIZAR
-            </Text>
+            <ThemedText themeColor="textSecondary" style={styles.from}>
+              {t('createListing.review.quoteOnlyTag')}
+            </ThemedText>
           )}
 
         </View>
@@ -124,14 +127,19 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
       </View>
 
       {/* BOTÓN */}
-      <Button
-        label={loading ? 'Publishing...' : 'Post an ad'}
-        onPress={onPublish}
-        loading={loading}
-        variant="primary"
-        style={styles.publishButton}
-        icon={(color) => <MaterialIcons name="publish" size={22} color={color} />}
-      />
+      <Pressable onPress={onPublish} disabled={loading} style={[styles.publishButton, { backgroundColor: theme.primary }]}>
+
+        <MaterialIcons
+          name="publish"
+          size={22}
+          color="#FFFFFF"
+        />
+
+        <ThemedText style={styles.publishText}>
+          {loading ? t('createListing.review.publishing') : t('createListing.review.postAd')}
+        </ThemedText>
+
+      </Pressable>
 
     </View>
   );
@@ -257,5 +265,24 @@ const styles = StyleSheet.create({
   // BOTÓN
   publishButton: {
     marginTop: 20,
+
+    minHeight: 48,
+
+    borderRadius: 8,
+
+    flexDirection: 'row',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    gap: 8,
+  },
+
+  publishText: {
+    color: '#FFFFFF',
+
+    fontSize: 16,
+
+    fontWeight: '600',
   },
 });

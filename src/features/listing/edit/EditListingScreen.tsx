@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import {
   View,
-  Text,
   TextInput,
   Pressable,
   StyleSheet,
@@ -13,12 +12,14 @@ import {
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { Button } from '@/components/ui/button';
-import { BorderRadius, MaxContentWidth } from '@/constants/theme';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { useTheme } from '@/hooks/use-theme';
-
+import { BorderRadius, MaxContentWidth } from '@/constants/theme';
+import { translateFieldError } from '@/i18n/translate-field-error';
 import { Step2Pricing } from '../create/components/Step2Pricing';
 import { useCategories } from '../create/hooks/use-categories';
 import { editListingSchema, type EditListingForm } from './schemas/edit-listing.schema';
@@ -33,6 +34,7 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
   const { data: listing, isLoading, isError, refetch } = useListing(id);
   const { data: categories } = useCategories();
   const updateMutation = useUpdateListing(id);
+  const { t } = useTranslation();
 
   const methods = useForm<EditListingForm>({
     resolver: zodResolver(editListingSchema),
@@ -70,19 +72,21 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
 
   if (isLoading) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <ThemedView style={styles.centered}>
         <ActivityIndicator size="large" color={theme.primary} />
-      </View>
+      </ThemedView>
     );
   }
 
   if (isError || !listing) {
     return (
-      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+      <ThemedView style={styles.centered}>
         <MaterialIcons name="error-outline" size={40} color={theme.textSecondary} />
-        <Text style={[styles.errorText, { color: theme.textSecondary }]}>No se pudo cargar el anuncio.</Text>
-        <Button label="Reintentar" variant="primary" onPress={() => void refetch()} />
-      </View>
+        <ThemedText themeColor="textSecondary" style={styles.errorText}>{t('editListing.loadError')}</ThemedText>
+        <Pressable style={[styles.retryButton, { backgroundColor: theme.primary }]} onPress={() => void refetch()}>
+          <ThemedText style={styles.retryButtonText}>{t('common.retry')}</ThemedText>
+        </Pressable>
+      </ThemedView>
     );
   }
 
@@ -92,122 +96,120 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={[styles.flexCentered, { backgroundColor: theme.background }]}
       >
-        <View style={styles.content}>
-        {/* HEADER */}
-        <View style={[styles.header, { backgroundColor: theme.background }]}>
-          <Pressable onPress={() => router.back()} style={styles.headerButton}>
-            <Text style={[styles.headerButtonText, { color: theme.primary }]}> ‹ </Text>
-          </Pressable>
+        <ThemedView style={{ flex: 1 }}>
+          {/* HEADER */}
+          <View style={styles.header}>
+            <Pressable onPress={() => router.back()} style={styles.headerButton}>
+              <ThemedText themeColor="primary" style={styles.headerButtonText}> ‹ </ThemedText>
+            </Pressable>
 
-          <Text style={[styles.headerTitle, { color: theme.primary }]}>Editar anuncio</Text>
+            <ThemedText themeColor="primary" style={styles.headerTitle}>{t('editListing.headerTitle')}</ThemedText>
 
-          <View style={styles.headerButton} />
-        </View>
+            <View style={styles.headerButton} />
+          </View>
 
-        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
+          <ScrollView contentContainerStyle={styles.container}>
 
-          {/* CATEGORÍA (solo lectura) */}
-          {categoryName && (
-            <View style={styles.section}>
-              <Text style={[styles.label, { color: theme.text }]}>Category</Text>
-              <View
-                style={[
-                  styles.readOnlyChip,
-                  { backgroundColor: theme.backgroundElement, borderColor: theme.border },
-                ]}
-              >
-                <Text style={[styles.readOnlyChipText, { color: theme.text }]}>{categoryName}</Text>
+            {/* CATEGORÍA (solo lectura) */}
+            {categoryName && (
+              <View style={styles.section}>
+                <ThemedText style={styles.label}>{t('editListing.categoryLabel')}</ThemedText>
+                <View style={[styles.readOnlyChip, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+                  <ThemedText style={styles.readOnlyChipText}>{categoryName}</ThemedText>
+                </View>
+                <ThemedText themeColor="textSecondary" style={styles.helper}>
+                  {t('editListing.categoryHelper')}
+                </ThemedText>
               </View>
-              <Text style={[styles.helper, { color: theme.textSecondary }]}>
-                La categoría no se puede modificar una vez creado el anuncio.
-              </Text>
+            )}
+
+            {/* TÍTULO */}
+            <View style={styles.section}>
+              <ThemedText style={styles.label}>{t('editListing.titleLabel')}</ThemedText>
+
+              <Controller
+                control={control}
+                name="title"
+                render={({ field, fieldState }) => (
+                  <>
+                    <TextInput
+                      value={field.value}
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                      style={[
+                        styles.input,
+                        { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text },
+                        fieldState.error && { borderColor: theme.danger },
+                      ]}
+                    />
+                    {fieldState.error && (
+                      <ThemedText themeColor="danger" style={styles.errorHelper}>{translateFieldError(t, fieldState.error.message)}</ThemedText>
+                    )}
+                  </>
+                )}
+              />
             </View>
-          )}
 
-          {/* TÍTULO */}
-          <View style={styles.section}>
-            <Text style={[styles.label, { color: theme.text }]}>Title</Text>
+            {/* DESCRIPCIÓN */}
+            <View style={styles.section}>
+              <ThemedText style={styles.label}>{t('editListing.descriptionLabel')}</ThemedText>
 
-            <Controller
-              control={control}
-              name="title"
-              render={({ field, fieldState }) => (
-                <>
-                  <TextInput
-                    value={field.value}
-                    onChangeText={field.onChange}
-                    onBlur={field.onBlur}
-                    style={[
-                      styles.input,
-                      { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text },
-                      fieldState.error && { borderColor: theme.danger },
-                    ]}
-                  />
-                  {fieldState.error && (
-                    <Text style={[styles.errorHelper, { color: theme.danger }]}>{fieldState.error.message}</Text>
-                  )}
-                </>
+              <Controller
+                control={control}
+                name="description"
+                render={({ field, fieldState }) => (
+                  <>
+                    <TextInput
+                      value={field.value}
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                      multiline
+                      numberOfLines={5}
+                      textAlignVertical="top"
+                      style={[
+                        styles.input,
+                        styles.textArea,
+                        { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text },
+                        fieldState.error && { borderColor: theme.danger },
+                      ]}
+                    />
+                    {fieldState.error && (
+                      <ThemedText themeColor="danger" style={styles.errorHelper}>{translateFieldError(t, fieldState.error.message)}</ThemedText>
+                    )}
+                  </>
+                )}
+              />
+            </View>
+
+            {/* PRICING (reutiliza el paso 2 del flujo de creación) */}
+            <Step2Pricing />
+
+            {errors.pricing && (
+              <ThemedText themeColor="danger" style={styles.errorHelper}>{t('editListing.pricingError')}</ThemedText>
+            )}
+
+            {updateMutation.isError && (
+              <ThemedText themeColor="danger" style={styles.errorHelper}>
+                {updateMutation.error instanceof Error
+                  ? updateMutation.error.message
+                  : t('editListing.saveError')}
+              </ThemedText>
+            )}
+
+            <Pressable
+              style={[styles.saveButton, { backgroundColor: theme.primary }, updateMutation.isPending && styles.saveButtonDisabled]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <ThemedText style={styles.saveButtonText}>{t('editListing.saveButton')}</ThemedText>
               )}
-            />
-          </View>
+            </Pressable>
 
-          {/* DESCRIPCIÓN */}
-          <View style={styles.section}>
-            <Text style={[styles.label, { color: theme.text }]}>Description</Text>
-
-            <Controller
-              control={control}
-              name="description"
-              render={({ field, fieldState }) => (
-                <>
-                  <TextInput
-                    value={field.value}
-                    onChangeText={field.onChange}
-                    onBlur={field.onBlur}
-                    multiline
-                    numberOfLines={5}
-                    textAlignVertical="top"
-                    style={[
-                      styles.input,
-                      styles.textArea,
-                      { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text },
-                      fieldState.error && { borderColor: theme.danger },
-                    ]}
-                  />
-                  {fieldState.error && (
-                    <Text style={[styles.errorHelper, { color: theme.danger }]}>{fieldState.error.message}</Text>
-                  )}
-                </>
-              )}
-            />
-          </View>
-
-          {/* PRICING (reutiliza el paso 2 del flujo de creación) */}
-          <Step2Pricing />
-
-          {errors.pricing && (
-            <Text style={[styles.errorHelper, { color: theme.danger }]}>Revisa el precio ingresado.</Text>
-          )}
-
-          {updateMutation.isError && (
-            <Text style={[styles.errorHelper, { color: theme.danger }]}>
-              {updateMutation.error instanceof Error
-                ? updateMutation.error.message
-                : 'No se pudo guardar el anuncio.'}
-            </Text>
-          )}
-
-          <Button
-            label="Guardar cambios"
-            variant="primary"
-            onPress={handleSubmit(onSubmit)}
-            loading={updateMutation.isPending}
-            disabled={updateMutation.isPending}
-            style={styles.saveButton}
-          />
-
-        </ScrollView>
-        </View>
+          </ScrollView>
+        </ThemedView>
       </KeyboardAvoidingView>
     </FormProvider>
   );
@@ -235,6 +237,17 @@ const styles = StyleSheet.create({
 
   errorText: {
     textAlign: 'center',
+  },
+
+  retryButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 
   header: {
@@ -285,6 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
+
   textArea: {
     minHeight: 120,
   },
@@ -311,5 +325,19 @@ const styles = StyleSheet.create({
 
   saveButton: {
     marginTop: 8,
+    minHeight: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  saveButtonDisabled: {
+    opacity: 0.7,
+  },
+
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
