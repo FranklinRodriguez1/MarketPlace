@@ -31,8 +31,6 @@
     "hasAccount": "Already have an account? Sign in"
   },
   "profile": {
-    "title": "My profile",
-    "email": "Email address",
     "becomeProvider": "Become a provider",
     "clientBadge": "Customer",
     "providerBadge": "Provider",
@@ -50,7 +48,11 @@
     "myListings": "My listings",
     "salesStats": "Sales statistics",
     "walletPayments": "Wallet & payments",
-    "reviewsReceived": "Reviews received"
+    "reviewsReceived": "Reviews received",
+    "security": "Security",
+    "biometricToggle": "Unlock with fingerprint",
+    "biometricConfirmPrompt": "Confirm your identity to enable fingerprint unlock",
+    "biometricConfirmError": "Could not verify your fingerprint. Please try again."
   },
   "moderation": {
     "title": "Moderation queue",
@@ -166,5 +168,13 @@
     "statusDraft": "Draft",
     "statusUnderReview": "Under review",
     "statusRemoved": "Removed"
+  },
+  "biometric": {
+    "unlockTitle": "Welcome back",
+    "unlockSubtitle": "Use your fingerprint to unlock Cerca",
+    "unlockPrompt": "Unlock Cerca with your fingerprint",
+    "unlockCta": "Unlock",
+    "usePassword": "Use password",
+    "error": "Could not verify your identity. Please try again."
   }
 }

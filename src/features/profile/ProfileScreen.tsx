@@ -8,14 +8,20 @@ import { useRouter } from "expo-router";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Switch } from "@/components/ui/switch";
 import { BorderRadius, MaxContentWidth, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
-
+import { authenticateWithBiometrics, isBiometricAvailable } from "@/features/auth/biometrics";
 import { refreshSession } from "@/features/auth/auth.api";
-import { clearTokens, getRefreshToken, saveTokens } from "@/features/auth/session";
 import { useMyListings } from "@/features/listing/my-listings/hooks/use-my-listings";
-
 import { activateProvider, getMe, type MeData } from "./profile.api";
+import {
+  clearTokens,
+  getBiometricsEnabled,
+  getRefreshToken,
+  saveTokens,
+  setBiometricsEnabled,
+} from "@/features/auth/session";
 
 // Idiomas soportados — el nombre se muestra en su propio idioma (Español/English),
 // no se traduce, igual que hacen la mayoría de selectores de idioma.
@@ -38,6 +44,10 @@ export default function ProfileScreen() {
   const [isActivating, setIsActivating] = useState(false);
   const [activateError, setActivateError] = useState<string | null>(null);
   const [languageSheetOpen, setLanguageSheetOpen] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [biometricBusy, setBiometricBusy] = useState(false);
+  const [biometricError, setBiometricError] = useState<string | null>(null);
 
   // Solo se necesita para las estadísticas de la vista de proveedor —
   // se evita el request de más mientras el actor sigue siendo cliente.
@@ -46,7 +56,37 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     void loadMe();
+    void loadBiometricPreference();
   }, []);
+
+  async function loadBiometricPreference(): Promise<void> {
+    const [available, enabled] = await Promise.all([isBiometricAvailable(), getBiometricsEnabled()]);
+    setBiometricAvailable(available);
+    setBiometricEnabled(enabled);
+  }
+
+  async function handleToggleBiometrics(next: boolean): Promise<void> {
+    setBiometricError(null);
+
+    if (!next) {
+      setBiometricEnabled(false);
+      await setBiometricsEnabled(false);
+      return;
+    }
+
+    setBiometricBusy(true);
+    try {
+      const success = await authenticateWithBiometrics(t("profile.biometricConfirmPrompt"));
+      if (success) {
+        setBiometricEnabled(true);
+        await setBiometricsEnabled(true);
+      } else {
+        setBiometricError(t("profile.biometricConfirmError"));
+      }
+    } finally {
+      setBiometricBusy(false);
+    }
+  }
 
   async function loadMe(): Promise<void> {
     setState({ status: "loading" });
@@ -313,6 +353,34 @@ export default function ProfileScreen() {
             )}
           </ThemedView>
 
+          {/* DESBLOQUEO CON BIOMETRÍA — solo si el dispositivo la soporta */}
+          {biometricAvailable && (
+            <ThemedView type="surface" style={[styles.card, { borderColor: theme.border }]}>
+              <View style={styles.biometricRow}>
+                <View style={styles.biometricRowLeft}>
+                  <View style={[styles.menuRowIcon, { backgroundColor: theme.backgroundElement }]}>
+                    <Ionicons name="finger-print-outline" size={18} color={theme.text} />
+                  </View>
+                  <ThemedText style={styles.menuRowLabel}>{t("profile.biometricToggle")}</ThemedText>
+                </View>
+                <Switch
+                  value={biometricEnabled}
+                  onValueChange={(next) => void handleToggleBiometrics(next)}
+                  disabled={biometricBusy}
+                />
+              </View>
+
+              {biometricError && (
+                <View style={styles.biometricErrorRow}>
+                  <Ionicons name="alert-circle-outline" size={14} color={theme.danger} />
+                  <ThemedText type="small" themeColor="danger">
+                    {biometricError}
+                  </ThemedText>
+                </View>
+              )}
+            </ThemedView>
+          )}
+
           {/* CERRAR SESIÓN */}
           <ThemedView type="surface" style={[styles.card, { borderColor: theme.border }]}>
             <MenuRow icon="log-out-outline" label={t("profile.logout")} onPress={confirmLogout} isLast danger />
@@ -574,5 +642,26 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.button,
     borderWidth: 1,
     alignItems: "center",
+  },
+  biometricRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Spacing.three,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+  },
+  biometricRowLeft: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.three,
+  },
+  biometricErrorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.three,
+    paddingBottom: Spacing.three,
   },
 });
