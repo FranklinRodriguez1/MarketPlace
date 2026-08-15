@@ -6,9 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
+import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
-
-import { CATEGORY_OPTIONS } from '../types/search.types';
 
 interface ListingCardProps {
   listing: Listing;
@@ -31,7 +30,8 @@ function priceLabel(listing: Listing): { amount: string; unit?: string } {
 
 export function ListingCard({ listing, onPress }: ListingCardProps) {
   const theme = useTheme();
-  const category = CATEGORY_OPTIONS.find((option) => option.id === listing.categoryId);
+  const { data: categories = [] } = useCategories();
+  const category = categories.find((option) => option.slug === listing.categoryId);
   const price = priceLabel(listing);
 
   return (
@@ -52,7 +52,7 @@ export function ListingCard({ listing, onPress }: ListingCardProps) {
           {category && (
             <View style={[styles.tag, { backgroundColor: theme.backgroundElement }]}>
               <ThemedText type="small" themeColor="textSecondary">
-                {category.label}
+                {category.name}
               </ThemedText>
             </View>
           )}

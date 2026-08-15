@@ -5,7 +5,9 @@ import { api } from '@/services/api';
 
 // actorSchema tiene { capacities, platformRole }.
 // El endpoint /me devuelve lo mismo más un id.
-const meSchema = actorSchema.extend({ id: z.string() });
+// email es opcional: el backend desplegado todavía no lo incluye en /me
+// (ver CERCA-21) — cuando lo agregue, esto empieza a llegar solo.
+const meSchema = actorSchema.extend({ id: z.string(), email: z.string().email().optional() });
 
 export type MeData = z.infer<typeof meSchema>;
 

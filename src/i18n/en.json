@@ -1,8 +1,10 @@
 {
   "common": {
     "retry": "Retry",
+    "cancel": "Cancel",
     "unexpectedError": "Unexpected error.",
-    "unexpectedErrorRetry": "Unexpected error. Please try again."
+    "unexpectedErrorRetry": "Unexpected error. Please try again.",
+    "featureComingSoon": "This feature will be available soon."
   },
   "login": {
     "subtitle": "Sign in to continue",
@@ -30,12 +32,25 @@
   },
   "profile": {
     "title": "My profile",
-    "id": "ID",
-    "role": "Role",
-    "capacities": "Capacities",
-    "none": "None",
+    "email": "Email address",
     "becomeProvider": "Become a provider",
-    "language": "Language"
+    "clientBadge": "Customer",
+    "providerBadge": "Provider",
+    "language": "Language",
+    "myBookings": "My bookings",
+    "favorites": "Favorites",
+    "currencyRegion": "Currency/region",
+    "notifications": "Notifications",
+    "help": "Help",
+    "logout": "Log out",
+    "logoutConfirmTitle": "Log out?",
+    "logoutConfirmMessage": "You'll be signed out of your Cerca account on this device.",
+    "rating": "Rating",
+    "activeListings": "Active listings",
+    "myListings": "My listings",
+    "salesStats": "Sales statistics",
+    "walletPayments": "Wallet & payments",
+    "reviewsReceived": "Reviews received"
   },
   "moderation": {
     "title": "Moderation queue",

@@ -2,9 +2,8 @@ import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
+import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
-
-import { CATEGORY_OPTIONS } from '../types/search.types';
 
 interface CategoryChipsProps {
   selectedCategoryId?: string;
@@ -13,6 +12,7 @@ interface CategoryChipsProps {
 
 export function CategoryChips({ selectedCategoryId, onSelect }: CategoryChipsProps) {
   const theme = useTheme();
+  const { data: categories = [] } = useCategories();
 
   return (
     <ScrollView
@@ -21,13 +21,13 @@ export function CategoryChips({ selectedCategoryId, onSelect }: CategoryChipsPro
       style={styles.wrapper}
       contentContainerStyle={styles.row}
     >
-      {CATEGORY_OPTIONS.map((category) => {
-        const selected = category.id === selectedCategoryId;
+      {categories.map((category) => {
+        const selected = category.slug === selectedCategoryId;
 
         return (
           <Pressable
             key={category.id}
-            onPress={() => onSelect(selected ? undefined : category.id)}
+            onPress={() => onSelect(selected ? undefined : category.slug)}
             style={[
               styles.chip,
               {
@@ -37,7 +37,7 @@ export function CategoryChips({ selectedCategoryId, onSelect }: CategoryChipsPro
             ]}
           >
             <ThemedText type="small" style={{ color: selected ? '#FFFFFF' : theme.text }}>
-              {category.label}
+              {category.name}
             </ThemedText>
           </Pressable>
         );

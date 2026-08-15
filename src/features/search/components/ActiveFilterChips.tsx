@@ -5,9 +5,9 @@ import { formatMoney } from '@cerca/src';
 
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
+import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
 
-import { CATEGORY_OPTIONS } from '../types/search.types';
 import type { FilterState } from '../types/search.types';
 
 interface ActiveFilterChipsProps {
@@ -18,13 +18,14 @@ interface ActiveFilterChipsProps {
 export function ActiveFilterChips({ filters, onRemove }: ActiveFilterChipsProps) {
   const theme = useTheme();
   const localeTag = getLocales()[0]?.languageTag ?? 'es-CO';
+  const { data: categories = [] } = useCategories();
 
   const chips: { key: keyof FilterState; label: string }[] = [];
 
   if (filters.categoryId) {
-    const category = CATEGORY_OPTIONS.find((option) => option.id === filters.categoryId);
+    const category = categories.find((option) => option.slug === filters.categoryId);
     if (category) {
-      chips.push({ key: 'categoryId', label: category.label });
+      chips.push({ key: 'categoryId', label: category.name });
     }
   }
 

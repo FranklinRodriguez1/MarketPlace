@@ -1,8 +1,10 @@
 {
   "common": {
     "retry": "Reintentar",
+    "cancel": "Cancelar",
     "unexpectedError": "Error inesperado.",
-    "unexpectedErrorRetry": "Error inesperado. Intenta de nuevo."
+    "unexpectedErrorRetry": "Error inesperado. Intenta de nuevo.",
+    "featureComingSoon": "Esta función estará disponible pronto."
   },
   "login": {
     "subtitle": "Inicia sesión para continuar",
@@ -30,12 +32,25 @@
   },
   "profile": {
     "title": "Mi perfil",
-    "id": "ID",
-    "role": "Rol",
-    "capacities": "Capacidades",
-    "none": "Ninguna",
-    "becomeProvider": "Convertirme en proveedor",
-    "language": "Idioma"
+    "email": "Correo electrónico",
+    "becomeProvider": "Conviértete en proveedor",
+    "clientBadge": "Cliente",
+    "providerBadge": "Proveedor",
+    "language": "Idioma",
+    "myBookings": "Mis reservas",
+    "favorites": "Favoritos",
+    "currencyRegion": "Moneda/región",
+    "notifications": "Notificaciones",
+    "help": "Ayuda",
+    "logout": "Cerrar sesión",
+    "logoutConfirmTitle": "¿Cerrar sesión?",
+    "logoutConfirmMessage": "Vas a salir de tu cuenta de Cerca en este dispositivo.",
+    "rating": "Rating",
+    "activeListings": "Anuncios activos",
+    "myListings": "Mis anuncios",
+    "salesStats": "Estadísticas de ventas",
+    "walletPayments": "Billetera y pagos",
+    "reviewsReceived": "Reseñas recibidas"
   },
   "moderation": {
     "title": "Cola de moderación",

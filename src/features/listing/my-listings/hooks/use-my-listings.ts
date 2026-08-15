@@ -3,10 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { myListingsKey } from '@/infrastructure/query/query-keys';
 import { getMyListing, pauseListing, publishListing } from '@/services/listing.service';
 
-export function useMyListings() {
+export function useMyListings(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: myListingsKey(),
     queryFn: getMyListing,
+    enabled: options?.enabled,
   });
 }
 

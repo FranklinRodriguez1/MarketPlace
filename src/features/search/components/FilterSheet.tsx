@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/themed-text';
 import { Button } from '@/components/ui/button';
 import { BorderRadius, Spacing } from '@/constants/theme';
+import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
 
-import { CATEGORY_OPTIONS, RATING_OPTIONS } from '../types/search.types';
+import { RATING_OPTIONS } from '../types/search.types';
 import type { FilterState } from '../types/search.types';
 
 interface FilterSheetProps {
@@ -19,6 +20,7 @@ interface FilterSheetProps {
 
 export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetProps) {
   const theme = useTheme();
+  const { data: categories = [] } = useCategories();
   const [categoryId, setCategoryId] = useState(filters.categoryId);
   const [minRating, setMinRating] = useState(filters.minRating);
   const [priceMaxText, setPriceMaxText] = useState(
@@ -53,17 +55,17 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
 
           <ThemedText type="smallBold">Categoría</ThemedText>
           <View style={styles.chipGrid}>
-            {CATEGORY_OPTIONS.map((category) => {
-              const selected = category.id === categoryId;
+            {categories.map((category) => {
+              const selected = category.slug === categoryId;
 
               return (
                 <Pressable
                   key={category.id}
-                  onPress={() => setCategoryId(selected ? undefined : category.id)}
+                  onPress={() => setCategoryId(selected ? undefined : category.slug)}
                   style={[styles.pill, { backgroundColor: selected ? theme.primary : theme.backgroundElement }]}
                 >
                   <ThemedText type="small" style={{ color: selected ? '#FFFFFF' : theme.text }}>
-                    {category.label}
+                    {category.name}
                   </ThemedText>
                 </Pressable>
               );
