@@ -6,11 +6,18 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Switch } from '@/components/ui/switch';
 import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 import { refreshSession } from '@/features/auth/auth.api';
-import { getRefreshToken, saveTokens } from '@/features/auth/session';
+import { authenticateWithBiometrics, isBiometricAvailable } from '@/features/auth/biometrics';
+import {
+  getBiometricsEnabled,
+  getRefreshToken,
+  saveTokens,
+  setBiometricsEnabled,
+} from '@/features/auth/session';
 
 import { activateProvider, getMe, type MeData } from './profile.api';
 
@@ -26,10 +33,44 @@ export default function ProfileScreen() {
   const [state, setState] = useState<ScreenState>({ status: 'loading' });
   const [isActivating, setIsActivating] = useState(false);
   const [activateError, setActivateError] = useState<string | null>(null);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [biometricBusy, setBiometricBusy] = useState(false);
+  const [biometricError, setBiometricError] = useState<string | null>(null);
 
   useEffect(() => {
     void loadMe();
+    void loadBiometricPreference();
   }, []);
+
+  async function loadBiometricPreference(): Promise<void> {
+    const [available, enabled] = await Promise.all([isBiometricAvailable(), getBiometricsEnabled()]);
+    setBiometricAvailable(available);
+    setBiometricEnabled(enabled);
+  }
+
+  async function handleToggleBiometrics(next: boolean): Promise<void> {
+    setBiometricError(null);
+
+    if (!next) {
+      setBiometricEnabled(false);
+      await setBiometricsEnabled(false);
+      return;
+    }
+
+    setBiometricBusy(true);
+    try {
+      const success = await authenticateWithBiometrics(t('profile.biometricConfirmPrompt'));
+      if (success) {
+        setBiometricEnabled(true);
+        await setBiometricsEnabled(true);
+      } else {
+        setBiometricError(t('profile.biometricConfirmError'));
+      }
+    } finally {
+      setBiometricBusy(false);
+    }
+  }
 
   async function loadMe(): Promise<void> {
     setState({ status: 'loading' });
@@ -183,6 +224,33 @@ export default function ProfileScreen() {
             />
           </View>
         </View>
+
+        {/* Desbloqueo con biometría — solo si el dispositivo la soporta */}
+        {biometricAvailable && (
+          <View style={styles.section}>
+            <ThemedText type="smallBold" style={styles.sectionLabel}>
+              {t('profile.security')}
+            </ThemedText>
+            {biometricError && (
+              <View style={styles.activateErrorRow}>
+                <Ionicons name="alert-circle-outline" size={14} color={theme.danger} />
+                <ThemedText type="small" themeColor="danger">
+                  {biometricError}
+                </ThemedText>
+              </View>
+            )}
+            <View style={[styles.biometricRow, { backgroundColor: theme.backgroundElement }]}>
+              <ThemedText type="small" style={styles.biometricLabel}>
+                {t('profile.biometricToggle')}
+              </ThemedText>
+              <Switch
+                value={biometricEnabled}
+                onValueChange={(next) => void handleToggleBiometrics(next)}
+                disabled={biometricBusy}
+              />
+            </View>
+          </View>
+        )}
       </SafeAreaView>
     </ThemedView>
   );
@@ -334,5 +402,16 @@ const styles = StyleSheet.create({
   },
   langButtonTextActive: {
     color: '#FFFFFF',
+  },
+  biometricRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: BorderRadius.card,
+    padding: Spacing.three,
+  },
+  biometricLabel: {
+    flex: 1,
+    marginRight: Spacing.two,
   },
 });

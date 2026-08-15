@@ -8,7 +8,10 @@
     "scheme": "marketplace",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Cerca usa Face ID para desbloquear la app de forma rápida y segura."
+      }
     },
     "androidStatusBar": {
       "hidden": true
@@ -48,7 +51,8 @@
         }
       ],
       "react-native-edge-to-edge",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-local-authentication"
     ],
     "experiments": {
       "typedRoutes": true,
