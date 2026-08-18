@@ -127,7 +127,14 @@ export function Step4Review({onPublish, loading= false}: Step4ReviewProps) {
       </View>
 
       {/* BOTÓN */}
-      <Pressable onPress={onPublish} disabled={loading} style={[styles.publishButton, { backgroundColor: theme.primary }]}>
+      <Pressable
+        onPress={onPublish}
+        disabled={loading}
+        style={({ pressed }) => [
+          styles.publishButton,
+          { backgroundColor: pressed && !loading ? '#0369A1' : theme.primary },
+        ]}
+      >
 
         <MaterialIcons
           name="publish"

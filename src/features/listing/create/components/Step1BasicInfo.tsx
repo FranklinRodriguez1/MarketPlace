@@ -21,6 +21,7 @@ import {
   DEFAULT_CATEGORY_ICON,
 } from "@/constants/category-icons";
 import { translateFieldError } from "@/i18n/translate-field-error";
+import { darkenColor } from "@/utils/color";
 
 import { useCategories } from "../hooks/use-categories";
 import type { CreateListingForm } from "../schemas/create-listing.schema";
@@ -178,15 +179,17 @@ export function Step1BasicInfo() {
             name="categoryId"
             render={({ field, fieldState }) => {
               const selected = field.value === item.id;
+              const baseBackground = selected ? theme.backgroundSelected : theme.surface;
 
               return (
                 <Pressable
                   onPress={() => field.onChange(item.id)}
-                  style={[
+                  style={({ pressed }) => [
                     styles.card,
                     { backgroundColor: theme.surface, borderColor: theme.border },
                     selected && { backgroundColor: theme.backgroundSelected, borderColor: theme.primary, borderWidth: 2 },
                     fieldState.error && { borderColor: theme.danger },
+                    pressed && { backgroundColor: darkenColor(baseBackground) },
                   ]}
                 >
                   {/* ICON */}
@@ -239,7 +242,11 @@ export function Step1BasicInfo() {
                 {t('createListing.step1.loadErrorCategories')}
               </ThemedText>
               <Pressable onPress={() => refetch()}>
-                <ThemedText themeColor="primary" style={styles.retryText}>{t('common.retry')}</ThemedText>
+                {({ pressed }) => (
+                  <ThemedText style={[styles.retryText, { color: pressed ? '#0369A1' : theme.primary }]}>
+                    {t('common.retry')}
+                  </ThemedText>
+                )}
               </Pressable>
             </View>
           ) : (

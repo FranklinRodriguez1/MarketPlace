@@ -39,7 +39,9 @@ export function CreateListingHeader({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                    <ThemedText themeColor="primary" style={{ fontSize: 28 }}> ‹ </ThemedText>
+                    {({ pressed }) => (
+                      <ThemedText style={{ fontSize: 28, color: pressed ? '#0369A1' : theme.primary }}> ‹ </ThemedText>
+                    )}
                 </Pressable>
             </View>
 
@@ -57,7 +59,9 @@ export function CreateListingHeader({
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                    <ThemedText themeColor="primary" style={{ fontSize: 28 }}>X</ThemedText>
+                    {({ pressed }) => (
+                      <ThemedText style={{ fontSize: 28, color: pressed ? '#0369A1' : theme.primary }}>X</ThemedText>
+                    )}
                 </Pressable>
             </View>
             </View>

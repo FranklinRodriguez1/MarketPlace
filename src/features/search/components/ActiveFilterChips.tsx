@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import type { FilterState } from '../types/search.types';
 
@@ -53,7 +54,10 @@ export function ActiveFilterChips({ filters, onRemove }: ActiveFilterChipsProps)
         <Pressable
           key={chip.key}
           onPress={() => onRemove(chip.key)}
-          style={[styles.chip, { backgroundColor: theme.backgroundSelected }]}
+          style={({ pressed }) => [
+            styles.chip,
+            { backgroundColor: pressed ? darkenColor(theme.backgroundSelected) : theme.backgroundSelected },
+          ]}
         >
           <ThemedText type="small" style={{ color: theme.primary }}>
             {chip.label}

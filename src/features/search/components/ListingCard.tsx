@@ -37,7 +37,10 @@ export function ListingCard({ listing, onPress }: ListingCardProps) {
   return (
     <Pressable
       onPress={() => onPress(listing.id)}
-      style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: pressed ? theme.backgroundElement : theme.surface, borderColor: theme.border },
+      ]}
     >
       <Image source={{ uri: listing.photos[0] }} style={[styles.image, { backgroundColor: theme.backgroundElement }]} />
       <View style={styles.body}>

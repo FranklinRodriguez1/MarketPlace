@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import {
   getReports,
@@ -109,7 +110,11 @@ export default function ModerationScreen() {
         </ThemedText>
         <Pressable
           onPress={() => void loadReports()}
-          style={[styles.retryButton, { borderColor: theme.border }]}
+          style={({ pressed }) => [
+            styles.retryButton,
+            { borderColor: theme.border },
+            pressed && { backgroundColor: theme.backgroundElement },
+          ]}
         >
           <ThemedText type="smallBold" themeColor="primary">
             {t('common.retry')}
@@ -216,7 +221,7 @@ function ReportCard({ report, isBusy, actionError, onModerate, onResolve }: Repo
           styles.resolveButton,
           { borderColor: theme.primary },
           isBusy && styles.buttonDisabled,
-          pressed && !isBusy && styles.buttonPressed,
+          pressed && !isBusy && { backgroundColor: theme.backgroundElement },
         ]}
       >
         {isBusy ? (
@@ -242,15 +247,15 @@ interface ModerateButtonProps {
 
 function ModerateButton({ label, onPress, disabled, danger = false }: ModerateButtonProps) {
   const theme = useTheme();
+  const baseColor = danger ? theme.danger : theme.primary;
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
         styles.moderateButton,
-        { backgroundColor: danger ? theme.danger : theme.primary },
+        { backgroundColor: pressed && !disabled ? darkenColor(baseColor) : baseColor },
         disabled && styles.buttonDisabled,
-        pressed && !disabled && styles.buttonPressed,
       ]}
     >
       <ThemedText type="small" style={styles.moderateButtonText}>
@@ -336,8 +341,5 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
-  },
-  buttonPressed: {
-    opacity: 0.8,
   },
 });

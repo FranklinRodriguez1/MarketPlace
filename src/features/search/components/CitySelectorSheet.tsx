@@ -5,6 +5,7 @@ import type { Coordinates } from '@cerca/src';
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 interface CityOption {
   id: string;
@@ -36,13 +37,15 @@ export function CitySelectorSheet({ visible, cities, selectedCityId, onSelect, o
           {cities.map((city) => {
             const selected = city.id === selectedCityId;
 
+            const baseBackground = selected ? theme.backgroundSelected : theme.background;
+
             return (
               <Pressable
                 key={city.id}
                 onPress={() => onSelect(city.id)}
-                style={[
+                style={({ pressed }) => [
                   styles.cityRow,
-                  { borderColor: theme.border, backgroundColor: selected ? theme.backgroundSelected : theme.background },
+                  { borderColor: theme.border, backgroundColor: pressed ? darkenColor(baseBackground) : baseBackground },
                 ]}
               >
                 <ThemedText>{city.label}</ThemedText>
@@ -51,11 +54,21 @@ export function CitySelectorSheet({ visible, cities, selectedCityId, onSelect, o
             );
           })}
 
-          <Pressable onPress={onRetryGps} style={styles.retry}>
-            <Ionicons name="locate-outline" size={16} color={theme.primary} />
-            <ThemedText type="small" style={{ color: theme.primary }}>
-              Intentar con mi ubicación otra vez
-            </ThemedText>
+          <Pressable
+            onPress={onRetryGps}
+            style={({ pressed }) => [
+              styles.retry,
+              pressed && { backgroundColor: theme.backgroundElement, borderRadius: BorderRadius.input },
+            ]}
+          >
+            {({ pressed }) => (
+              <>
+                <Ionicons name="locate-outline" size={16} color={pressed ? '#0369A1' : theme.primary} />
+                <ThemedText type="small" style={{ color: pressed ? '#0369A1' : theme.primary }}>
+                  Intentar con mi ubicación otra vez
+                </ThemedText>
+              </>
+            )}
           </Pressable>
         </View>
       </View>

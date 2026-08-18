@@ -163,7 +163,12 @@ export function Step2Pricing() {
                 borderRadius: BorderRadius.input,
               }}
             >
-              <Pressable onPress={selectFixed}>
+              <Pressable
+                onPress={selectFixed}
+                style={({ pressed }) => [
+                  pressed && { backgroundColor: theme.backgroundElement, borderRadius: BorderRadius.input },
+                ]}
+              >
                 <ThemedText
                   style={{ fontSize: 16, fontWeight: '600' }}
                 >
@@ -263,7 +268,12 @@ export function Step2Pricing() {
                 borderRadius: BorderRadius.input,
               }}
             >
-              <Pressable onPress={selectHourly}>
+              <Pressable
+                onPress={selectHourly}
+                style={({ pressed }) => [
+                  pressed && { backgroundColor: theme.backgroundElement, borderRadius: BorderRadius.input },
+                ]}
+              >
                 <ThemedText
                   style={{ fontSize: 16, fontWeight: '600' }}
                 >
@@ -423,7 +433,12 @@ export function Step2Pricing() {
                 borderRadius: BorderRadius.input,
               }}
             >
-              <Pressable onPress={selectQuote}>
+              <Pressable
+                onPress={selectQuote}
+                style={({ pressed }) => [
+                  pressed && { backgroundColor: theme.backgroundElement, borderRadius: BorderRadius.input },
+                ]}
+              >
                 <ThemedText
                   style={{ fontSize: 16, fontWeight: '600' }}
                 >

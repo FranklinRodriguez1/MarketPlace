@@ -11,6 +11,7 @@ import {  Spacing } from '@/constants/theme';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import type { Listing } from '@/services/listing.service';
+import { darkenColor } from '@/utils/color';
 
 interface ListingCardProps {
   listing: Listing;
@@ -42,11 +43,13 @@ export function ListingCard({
           </ThemedText>
 
           <Pressable onPress={() => onMenuPress(listing)}>
-            <MaterialIcons
-              name="more-vert"
-              size={24}
-              color={theme.text}
-            />
+            {({ pressed }) => (
+              <MaterialIcons
+                name="more-vert"
+                size={24}
+                color={pressed ? darkenColor(theme.text) : theme.text}
+              />
+            )}
           </Pressable>
         </View>
 

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import { signIn } from '../auth.api';
 import { loginFormSchema, type LoginFormData } from '../auth.schemas';
@@ -85,11 +86,13 @@ export function LoginScreen() {
             error={errors.password?.message}
             rightElement={
               <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={8}>
-                <Ionicons
-                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                  size={18}
-                  color={theme.textSecondary}
-                />
+                {({ pressed }) => (
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={18}
+                    color={pressed ? darkenColor(theme.textSecondary) : theme.textSecondary}
+                  />
+                )}
               </Pressable>
             }
           />
@@ -106,9 +109,11 @@ export function LoginScreen() {
       )}
 
       <Pressable style={styles.forgotLink}>
-        <ThemedText type="smallBold" themeColor="primary">
-          {t('login.forgotPassword')}
-        </ThemedText>
+        {({ pressed }) => (
+          <ThemedText type="smallBold" style={{ color: pressed ? '#0369A1' : theme.primary }}>
+            {t('login.forgotPassword')}
+          </ThemedText>
+        )}
       </Pressable>
 
       <AuthButton
@@ -125,9 +130,11 @@ export function LoginScreen() {
       <View style={styles.footerRow}>
         <ThemedText type="small">{t('login.noAccount')}{' '}</ThemedText>
         <Pressable onPress={() => router.push('/register')}>
-          <ThemedText type="smallBold" themeColor="primary">
-            {t('login.signUpLink')}
-          </ThemedText>
+          {({ pressed }) => (
+            <ThemedText type="smallBold" style={{ color: pressed ? '#0369A1' : theme.primary }}>
+              {t('login.signUpLink')}
+            </ThemedText>
+          )}
         </Pressable>
       </View>
     </AuthCard>

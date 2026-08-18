@@ -83,7 +83,10 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
       <ThemedView style={styles.centered}>
         <MaterialIcons name="error-outline" size={40} color={theme.textSecondary} />
         <ThemedText themeColor="textSecondary" style={styles.errorText}>{t('editListing.loadError')}</ThemedText>
-        <Pressable style={[styles.retryButton, { backgroundColor: theme.primary }]} onPress={() => void refetch()}>
+        <Pressable
+          style={({ pressed }) => [styles.retryButton, { backgroundColor: pressed ? '#0369A1' : theme.primary }]}
+          onPress={() => void refetch()}
+        >
           <ThemedText style={styles.retryButtonText}>{t('common.retry')}</ThemedText>
         </Pressable>
       </ThemedView>
@@ -100,7 +103,9 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
           {/* HEADER */}
           <View style={styles.header}>
             <Pressable onPress={() => router.back()} style={styles.headerButton}>
-              <ThemedText themeColor="primary" style={styles.headerButtonText}> ‹ </ThemedText>
+              {({ pressed }) => (
+                <ThemedText style={[styles.headerButtonText, { color: pressed ? '#0369A1' : theme.primary }]}> ‹ </ThemedText>
+              )}
             </Pressable>
 
             <ThemedText themeColor="primary" style={styles.headerTitle}>{t('editListing.headerTitle')}</ThemedText>
@@ -197,7 +202,11 @@ export function EditListingScreen({ id }: EditListingScreenProps) {
             )}
 
             <Pressable
-              style={[styles.saveButton, { backgroundColor: theme.primary }, updateMutation.isPending && styles.saveButtonDisabled]}
+              style={({ pressed }) => [
+                styles.saveButton,
+                { backgroundColor: pressed && !updateMutation.isPending ? '#0369A1' : theme.primary },
+                updateMutation.isPending && styles.saveButtonDisabled,
+              ]}
               onPress={handleSubmit(onSubmit)}
               disabled={updateMutation.isPending}
             >

@@ -14,6 +14,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { authenticateWithBiometrics, isBiometricAvailable } from "@/features/auth/biometrics";
 import { refreshSession } from "@/features/auth/auth.api";
 import { useMyListings } from "@/features/listing/my-listings/hooks/use-my-listings";
+import { darkenColor } from "@/utils/color";
 import { activateProvider, getMe, type MeData } from "./profile.api";
 import {
   clearTokens,
@@ -165,7 +166,11 @@ export default function ProfileScreen() {
         </ThemedText>
         <Pressable
           onPress={() => void loadMe()}
-          style={[styles.retryButton, { borderColor: theme.border }]}
+          style={({ pressed }) => [
+            styles.retryButton,
+            { borderColor: theme.border },
+            pressed && { backgroundColor: theme.backgroundElement },
+          ]}
         >
           <ThemedText type="smallBold" themeColor="primary">
             {t("common.retry")}
@@ -237,9 +242,10 @@ export default function ProfileScreen() {
                   <Pressable
                     onPress={() => void handleActivateProvider()}
                     disabled={isActivating}
-                    style={[
+                    style={({ pressed }) => [
                       styles.outlinedButton,
                       { borderColor: theme.primary },
+                      pressed && !isActivating && { backgroundColor: theme.backgroundElement },
                       isActivating && styles.buttonDisabled,
                     ]}
                   >
@@ -312,6 +318,12 @@ export default function ProfileScreen() {
                   icon="chatbubbles-outline"
                   label={t("profile.reviewsReceived")}
                   onPress={() => notifyComingSoon(t("profile.reviewsReceived"))}
+                />
+                <MenuRow
+                  icon="globe-outline"
+                  label={t("profile.language")}
+                  value={currentLanguage?.label}
+                  onPress={() => setLanguageSheetOpen(true)}
                   isLast
                 />
               </>
@@ -401,6 +413,8 @@ export default function ProfileScreen() {
               {LANGUAGE_OPTIONS.map((option) => {
                 const selected = option.code === i18n.language;
 
+                const baseBackground = selected ? theme.backgroundSelected : theme.background;
+
                 return (
                   <Pressable
                     key={option.code}
@@ -408,9 +422,12 @@ export default function ProfileScreen() {
                       void i18n.changeLanguage(option.code);
                       setLanguageSheetOpen(false);
                     }}
-                    style={[
+                    style={({ pressed }) => [
                       styles.sheetOption,
-                      { borderColor: theme.border, backgroundColor: selected ? theme.backgroundSelected : theme.background },
+                      {
+                        borderColor: theme.border,
+                        backgroundColor: pressed ? darkenColor(baseBackground) : baseBackground,
+                      },
                     ]}
                   >
                     <ThemedText>{option.label}</ThemedText>
@@ -421,7 +438,11 @@ export default function ProfileScreen() {
 
               <Pressable
                 onPress={() => setLanguageSheetOpen(false)}
-                style={[styles.sheetCancel, { borderColor: theme.border }]}
+                style={({ pressed }) => [
+                  styles.sheetCancel,
+                  { borderColor: theme.border },
+                  pressed && { backgroundColor: theme.backgroundElement },
+                ]}
               >
                 <ThemedText type="smallBold">{t("common.cancel")}</ThemedText>
               </Pressable>

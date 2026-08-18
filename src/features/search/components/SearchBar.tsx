@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 interface SearchBarProps {
   value: string;
@@ -36,7 +37,9 @@ export function SearchBar({
       />
       {editable && value.length > 0 && (
         <Pressable onPress={() => onChangeText('')} hitSlop={8}>
-          <Ionicons name="close-circle" size={18} color={theme.textSecondary} />
+          {({ pressed }) => (
+            <Ionicons name="close-circle" size={18} color={pressed ? darkenColor(theme.textSecondary) : theme.textSecondary} />
+          )}
         </Pressable>
       )}
       {onPress && !editable && (

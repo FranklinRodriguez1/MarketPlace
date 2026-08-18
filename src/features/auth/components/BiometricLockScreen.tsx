@@ -68,9 +68,11 @@ export function BiometricLockScreen({ onUnlock }: BiometricLockScreenProps) {
       <AuthButton label={t('biometric.unlockCta')} onPress={unlock} loading={authenticating} />
       <View style={styles.gap} />
       <Pressable style={styles.passwordLink} onPress={usePassword}>
-        <ThemedText type="smallBold" themeColor="primary">
-          {t('biometric.usePassword')}
-        </ThemedText>
+        {({ pressed }) => (
+          <ThemedText type="smallBold" style={{ color: pressed ? '#0369A1' : theme.primary }}>
+            {t('biometric.usePassword')}
+          </ThemedText>
+        )}
       </Pressable>
     </AuthCard>
   );

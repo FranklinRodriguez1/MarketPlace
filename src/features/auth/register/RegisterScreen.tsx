@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import { signUp } from '../auth.api';
 import { registerFormSchema, type RegisterFormData } from '../auth.schemas';
@@ -100,11 +101,13 @@ export function RegisterScreen() {
             error={errors.password?.message}
             rightElement={
               <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={8}>
-                <Ionicons
-                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                  size={18}
-                  color={theme.textSecondary}
-                />
+                {({ pressed }) => (
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={18}
+                    color={pressed ? darkenColor(theme.textSecondary) : theme.textSecondary}
+                  />
+                )}
               </Pressable>
             }
           />
@@ -126,11 +129,13 @@ export function RegisterScreen() {
             error={errors.confirmPassword?.message}
             rightElement={
               <Pressable onPress={() => setShowConfirmPassword((v) => !v)} hitSlop={8}>
-                <Ionicons
-                  name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
-                  size={18}
-                  color={theme.textSecondary}
-                />
+                {({ pressed }) => (
+                  <Ionicons
+                    name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={18}
+                    color={pressed ? darkenColor(theme.textSecondary) : theme.textSecondary}
+                  />
+                )}
               </Pressable>
             }
           />
@@ -155,10 +160,14 @@ export function RegisterScreen() {
 
       <View style={styles.footerRow}>
         <Pressable onPress={() => router.push('/login')} style={styles.footerLinkRow}>
-          <ThemedText type="smallBold" themeColor="primary">
-            {t('register.hasAccount')}
-          </ThemedText>
-          <Ionicons name="arrow-forward" size={14} color={theme.primary} />
+          {({ pressed }) => (
+            <>
+              <ThemedText type="smallBold" style={{ color: pressed ? '#0369A1' : theme.primary }}>
+                {t('register.hasAccount')}
+              </ThemedText>
+              <Ionicons name="arrow-forward" size={14} color={pressed ? '#0369A1' : theme.primary} />
+            </>
+          )}
         </Pressable>
       </View>
     </AuthCard>

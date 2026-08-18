@@ -11,6 +11,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BorderRadius, MaxContentWidth, Spacing } from '@/constants/theme';
 import { getAccessToken } from '@/features/auth/session';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import { ActiveFilterChips } from './components/ActiveFilterChips';
 import { CategoryChips } from './components/CategoryChips';
@@ -127,7 +128,9 @@ export function SearchScreen() {
         {/* HEADER */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.two }]}>
           <Pressable onPress={handleClose} hitSlop={12}>
-            <Ionicons name="close" size={26} color={theme.primary} />
+            {({ pressed }) => (
+              <Ionicons name="close" size={26} color={pressed ? '#0369A1' : theme.primary} />
+            )}
           </Pressable>
           <ThemedText style={[styles.logo, { color: theme.primary }]}>Cerca</ThemedText>
           <View style={styles.headerSpacer} />
@@ -182,11 +185,23 @@ export function SearchScreen() {
           ]}
         >
           <View style={styles.guestBarContent}>
-            <Pressable style={styles.guestItem} onPress={() => router.push('/login')}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.guestItem,
+                pressed && { backgroundColor: darkenColor(theme.surface), borderRadius: BorderRadius.input },
+              ]}
+              onPress={() => router.push('/login')}
+            >
               <Ionicons name="log-in-outline" size={22} color={theme.text} />
               <ThemedText type="small">Login</ThemedText>
             </Pressable>
-            <Pressable style={styles.guestItem} onPress={() => router.push('/register')}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.guestItem,
+                pressed && { backgroundColor: darkenColor(theme.surface), borderRadius: BorderRadius.input },
+              ]}
+              onPress={() => router.push('/register')}
+            >
               <Ionicons name="person-add-outline" size={22} color={theme.text} />
               <ThemedText type="small">Sign Up</ThemedText>
             </Pressable>

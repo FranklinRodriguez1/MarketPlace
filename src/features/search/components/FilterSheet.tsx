@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import { RATING_OPTIONS } from '../types/search.types';
 import type { FilterState } from '../types/search.types';
@@ -49,7 +50,9 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
           <View style={styles.header}>
             <ThemedText style={styles.title}>Filtros</ThemedText>
             <Pressable onPress={onClose} hitSlop={12}>
-              <Ionicons name="close" size={22} color={theme.text} />
+              {({ pressed }) => (
+                <Ionicons name="close" size={22} color={pressed ? darkenColor(theme.text) : theme.text} />
+              )}
             </Pressable>
           </View>
 
@@ -58,11 +61,16 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
             {categories.map((category) => {
               const selected = category.slug === categoryId;
 
+              const baseBackground = selected ? theme.primary : theme.backgroundElement;
+
               return (
                 <Pressable
                   key={category.id}
                   onPress={() => setCategoryId(selected ? undefined : category.slug)}
-                  style={[styles.pill, { backgroundColor: selected ? theme.primary : theme.backgroundElement }]}
+                  style={({ pressed }) => [
+                    styles.pill,
+                    { backgroundColor: pressed ? darkenColor(baseBackground) : baseBackground },
+                  ]}
                 >
                   <ThemedText type="small" style={{ color: selected ? '#FFFFFF' : theme.text }}>
                     {category.name}
@@ -79,11 +87,16 @@ export function FilterSheet({ visible, filters, onApply, onClose }: FilterSheetP
             {RATING_OPTIONS.map((rating) => {
               const selected = rating === minRating;
 
+              const baseBackground = selected ? theme.backgroundSelected : theme.backgroundElement;
+
               return (
                 <Pressable
                   key={rating}
                   onPress={() => setMinRating(selected ? undefined : rating)}
-                  style={[styles.pill, { backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement }]}
+                  style={({ pressed }) => [
+                    styles.pill,
+                    { backgroundColor: pressed ? darkenColor(baseBackground) : baseBackground },
+                  ]}
                 >
                   <ThemedText type="small" style={{ color: selected ? theme.primary : theme.text }}>
                     {rating}+

@@ -30,11 +30,13 @@ export function ReviewSubmitted() {
         ]}
       >
         <Pressable onPress={() => router.push('/')} style={styles.backButton}>
-          <MaterialIcons
-            name="arrow-back"
-            size={24}
-            color={theme.primary}
-          />
+          {({ pressed }) => (
+            <MaterialIcons
+              name="arrow-back"
+              size={24}
+              color={pressed ? '#0369A1' : theme.primary}
+            />
+          )}
         </Pressable>
 
         <Text style={[styles.headerTitle, { color: theme.primary }]}>

@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { Button } from '@/components/ui/button';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 interface ReviewFormProps {
   onSubmit: () => void;
@@ -62,7 +63,9 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.navbar}>
         <Pressable onPress={() => router.push('/')}>
-          <MaterialIcons name="close" size={24} color={theme.primary} />
+          {({ pressed }) => (
+            <MaterialIcons name="close" size={24} color={pressed ? '#0369A1' : theme.primary} />
+          )}
         </Pressable>
         <Text>Review</Text>
       </View>
@@ -83,14 +86,19 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
         <View style={styles.stars}>
           {[1, 2, 3, 4, 5].map((star) => (
             <Pressable key={star} onPress={() => setRating(star)} hitSlop={8}>
-              <Text
-                style={[
-                  styles.star,
-                  { color: star <= rating ? theme.primary : theme.border },
-                ]}
-              >
-                ★
-              </Text>
+              {({ pressed }) => {
+                const baseColor = star <= rating ? theme.primary : theme.border;
+                return (
+                  <Text
+                    style={[
+                      styles.star,
+                      { color: pressed ? darkenColor(baseColor) : baseColor },
+                    ]}
+                  >
+                    ★
+                  </Text>
+                );
+              }}
             </Pressable>
           ))}
         </View>

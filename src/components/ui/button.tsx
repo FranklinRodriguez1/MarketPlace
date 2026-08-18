@@ -12,6 +12,7 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 // Las 4 variantes de botón definidas en RULES.md — no crear variantes ad-hoc.
 export type ButtonVariant = 'primary' | 'secondary' | 'inverted' | 'outlined';
@@ -46,7 +47,7 @@ export function Button({
   const pressOut = () =>
     Animated.spring(scale, { toValue: 1, friction: 4, useNativeDriver: true }).start();
 
-  const { container, textColor } = variantStyle(variant, theme);
+  const { container, textColor, pressedBackgroundColor } = variantStyle(variant, theme);
 
   return (
     <Animated.View style={[{ transform: [{ scale }] }, isDisabled && styles.disabled, style]}>
@@ -55,7 +56,11 @@ export function Button({
         onPressIn={isDisabled ? undefined : pressIn}
         onPressOut={isDisabled ? undefined : pressOut}
         disabled={isDisabled}
-        style={[styles.button, container]}
+        style={({ pressed }) => [
+          styles.button,
+          container,
+          pressed && !isDisabled && { backgroundColor: pressedBackgroundColor },
+        ]}
       >
         {loading ? (
           <ActivityIndicator color={textColor} />
@@ -78,17 +83,20 @@ function variantStyle(variant: ButtonVariant, theme: ReturnType<typeof useTheme>
         container: { backgroundColor: theme.primary } as ViewStyle,
         // Texto blanco fijo sobre botón primario — contraste fijo permitido por RULES.md, no token de tema.
         textColor: '#FFFFFF',
+        pressedBackgroundColor: darkenColor(theme.primary),
       };
     case 'secondary':
       return {
         container: { backgroundColor: theme.secondary } as ViewStyle,
         textColor: theme.text,
+        pressedBackgroundColor: darkenColor(theme.secondary),
       };
     case 'inverted':
       return {
         // Fondo oscuro fijo independiente del esquema de color — el punto de esta variante es máximo contraste.
         container: { backgroundColor: '#1A1A1A' } as ViewStyle,
         textColor: '#FFFFFF',
+        pressedBackgroundColor: darkenColor('#1A1A1A'),
       };
     case 'outlined':
       return {
@@ -98,6 +106,8 @@ function variantStyle(variant: ButtonVariant, theme: ReturnType<typeof useTheme>
           borderColor: theme.border,
         } as ViewStyle,
         textColor: theme.text,
+        // Sin fondo propio que oscurecer — usa el tinte neutro de superficie presionada.
+        pressedBackgroundColor: theme.backgroundElement,
       };
   }
 }
@@ -122,5 +132,6 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '700',
     fontSize: 16,
+    textAlign: 'center',
   },
 });

@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 interface AuthCheckboxProps {
   checked: boolean;
@@ -13,19 +14,28 @@ interface AuthCheckboxProps {
 export function AuthCheckbox({ checked, onToggle, label }: AuthCheckboxProps) {
   const theme = useTheme();
 
+  const baseBoxBackground = checked ? theme.primary : theme.surface;
+
   return (
     <Pressable onPress={onToggle} style={styles.row}>
-      <View
-        style={[
-          styles.box,
-          { borderColor: theme.border, backgroundColor: checked ? theme.primary : theme.surface },
-        ]}
-      >
-        {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
-      </View>
-      <ThemedText type="small" style={styles.label}>
-        {label}
-      </ThemedText>
+      {({ pressed }) => (
+        <>
+          <View
+            style={[
+              styles.box,
+              {
+                borderColor: theme.border,
+                backgroundColor: pressed ? darkenColor(baseBoxBackground) : baseBoxBackground,
+              },
+            ]}
+          >
+            {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+          </View>
+          <ThemedText type="small" style={styles.label}>
+            {label}
+          </ThemedText>
+        </>
+      )}
     </Pressable>
   );
 }

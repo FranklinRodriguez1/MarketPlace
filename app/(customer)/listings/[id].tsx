@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 // Placeholder de Fase 2: la pantalla de Detalle completa (fotos, precio, reseñas, botón de reserva)
 // se construye junto con Reservas. Por ahora solo confirma que la navegación desde Búsqueda llega
@@ -13,6 +14,7 @@ export default function ListingDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   return (
     <ThemedView style={styles.container}>
@@ -23,7 +25,11 @@ export default function ListingDetailPage() {
           Esta pantalla se completa en la Fase 2 (Detalle + Reservas).
         </ThemedText>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <ThemedText type="linkPrimary">Volver a la búsqueda</ThemedText>
+          {({ pressed }) => (
+            <ThemedText type="linkPrimary" style={{ color: pressed ? '#0369A1' : theme.primary }}>
+              Volver a la búsqueda
+            </ThemedText>
+          )}
         </Pressable>
       </ThemedView>
     </ThemedView>

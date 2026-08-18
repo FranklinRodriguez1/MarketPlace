@@ -11,6 +11,7 @@ import { translateFieldError } from '@/i18n/translate-field-error';
 import { Button } from '@/components/ui/button';
 import { BorderRadius } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 import type { CreateListingForm } from '../schemas/create-listing.schema';
 
@@ -88,7 +89,11 @@ export function Step3LocationPhotos() {
             </View>
 
             <Pressable
-              style={[styles.locateButton, { backgroundColor: theme.primary }, isLocating && styles.locateButtonDisabled]}
+              style={({ pressed }) => [
+                styles.locateButton,
+                { backgroundColor: pressed && !isLocating ? '#0369A1' : theme.primary },
+                isLocating && styles.locateButtonDisabled,
+              ]}
               onPress={() => void handleUseCurrentLocation()}
               disabled={isLocating}
             >
@@ -126,7 +131,15 @@ export function Step3LocationPhotos() {
             </ThemedText>
 
             {/* ÁREA PARA AGREGAR FOTOS */}
-            <Pressable style={[styles.uploadContainer, { borderColor: theme.border, backgroundColor: theme.backgroundElement }]}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.uploadContainer,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: pressed ? darkenColor(theme.backgroundElement) : theme.backgroundElement,
+                },
+              ]}
+            >
               <View style={[styles.uploadIcon, { backgroundColor: theme.background }]}>
                 <MaterialIcons
                   name="add-a-photo"

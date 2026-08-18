@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useCategories } from '@/features/listing/create/hooks/use-categories';
 import { useTheme } from '@/hooks/use-theme';
+import { darkenColor } from '@/utils/color';
 
 interface CategoryChipsProps {
   selectedCategoryId?: string;
@@ -24,14 +25,18 @@ export function CategoryChips({ selectedCategoryId, onSelect }: CategoryChipsPro
       {categories.map((category) => {
         const selected = category.slug === selectedCategoryId;
 
+        const baseBackground = selected ? theme.primary : 'transparent';
+
         return (
           <Pressable
             key={category.id}
             onPress={() => onSelect(selected ? undefined : category.slug)}
-            style={[
+            style={({ pressed }) => [
               styles.chip,
               {
-                backgroundColor: selected ? theme.primary : 'transparent',
+                backgroundColor: pressed
+                  ? (selected ? darkenColor(theme.primary) : theme.backgroundElement)
+                  : baseBackground,
                 borderColor: selected ? theme.primary : theme.border,
               },
             ]}

@@ -95,10 +95,13 @@ export default function MyListingsScreen() {
         </ThemedText>
 
         <Pressable
-          style={[styles.emptyButton, { backgroundColor: theme.primary }]}
+          style={({ pressed }) => [
+            styles.emptyButton,
+            { backgroundColor: pressed ? '#0369A1' : theme.primary },
+          ]}
           onPress={() => void refetch()}
         >
-          <ThemedText style={styles.emptyButton}>
+          <ThemedText style={[styles.emptyButtonText, { textAlign: 'center' }]}>
             {t('common.retry')}
           </ThemedText>
         </Pressable>
@@ -124,10 +127,10 @@ export default function MyListingsScreen() {
       </ThemedText>
 
       <Pressable
-        style={[styles.emptyButton, { backgroundColor: theme.primary }]}
+        style={({ pressed }) => [styles.emptyButton, { backgroundColor: pressed ? '#0369A1' : theme.primary }]}
         onPress={() => router.push('/(provider)/listings/create')}
       >
-        <ThemedText style={[styles.emptyButton, { textAlign: 'center' }]}>
+        <ThemedText style={[styles.emptyButtonText, { textAlign: 'center' }]}>
           {t('myListings.publishAnAd')}
         </ThemedText>
       </Pressable>
@@ -141,11 +144,13 @@ export default function MyListingsScreen() {
       {/* HEADER */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <Pressable>
-          <MaterialIcons
-            name="close"
-            size={24}
-            color={theme.primary}
-          />
+          {({ pressed }) => (
+            <MaterialIcons
+              name="close"
+              size={24}
+              color={pressed ? '#0369A1' : theme.primary}
+            />
+          )}
         </Pressable>
 
         <ThemedText themeColor="primary" style={styles.logo}>
@@ -179,7 +184,13 @@ export default function MyListingsScreen() {
       </View>
 
       {/* BOTÓN + */}
-      <Pressable onPress={()=> router.push('/(provider)/listings/create')} style={[styles.addButton, { backgroundColor: theme.primary }]}>
+      <Pressable
+        onPress={()=> router.push('/(provider)/listings/create')}
+        style={({ pressed }) => [
+          styles.addButton,
+          { backgroundColor: pressed ? '#0369A1' : theme.primary },
+        ]}
+      >
         <MaterialIcons
           name="add"
           size={30}
@@ -209,7 +220,12 @@ export default function MyListingsScreen() {
               </ThemedText>
             )}
 
-            <Pressable style={styles.menuItem}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuItem,
+                pressed && { backgroundColor: theme.backgroundElement },
+              ]}
+            >
               <MaterialIcons
                 name="visibility"
                 size={20}
@@ -221,7 +237,14 @@ export default function MyListingsScreen() {
               </ThemedText>
             </Pressable>
 
-            <Pressable style={styles.menuItem} onPress={handleEdit} disabled={isActing}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuItem,
+                pressed && !isActing && { backgroundColor: theme.backgroundElement },
+              ]}
+              onPress={handleEdit}
+              disabled={isActing}
+            >
               <MaterialIcons
                 name="edit"
                 size={20}
@@ -234,7 +257,14 @@ export default function MyListingsScreen() {
             </Pressable>
 
             {selectedListing?.status === 'published' && (
-              <Pressable style={styles.menuItem} onPress={handlePause} disabled={isActing}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.menuItem,
+                  pressed && !isActing && { backgroundColor: theme.backgroundElement },
+                ]}
+                onPress={handlePause}
+                disabled={isActing}
+              >
                 {pauseMutation.isPending ? (
                   <ActivityIndicator size="small" color={theme.text} />
                 ) : (
@@ -252,7 +282,14 @@ export default function MyListingsScreen() {
             )}
 
             {(selectedListing?.status === 'paused' || selectedListing?.status === 'draft') && (
-              <Pressable style={styles.menuItem} onPress={handlePublish} disabled={isActing}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.menuItem,
+                  pressed && !isActing && { backgroundColor: theme.backgroundElement },
+                ]}
+                onPress={handlePublish}
+                disabled={isActing}
+              >
                 {publishMutation.isPending ? (
                   <ActivityIndicator size="small" color={theme.primary} />
                 ) : (
@@ -301,8 +338,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignSelf: 'stretch',
     borderRadius: 18,
-    
+    paddingVertical: 5,
+  alignItems: 'center',
+  justifyContent: 'center',
   },
+  emptyButtonText: {
+  textAlign: 'center',
+  fontWeight: '600',
+  color: '#FFFFFF',
+},
 
   container: {
     flex: 1,
