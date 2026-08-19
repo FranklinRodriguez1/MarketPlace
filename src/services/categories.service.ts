@@ -1,17 +1,18 @@
 // categories.service.ts
+import { api } from './api';
 
-export type Category = {
+export interface Category {
   id: string;
   slug: string;
   name: string;
 };
 
 export async function getCategories(): Promise<Category[]> {
-  const response = await fetch('/categories');
+  const response = await api.get<Category[]>('/categories');
 
-  if (!response.ok) {
-    throw new Error('No se pudieron obtener las categorías');
-  }
+//   if (!response.data) {
+//     throw new Error('No se pudieron obtener las categorías');
+//   }
 
-  return response.json();
+  return response.data;
 }

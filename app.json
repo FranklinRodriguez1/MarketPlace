@@ -8,7 +8,13 @@
     "scheme": "marketplace",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Cerca usa Face ID para desbloquear la app de forma rápida y segura."
+      }
+    },
+    "androidStatusBar": {
+      "hidden": true
     },
     "android": {
       "adaptiveIcon": {
@@ -18,6 +24,9 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
+      "usesCleartextTraffic": true,
+
+      
       "package": "com.danna22.marketplace"
     },
     "web": {
@@ -33,7 +42,17 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-localization",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Cerca usa tu ubicación para mostrarte servicios cercanos."
+        }
+      ],
+      "react-native-edge-to-edge",
+      "expo-secure-store",
+      "expo-local-authentication"
     ],
     "experiments": {
       "typedRoutes": true,

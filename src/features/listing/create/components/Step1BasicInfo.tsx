@@ -1,82 +1,66 @@
+import { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
+  ActivityIndicator,
   FlatList,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ActivityIndicator,
-} from 'react-native';
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 
-import { Controller, useFormContext } from 'react-hook-form';
-import { useEffect, useMemo, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Controller, useFormContext } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
-import type { CreateListingForm } from '../schemas/create-listing.schema';
+import { ThemedText } from "@/components/themed-text";
+import { useTheme } from "@/hooks/use-theme";
+import {
+  CATEGORY_ICONS,
+  DEFAULT_CATEGORY_ICON,
+} from "@/constants/category-icons";
+import { translateFieldError } from "@/i18n/translate-field-error";
 
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useCategories } from "../hooks/use-categories";
+import type { CreateListingForm } from "../schemas/create-listing.schema";
 
-type Category = {
-  id: string;
-  slug: string;
-  name: string;
+const ACCENTED_CHARACTERS: Record<string, string> = {
+  á: "a",
+  é: "e",
+  í: "i",
+  ó: "o",
+  ú: "u",
+  ü: "u",
+  ñ: "n",
 };
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+function normalizeForSearch(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(
+      /[áéíóúüñ]/g,
+      (accented) => ACCENTED_CHARACTERS[accented] ?? accented,
+    );
+}
 
 export function Step1BasicInfo() {
   const { control } = useFormContext<CreateListingForm>();
+  const theme = useTheme();
+  const { t } = useTranslation();
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [search, setSearch] = useState('');
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        setLoadingCategories(true);
-        setCategoriesError(null);
+  const { data: categories, isPending, isError, refetch } = useCategories();
 
-        const response = await fetch(`${API_URL}/categories`);
-
-        if (!response.ok) {
-          throw new Error('No se pudieron cargar las categorías');
-        }
-
-        const data: Category[] = await response.json();
-
-        setCategories(data);
-      } catch (error) {
-        setCategoriesError(
-          error instanceof Error
-            ? error.message
-            : 'Error cargando categorías'
-        );
-      } finally {
-        setLoadingCategories(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  const filteredCategories = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim();
-
-    if (!normalizedSearch) {
-      return categories;
-    }
-
-    return categories.filter((category) =>
-      category.name.toLowerCase().includes(normalizedSearch)
-    );
-  }, [categories, search]);
+  const filteredCategories = (categories ?? []).filter((category) =>
+    normalizeForSearch(category.name).includes(normalizeForSearch(search)),
+  );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
       <FlatList
@@ -88,16 +72,12 @@ export function Step1BasicInfo() {
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View style={styles.header}>
+            {/* BASIC INFORMATION */}
+            <ThemedText themeColor="textSecondary" style={styles.stepLabel}>{t('createListing.step1.basicInformation')}</ThemedText>
 
-            <Text style={styles.stepLabel}>
-              Basic Information
-            </Text>
-
-            {/* TÍTULO */}
+            {/* TITLE */}
             <View style={styles.section}>
-              <Text style={styles.label}>
-                Title
-              </Text>
+              <ThemedText style={styles.label}>{t('createListing.step1.titleLabel')}</ThemedText>
 
               <Controller
                 control={control}
@@ -108,68 +88,87 @@ export function Step1BasicInfo() {
                       value={field.value}
                       onChangeText={field.onChange}
                       onBlur={field.onBlur}
-                      placeholder="Ej. Clases de inglés"
+                      placeholder={t('createListing.step1.titlePlaceholder')}
+                      placeholderTextColor={theme.textSecondary}
                       style={[
                         styles.input,
-                        fieldState.error && styles.inputError,
+                        { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text },
+                        fieldState.error && { borderColor: theme.danger },
                       ]}
                     />
 
                     {fieldState.error && (
-                      <Text style={styles.error}>
-                        {fieldState.error.message}
-                      </Text>
+                      <ThemedText themeColor="danger" style={styles.error}>
+                        {translateFieldError(t, fieldState.error.message)}
+                      </ThemedText>
                     )}
                   </>
                 )}
               />
 
-              <Text style={styles.helper}>
-                A descriptive title helps users find your service easily.
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.helper}>
+                {t('createListing.step1.titleHelper')}
+              </ThemedText>
             </View>
 
-            {/* CATEGORÍA */}
+            {/* DESCRIPTION */}
+            <View style={styles.section}>
+              <ThemedText style={styles.label}>{t('createListing.step1.descriptionLabel')}</ThemedText>
+
+              <Controller
+                control={control}
+                name="description"
+                render={({ field, fieldState }) => (
+                  <>
+                    <TextInput
+                      value={field.value}
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder={t('createListing.step1.descriptionPlaceholder')}
+                      placeholderTextColor={theme.textSecondary}
+                      multiline
+                      numberOfLines={5}
+                      textAlignVertical="top"
+                      style={[
+                        styles.input,
+                        { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text },
+                        fieldState.error && { borderColor: theme.danger },
+                      ]}
+                    />
+
+                    {fieldState.error && (
+                      <ThemedText themeColor="danger" style={styles.error}>
+                        {translateFieldError(t, fieldState.error.message)}
+                      </ThemedText>
+                    )}
+                  </>
+                )}
+              />
+
+              <ThemedText themeColor="textSecondary" style={styles.helper}>
+                {t('createListing.step1.descriptionHelper')}
+              </ThemedText>
+            </View>
+            {/* CATEGORY */}
             <View style={styles.categoryHeader}>
-              <Text style={styles.title}>
-                Select a category
-              </Text>
+              <ThemedText style={styles.title}>{t('createListing.step1.selectCategory')}</ThemedText>
 
-              <Text style={styles.description}>
-                Choose the category that best describes your service.
-              </Text>
+              <ThemedText themeColor="textSecondary" style={styles.description}>
+                {t('createListing.step1.selectCategoryDescription')}
+              </ThemedText>
 
-              {/* BUSCADOR */}
-              <View style={styles.searchContainer}>
-                <MaterialIcons
-                  name="search"
-                  size={22}
-                  color="#64748B"
-                />
+              {/* SEARCH */}
+              <View style={[styles.searchContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                <MaterialIcons name="search" size={22} color={theme.textSecondary} />
 
                 <TextInput
                   value={search}
                   onChangeText={setSearch}
-                  placeholder="Buscar categoría..."
-                  placeholderTextColor="#94A3B8"
-                  style={styles.searchInput}
+                  placeholder={t('createListing.step1.searchPlaceholder')}
+                  placeholderTextColor={theme.textSecondary}
+                  style={[styles.searchInput, { color: theme.text }]}
                 />
               </View>
-
-              {/* ERROR */}
-              {categoriesError && (
-                <Text style={styles.error}>
-                  {categoriesError}
-                </Text>
-              )}
-
-              {/* LOADING */}
-              {loadingCategories && (
-                <View style={styles.loading}>
-                  <ActivityIndicator />
-                  <Text>Cargando categorías...</Text>
-                </View>
-              )}
             </View>
           </View>
         }
@@ -185,37 +184,40 @@ export function Step1BasicInfo() {
                   onPress={() => field.onChange(item.id)}
                   style={[
                     styles.card,
-                    selected && styles.cardSelected,
-                    fieldState.error && styles.cardError,
+                    { backgroundColor: theme.surface, borderColor: theme.border },
+                    selected && { backgroundColor: theme.backgroundSelected, borderColor: theme.primary, borderWidth: 2 },
+                    fieldState.error && { borderColor: theme.danger },
                   ]}
                 >
+                  {/* ICON */}
                   <View
                     style={[
                       styles.iconContainer,
-                      selected && styles.iconContainerSelected,
+                      { backgroundColor: theme.backgroundElement },
+                      selected && { backgroundColor: theme.backgroundSelected },
                     ]}
                   >
                     <MaterialIcons
-                      name="category"
+                      name={CATEGORY_ICONS[item.slug] ?? DEFAULT_CATEGORY_ICON}
                       size={28}
-                      color={selected ? '#0284C7' : '#334155'}
+                      color={selected ? theme.primary : theme.text}
                     />
                   </View>
 
-                  <Text
-                    style={[
-                      styles.name,
-                      selected && styles.nameSelected,
-                    ]}
+                  {/* NAME */}
+                  <ThemedText
+                    themeColor={selected ? "primary" : "text"}
+                    style={[styles.name, selected && styles.nameSelected]}
                   >
                     {item.name}
-                  </Text>
+                  </ThemedText>
 
+                  {/* CHECK */}
                   {selected && (
                     <MaterialIcons
                       name="check-circle"
                       size={20}
-                      color="#0284C7"
+                      color={theme.primary}
                       style={styles.check}
                     />
                   )}
@@ -225,19 +227,30 @@ export function Step1BasicInfo() {
           />
         )}
         ListEmptyComponent={
-          !loadingCategories ? (
+          isPending ? (
             <View style={styles.empty}>
-              <MaterialIcons
-                name="search-off"
-                size={40}
-                color="#94A3B8"
-              />
-
-              <Text style={styles.emptyText}>
-                No se encontraron categorías.
-              </Text>
+              <ActivityIndicator size="large" color={theme.primary} />
+              <ThemedText themeColor="textSecondary" style={styles.emptyText}>{t('createListing.step1.loadingCategories')}</ThemedText>
             </View>
-          ) : null
+          ) : isError ? (
+            <View style={styles.empty}>
+              <MaterialIcons name="error-outline" size={40} color={theme.danger} />
+              <ThemedText themeColor="textSecondary" style={styles.emptyText}>
+                {t('createListing.step1.loadErrorCategories')}
+              </ThemedText>
+              <Pressable onPress={() => refetch()}>
+                <ThemedText themeColor="primary" style={styles.retryText}>{t('common.retry')}</ThemedText>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={styles.empty}>
+              <MaterialIcons name="search-off" size={40} color={theme.textSecondary} />
+
+              <ThemedText themeColor="textSecondary" style={styles.emptyText}>
+                {t('createListing.step1.noCategoriesFound')}
+              </ThemedText>
+            </View>
+          )
         }
       />
     </KeyboardAvoidingView>
@@ -256,7 +269,6 @@ const styles = StyleSheet.create({
 
   stepLabel: {
     fontSize: 14,
-    color: '#64748B',
   },
 
   section: {
@@ -265,25 +277,18 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   input: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#FFF',
     fontSize: 16,
   },
 
-  inputError: {
-    borderColor: '#EF4444',
-  },
-
   helper: {
-    color: '#64748B',
     fontSize: 13,
   },
 
@@ -293,22 +298,19 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 
   description: {
-    color: '#64748B',
     fontSize: 14,
   },
 
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
     borderRadius: 8,
-    backgroundColor: '#FFF',
     paddingHorizontal: 12,
     marginTop: 8,
   },
@@ -320,7 +322,7 @@ const styles = StyleSheet.create({
   },
 
   row: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     gap: 12,
     marginTop: 12,
   },
@@ -328,78 +330,55 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     minHeight: 130,
-    backgroundColor: '#FFF',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     borderRadius: 14,
     padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-
-  cardSelected: {
-    backgroundColor: '#E0F2FE',
-    borderColor: '#0284C7',
-    borderWidth: 2,
-  },
-
-  cardError: {
-    borderColor: '#EF4444',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
 
   iconContainer: {
     width: 52,
     height: 52,
     borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F1F5F9',
-  },
-
-  iconContainerSelected: {
-    backgroundColor: '#BAE6FD',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   name: {
     marginTop: 10,
     fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    color: '#334155',
+    textAlign: "center",
   },
 
   nameSelected: {
-    color: '#0369A1',
-    fontWeight: '700',
+    fontWeight: "700",
   },
 
   check: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
   },
 
-  loading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 10,
-  },
-
-  error: {
-    color: '#EF4444',
-    fontSize: 13,
-  },
-
   empty: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 40,
     gap: 10,
   },
 
   emptyText: {
-    color: '#64748B',
+    textAlign: 'center',
+  },
+
+  retryText: {
+    fontWeight: "600",
+    marginTop: 4,
+  },
+
+  error: {
+    fontSize: 13,
   },
 });

@@ -1,4 +1,10 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
+import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+
+import { ThemedText } from '@/components/themed-text';
+
+import { useTheme } from '@/hooks/use-theme';
 
 interface CreateListingHeaderProps {
     step: number;
@@ -11,54 +17,49 @@ export function CreateListingHeader({
     totalSteps,
     onBack,
 }: CreateListingHeaderProps) {
+    const { t } = useTranslation();
+    const theme = useTheme();
     const progress = step / totalSteps;
 
     return(
-        <View>
-            <View style={{
+        <View style={{
           height: 56,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
+          justifyContent: 'space-between',
           marginTop: 15,
+          paddingHorizontal: 16,
+          backgroundColor: theme.background,
         }}>
-            <Pressable onPress={onBack}
-          style={{
-            position: 'absolute',
-            left: 16,
-            width: 40,
-            height: 40,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-                <Text style={{
-              fontSize: 28,
-              color: '#0369A1',
-            }}> ‹ </Text>
-            </Pressable>
-            <Text style={{
-            fontSize: 14,
-            fontWeight: '700',
-            color: '#075985',
-          }}>
-                Step {step} of {totalSteps}
-            </Text>
+            <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                <Pressable onPress={onBack}
+              style={{
+                width: 40,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                    <ThemedText themeColor="primary" style={{ fontSize: 28 }}> ‹ </ThemedText>
+                </Pressable>
             </View>
-            <View
-        style={{
-          height: 3,
-          backgroundColor: '#E5E7EB',
-        }}
-      >
-        <View
-          style={{
-            height: 3,
-            width: `${progress * 100}%`,
-            backgroundColor: '#0369A1',
-          }}
-        />
-      </View>
-        </View>
+
+            <View style={{ flex: 1, alignItems: 'center' }}>
+                <ThemedText themeColor="primary" style={{ fontSize: 14, fontWeight: '700' }}>
+                    {t('createListing.stepOf', { step, totalSteps })}
+                </ThemedText>
+            </View>
+
+            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <Pressable onPress={() => router.push('/my-listings')}
+              style={{
+                width: 40,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                    <ThemedText themeColor="primary" style={{ fontSize: 28 }}>X</ThemedText>
+                </Pressable>
+            </View>
+            </View>
     )
 }

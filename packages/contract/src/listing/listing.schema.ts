@@ -1,29 +1,19 @@
 import { z } from 'zod';
+import { coordinatesSchema } from '../geo/coordinates.schema';
+import { listingStatusSchema } from './listing-status.schema';
+import { pricingSchema } from '../pricing/pricing.schema';
 
-export const listingStatusSchema = z.discriminatedUnion('kind', [
-  z.object({
-    kind: z.literal('draft'),
-  }),
+export const listingSchema = z.object({
+    id: z.string().min(1),
+    categoryId: z.string().min(1),
+    title: z.string().trim().min(1).max(80),
+    providerName: z.string().min(1),
+    pricing: pricingSchema,
+    location: coordinatesSchema,
+    photos: z.array(z.string()).min(1),
+    status: listingStatusSchema,
+    ratingAverage: z.number().min(0).max(5).optional(),
+    ratingCount: z.number().int().nonnegative().optional(),
+});
 
-  z.object({
-    kind: z.literal('published'),
-    publishedAt: z.string().datetime(),
-  }),
-
-  z.object({
-    kind: z.literal('paused'),
-  }),
-
-  z.object({
-    kind: z.literal('under_review'),
-    reportId: z.string(),
-  }),
-
-  z.object({
-    kind: z.literal('removed'),
-    removedBy: z.string(),
-    reason: z.string(),
-  }),
-]);
-
-export type ListingStatus = z.infer<typeof listingStatusSchema>;
+export type ListingSchema = z.infer<typeof listingSchema>;
